@@ -1,8 +1,7 @@
-import os
 import time
 from jetson_utils import videoSource
 from frame_processor import FrameProcessor
-from execution_timer import ExecutionTimer
+from fps_tracker import FPSTracker
 import logging
 
 # Configure the root logger
@@ -21,12 +20,11 @@ logging.basicConfig(
 
 
 def main():
-    script_dir = os.path.dirname(os.path.abspath(__file__))
 
     frame_processor = FrameProcessor()
     # Configure video sources
-    capture = os.path.join(script_dir, 'data', 'videos', 'video3.mp4')
-    output = os.path.join(script_dir, 'data', 'output', 'out.mp4')
+    capture = 'data/videos/video3.mp4'
+    output = 'data/output/out.mp4'
 
     capture_config = ['--headless', '--input-width=1920', '--input-height=1080',
                       '--input-codec=mjpeg', '--input-rate=30', f'--input-save={output}']
@@ -40,7 +38,8 @@ def main():
             if frame is None:
                 break
 
-            frame_processor.run(frame)
+            with FPSTracker():
+                frame_processor.run(frame)
             logging.debug(f'iteration {i}')
 
             # exit on input/output EOS
