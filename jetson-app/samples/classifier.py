@@ -5,7 +5,7 @@ from classifier import Classifier
 # Configure classifier to log details
 logging.basicConfig(level=logging.DEBUG)
 
-img = jetson_utils.loadImage('./videos/photos/1.jpg', format="rgb8")
+img = jetson_utils.loadImage('./data/photos/1.jpg', format="rgb8")
 try:
     classifier = Classifier()
     for i in range(10):
