@@ -1,6 +1,7 @@
 import threading
 from jetson_utils import videoSource, videoOutput, cudaAllocMapped, cudaMemcpy
 
+
 class Recorder:
     def __init__(self):
         self.video_capture = None  # Initialize video capture source
@@ -15,8 +16,10 @@ class Recorder:
         self,
         capture,
         output,
-        capture_config=['--input-width=1920', '--input-height=1080', '--input-codec=mjpeg'],
-        output_config=['--headless', '--output-width=1920', '--output-height=1080', '--output-frameRate=30', '--output-codec=h264', '--bitrate=4000000']
+        capture_config=['--input-width=1920',
+                        '--input-height=1080', '--input-codec=mjpeg'],
+        output_config=['--headless', '--output-width=1920', '--output-height=1080',
+                       '--output-frameRate=30', '--output-codec=h264', '--bitrate=4000000']
     ):
         with self.running_lock:
             if self.running:
@@ -48,8 +51,7 @@ class Recorder:
             self.read_thread.join()
             self.read_thread = None
         self.release_videos()
-       
-    
+
     def release_videos(self):
         if self.video_capture:
             self.video_capture.Close()
@@ -90,13 +92,14 @@ class Recorder:
     def read(self):
         with self.running_lock:
             if not self.running:
-                print('Recorder is not running') 
+                print('Recorder is not running')
                 return None
-        
+
         with self.read_lock:
             if self.frame is None:
-                return None  # Handle case where frame is not available (end of stream)
-            frame = cudaAllocMapped(width=self.frame.width, height=self.frame.height, format=self.frame.format)
+                # Handle case where frame is not available (end of stream)
+                return None
+            frame = cudaAllocMapped(
+                width=self.frame.width, height=self.frame.height, format=self.frame.format)
             cudaMemcpy(frame, self.frame)
         return frame
-            

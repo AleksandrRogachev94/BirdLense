@@ -31,17 +31,15 @@ recorder.start(capture, output)
 try:
     i = 0
     while True:
-            i+= 1
-            frame = recorder.read()
-            if frame is None:
-                break
-            frame_processor.run(frame)
-            print(f'-- Main iteration {i}')
-            time.sleep(0.005)
+        i += 1
+        frame = recorder.read()
+        if frame is None:
+            break
+        frame_processor.run(frame)
+        print(f'-- Main iteration {i}')
+        time.sleep(0.005)
 finally:
     print('--- Main stop')
     print('!!!!!!')
     frame_processor.get_results()
     recorder.stop()
-
-    
