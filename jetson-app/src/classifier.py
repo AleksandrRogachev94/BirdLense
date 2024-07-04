@@ -25,10 +25,10 @@ class Classifier:
             width=INPUT_SHAPE[0], height=INPUT_SHAPE[1], format="rgb8") for _ in range(self.max_batch_size)]
 
         with open(labels, 'r') as f:
-            self.labels = [line.strip() for line in f]
+            self.labels = [line.strip().lower() for line in f]
         with open(labels_used, 'r') as f:
             # Ignore classes not listed in labels_used.
-            self.labels_used = [line.strip() for line in f]
+            self.labels_used = [line.strip().lower() for line in f]
             self.labels_not_used_indexes = np.where(
                 ~np.isin(self.labels, self.labels_used))[0]
         with open(trt_engine, 'rb') as f, trt.Runtime(TRT_LOGGER) as runtime:
