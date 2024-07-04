@@ -72,17 +72,23 @@ class FrameProcessor:
 
         # Classification postprocessing and tracks analysis
         class_idx = 0
+        detected_bird, detected_squirrel = False, False
         for det, img in zip(detections, imgs):
             class_desc = self.detector.GetClassDesc(det.ClassID)
             if class_desc != 'squirrel':
                 class_desc = class_descs[class_idx]
                 class_idx += 1
+                detected_bird = True
+            else:
+                detected_squirrel = True
 
             self.logger.debug(
                 f'Track Info: Track ID: {det.TrackID}, Status: {det.TrackStatus}, Frames: {det.TrackFrames}, Lost: {det.TrackLost}')
             if det.TrackID not in self.tracks_to_preds:
                 self.tracks_to_preds[det.TrackID] = []
             self.tracks_to_preds[det.TrackID].append(class_desc)
+
+        return detected_bird, detected_squirrel
 
     def get_results(self):
         fps = 10

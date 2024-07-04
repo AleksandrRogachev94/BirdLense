@@ -1,8 +1,9 @@
 import time
+import argparse
+import logging
 from jetson_utils import videoSource
 from frame_processor import FrameProcessor
 from fps_tracker import FPSTracker
-import logging
 
 # Configure the root logger
 logging.basicConfig(
@@ -20,15 +21,17 @@ logging.basicConfig(
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Smart bird feeder program")
+    parser.add_argument('input', type=str,
+                        help='Input source, camera/video file')
+    args = parser.parse_args()
 
     frame_processor = FrameProcessor()
     # Configure video sources
-    capture = 'data/videos/video3.mp4'
     output = 'data/output/out.mp4'
-
     capture_config = ['--headless', '--input-width=1920', '--input-height=1080',
                       '--input-codec=mjpeg', '--input-rate=30', f'--input-save={output}']
-    video_capture = videoSource(capture, argv=capture_config)
+    video_capture = videoSource(args.input, argv=capture_config)
 
     try:
         i = 0
@@ -39,7 +42,7 @@ def main():
                 break
 
             with FPSTracker():
-                frame_processor.run(frame)
+                detected_bird, detected_squirrel = frame_processor.run(frame)
             logging.debug(f'iteration {i}')
 
             # exit on input/output EOS
