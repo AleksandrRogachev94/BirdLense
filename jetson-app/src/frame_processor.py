@@ -1,13 +1,9 @@
-import os
 import time
 import logging
 from collections import Counter
-from execution_timer import ExecutionTimer
-from jetson_inference import detectNet, imageNet
-from jetson_utils import videoSource, videoOutput, cudaAllocMapped, cudaCrop, saveImage
+from jetson_inference import detectNet
+from jetson_utils import cudaAllocMapped, cudaCrop
 from classifier import Classifier
-
-script_dir = os.path.dirname(os.path.abspath(__file__))
 
 MIN_TRACK_FRAMES = 5
 
@@ -21,20 +17,13 @@ class FrameProcessor:
         test_frame = cudaAllocMapped(width=1920, height=1080, format="rgb8")
 
         # Load detector
-        detector_file = os.path.join(
-            script_dir, 'models', 'detection', 'ssd-mobilenet.onnx')
-        labels = os.path.join(script_dir, 'models', 'detection', 'labels.txt')
+        detector_file = 'models/detection/ssd-mobilenet.onnx'
+        labels = 'models/detection/labels.txt'
         self.detector = detectNet(detector_file, threshold=0.5, labels=labels, input_blob="input_0",
-                                  output_bbox="boxes", output_cvg="scores", argv=[f'--log-level=info'])
+                                  output_bbox="boxes", output_cvg="scores")
         self.detector.SetTrackingEnabled(True)
         self.detector.Detect(test_frame)
         # self.detector.SetTrackingParams(minFrames=3, dropFrames=15, overlapThreshold=0.5)
-
-        # Load classifier.
-        # classifier_file = os.path.join(script_dir, 'models', 'classification', 'resnet18.onnx')
-        # labels = os.path.join(script_dir, 'models', 'classification', 'labels.txt')
-        # self.classifier = imageNet(classifier_file, labels=labels, input_blob="input_0", output_blob="output_0")
-        # self.classifier.Classify(test_frame)
 
         # Load classifier.
         self.classifier = Classifier()
