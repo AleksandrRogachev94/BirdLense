@@ -19,6 +19,7 @@ logging.basicConfig(
     ]
 )
 
+
 def main():
     script_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -27,24 +28,25 @@ def main():
     capture = os.path.join(script_dir, 'videos', 'video3.mp4')
     output = os.path.join(script_dir, 'videos', 'sample1_out.mp4')
 
-    capture_config = ['--headless', '--input-width=1920', '--input-height=1080', '--input-codec=mjpeg', '--input-rate=30', f'--input-save={output}']
+    capture_config = ['--headless', '--input-width=1920', '--input-height=1080',
+                      '--input-codec=mjpeg', '--input-rate=30', f'--input-save={output}']
     video_capture = videoSource(capture, argv=capture_config)
 
     try:
         i = 0
         while True:
-                i+= 1
-                frame = video_capture.Capture()
-                if frame is None:
-                    break
+            i += 1
+            frame = video_capture.Capture()
+            if frame is None:
+                break
 
-                frame_processor.run(frame)
-                logging.debug(f'iteration {i}')
+            frame_processor.run(frame)
+            logging.debug(f'iteration {i}')
 
-                # exit on input/output EOS
-                if not video_capture.IsStreaming():
-                    break
-                time.sleep(0.005)
+            # exit on input/output EOS
+            if not video_capture.IsStreaming():
+                break
+            time.sleep(0.005)
     finally:
         logging.info('Main loop stopped')
         frame_processor.get_results()
@@ -54,5 +56,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-    
