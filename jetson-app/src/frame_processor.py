@@ -44,7 +44,7 @@ class FrameProcessor:
         if len(detections) == 0:
             return
 
-        # Batch classification
+        # Filter detections based on tracking criteria
         detections = [det for det in detections if det.TrackID != -
                       1 and det.TrackStatus == 1 and det.TrackFrames >= MIN_TRACK_FRAMES]
         if len(detections) == 0:
@@ -55,22 +55,29 @@ class FrameProcessor:
         for det in detections:
             crop_roi = (int(det.Left), int(det.Top),
                         int(det.Right), int(det.Bottom))
-            bird_img = cudaAllocMapped(
+            cropped_img = cudaAllocMapped(
                 width=crop_roi[2] - crop_roi[0], height=crop_roi[3] - crop_roi[1], format=img.format)
-            # crop the image to the ROI
-            cudaCrop(img, bird_img, crop_roi)
-            imgs.append(bird_img)
+            cudaCrop(img, cropped_img, crop_roi)
+            imgs.append(cropped_img)
         self.logger.debug(
             f'Cropping Time : {(time.time() - st) * 1000} [msec] (detections: {len(detections)})')
 
+        # Classify only non-squirrel images
         st = time.time()
-        class_descs = self.classifier.classify(imgs)
+        bird_imgs = [img for det, img in zip(
+            detections, imgs) if self.detector.GetClassDesc(det.ClassID) != 'squirrel']
+        class_descs = self.classifier.classify(bird_imgs)
         self.logger.debug(
-            f'Classification Time : {(time.time() - st) * 1000} [msec] (images: {len(imgs)})')
+            f'Classification Time : {(time.time() - st) * 1000} [msec] (images: {len(bird_imgs)})')
 
-        for i in range(len(imgs)):
-            det = detections[i]
-            class_desc = class_descs[i]
+        # Classification postprocessing and tracks analysis
+        class_idx = 0
+        for det, img in zip(detections, imgs):
+            class_desc = self.detector.GetClassDesc(det.ClassID)
+            if class_desc != 'squirrel':
+                class_desc = class_descs[class_idx]
+                class_idx += 1
+
             self.logger.debug(
                 f'Track Info: Track ID: {det.TrackID}, Status: {det.TrackStatus}, Frames: {det.TrackFrames}, Lost: {det.TrackLost}')
             if det.TrackID not in self.tracks_to_preds:
