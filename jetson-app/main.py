@@ -25,8 +25,8 @@ def main():
 
     frame_processor = FrameProcessor()
     # Configure video sources
-    capture = os.path.join(script_dir, 'videos', 'video3.mp4')
-    output = os.path.join(script_dir, 'videos', 'sample1_out.mp4')
+    capture = os.path.join(script_dir, 'data', 'videos', 'video3.mp4')
+    output = os.path.join(script_dir, 'data', 'output', 'out.mp4')
 
     capture_config = ['--headless', '--input-width=1920', '--input-height=1080',
                       '--input-codec=mjpeg', '--input-rate=30', f'--input-save={output}']
