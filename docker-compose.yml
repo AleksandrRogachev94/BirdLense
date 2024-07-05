@@ -1,0 +1,29 @@
+# version: '3'
+# services:
+#   processor:
+#     build:
+#       context: ./jetson-app
+#       dockerfile: Dockerfile
+#     runtime: nvidia
+#     network_mode: host
+#     volumes:
+#       - /tmp/argus_socket:/tmp/argus_socket
+#       - /etc/enctune.conf:/etc/enctune.conf
+#       - /etc/nv_tegra_release:/etc/nv_tegra_release
+#       - /tmp/nv_jetson_model:/tmp/nv_jetson_model
+#       - /var/run/dbus:/var/run/dbus
+#       - /var/run/avahi-daemon/socket:/var/run/avahi-daemon/socket
+#     devices:
+#       - /dev/video0:/dev/video0  # Adjust based on your device requirements
+#     shm_size: '8g'
+#     ulimits:
+#       memlock: -1
+#       stack: 67108864
+#     # /proc or /sys files aren't mountable into docker
+#     command: bash -c "cat /proc/device-tree/model > /tmp/nv_jetson_model && bash"
+
+version: '3'
+services:
+  test-service:
+    image: alpine:latest
+    command: ["echo", "Hello from Docker!"]
