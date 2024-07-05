@@ -11,7 +11,6 @@ MIN_TRACK_FRAMES = 5
 class FrameProcessor:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
-        self.cnt = 0
         self.tracks_to_preds = {}
         self.logger.info('Loading models...')
         test_frame = cudaAllocMapped(width=1920, height=1080, format="rgb8")
@@ -32,7 +31,6 @@ class FrameProcessor:
         self.logger.info('Done loading models.')
 
     def run(self, img):
-        self.cnt += 1
         if img is None:
             self.logger.error('Frame is missing in process_frame')
             return
@@ -41,14 +39,12 @@ class FrameProcessor:
         detections = self.detector.Detect(img, overlay="none")
         self.logger.debug(
             f'Detection Time: {(time.time() - st) * 1000} [msec]')
-        if len(detections) == 0:
-            return
 
         # Filter detections based on tracking criteria
         detections = [det for det in detections if det.TrackID != -
                       1 and det.TrackStatus == 1 and det.TrackFrames >= MIN_TRACK_FRAMES]
         if len(detections) == 0:
-            return
+            return False, False
 
         st = time.time()
         imgs = []
@@ -98,6 +94,9 @@ class FrameProcessor:
             1)[0][0] for track_id, preds in tracks_to_preds.items()}
         predictions_array = list(most_common_preds.values())
         self.logger.info(predictions_array)
+
+    def reset(self):
+        self.tracks_to_preds = {}
 
     def close(self):
         self.logger.info('closing frame processor')
