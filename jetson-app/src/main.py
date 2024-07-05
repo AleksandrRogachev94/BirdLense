@@ -1,6 +1,7 @@
 import time
 import argparse
 import logging
+import os
 from jetson_utils import videoSource
 from frame_processor import FrameProcessor
 from motion_detector import MotionDetector
@@ -23,6 +24,13 @@ logging.basicConfig(
 )
 
 
+def get_output():
+    output_dir = "data/output/" + time.strftime("%Y/%m/%d")
+    os.makedirs(output_dir, exist_ok=True)
+    output_filename = time.strftime("%Y%m%d-%H%M%S.mp4")
+    return f"{output_dir}/{output_filename}"
+
+
 def main():
     parser = argparse.ArgumentParser(description="Smart bird feeder program")
     parser.add_argument('input', type=str,
@@ -42,9 +50,8 @@ def main():
         logging.info('Motion detected. Processing started')
 
         # Configure video sources
-        output = 'data/output/out.mp4'
         capture_config = ['--headless', '--input-width=1920', '--input-height=1080',
-                          '--input-codec=mjpeg', '--input-rate=30', f'--input-save={output}']
+                          '--input-codec=mjpeg', '--input-rate=30', f'--input-save={get_output()}']
         video_capture = videoSource(args.input, argv=capture_config)
 
         try:
