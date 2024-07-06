@@ -2,7 +2,7 @@
 FROM dustynv/jetson-inference:r32.7.1
 
 # Set the working directory inside the container
-WORKDIR /jetson-inference
+WORKDIR /app
 
 # Copy your project data and scripts into the container
 # COPY ./data /jetson-inference/data
@@ -12,9 +12,6 @@ WORKDIR /jetson-inference
 
 # Set any environment variables if needed
 # ENV <key>=<value>
-
-# Capture device model information during build
-RUN cat /proc/device-tree/model > /tmp/nv_jetson_model
 
 # Specify the command to run when the container starts
 CMD ["bash"]
