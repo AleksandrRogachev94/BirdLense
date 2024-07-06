@@ -1,8 +1,8 @@
 version: '3'
 services:
-  processor:
+  video-processor:
     build:
-      context: ./jetson-app
+      context: ./video-processor
       dockerfile: Dockerfile
     runtime: nvidia
     network_mode: host
@@ -13,7 +13,7 @@ services:
       - /tmp/nv_jetson_model:/tmp/nv_jetson_model
       - /var/run/dbus:/var/run/dbus
       - /var/run/avahi-daemon/socket:/var/run/avahi-daemon/socket
-      - ./jetson-app:/app
+      - ./video-processor:/app
       # devices:
       #   - /dev/video0:/dev/video0 # Adjust based on your device requirements
 
