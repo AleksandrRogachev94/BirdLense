@@ -47,12 +47,13 @@ def main():
         if not motion_detector.detect():
             continue
 
-        logging.info('Motion detected. Processing started')
-
         # Configure video sources
+        output = get_output()
         capture_config = ['--headless', '--input-width=1920', '--input-height=1080',
-                          '--input-codec=mjpeg', '--input-rate=30', f'--input-save={get_output()}']
+                          '--input-codec=mjpeg', '--input-rate=30', f'--input-save={output}']
         video_capture = videoSource(args.input, argv=capture_config)
+
+        logging.info('Motion detected. Processing started. Reecording video to "{output}"')
 
         try:
             while True:
