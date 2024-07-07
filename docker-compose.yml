@@ -13,6 +13,7 @@ services:
       - /var/run/dbus:/var/run/dbus
       - /var/run/avahi-daemon/socket:/var/run/avahi-daemon/socket
       - ./video-processor:/app
+      - ./data:/app/data
       # devices:
       #   - /dev/video0:/dev/video0 # Adjust based on your device requirements
     command: python3 src/main.py data/videos/video3.mp4
@@ -24,6 +25,7 @@ services:
     # (default stop signal from Compose is SIGTERM)
     volumes:
       - ./web:/app
+      - ./data:/app/data
     env_file: "./web/.env"
     stop_signal: SIGINT
     ports:
