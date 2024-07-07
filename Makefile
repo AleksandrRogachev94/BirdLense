@@ -8,7 +8,7 @@ DOCKER_COMPOSE_FILE=docker-compose.yml
 
 build:
 	@echo "Building Docker Compose services..."
-	@docker-compose -f $(DOCKER_COMPOSE_FILE) build
+	@sudo docker-compose -f $(DOCKER_COMPOSE_FILE) build
 	@echo "Docker Compose services built."
 
 # Start the Docker Compose services

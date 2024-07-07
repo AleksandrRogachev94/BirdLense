@@ -3,9 +3,8 @@ services:
   video-processor:
     build:
       context: ./video-processor
-      dockerfile: Dockerfile
     runtime: nvidia
-    network_mode: host
+    # network_mode: host
     volumes:
       - /tmp/argus_socket:/tmp/argus_socket
       - /etc/enctune.conf:/etc/enctune.conf
@@ -16,5 +15,17 @@ services:
       - ./video-processor:/app
       # devices:
       #   - /dev/video0:/dev/video0 # Adjust based on your device requirements
-
     command: python3 src/main.py data/videos/video3.mp4
+
+  web:
+    build:
+      context: ./web
+    # flask requires SIGINT to stop gracefully
+    # (default stop signal from Compose is SIGTERM)
+    volumes:
+      - ./web:/app
+    env_file: "./web/.env"
+    stop_signal: SIGINT
+    ports:
+      - '8000:8000'
+    command: flask run --host=0.0.0.0 --port=8000
