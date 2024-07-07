@@ -1,4 +1,5 @@
 from flask import request
+from datetime import datetime
 from models import db, BirdFood, Videos, Species
 from util import fetch_weather_data
 
@@ -12,18 +13,28 @@ def register_routes(app):
     def weather():
         return fetch_weather_data()
 
-    @app.route('/api/upload_video', methods=['POST'])
+    @app.route('/api/videos', methods=['POST'])
     def upload_video():
         data = request.json
+
+        # Convert start_time and end_time strings to datetime objects
+        start_time_str = data.get('start_time')
+        end_time_str = data.get('end_time')
+
+        try:
+            start_time = datetime.strptime(
+                start_time_str, '%Y-%m-%dT%H:%M:%SZ')
+            end_time = datetime.strptime(end_time_str, '%Y-%m-%dT%H:%M:%SZ')
+        except ValueError as e:
+            return {'error': f'Invalid datetime format: {e}'}, 400
 
         # Extract data from JSON request
         video_data = {
             'video_processor_version': data['video_processor_version'],
-            'start_time': data['start_time'],
-            'end_time': data['end_time'],
+            'start_time': start_time,
+            'end_time': end_time,
             'video_path': data['video_path'],
             'audio_path': data['audio_path'],
-            'weather_main': data.get('weather_main'),
             **fetch_weather_data()
         }
 
@@ -53,3 +64,42 @@ def register_routes(app):
         db.session.commit()
 
         return {'message': 'Video and associated data inserted successfully.'}, 201
+
+    @app.route('/api/birdfood', methods=['POST'])
+    def add_birdfood():
+        data = request.json
+        name = data.get('name')
+        if not name:
+            return {'error': 'Name is required'}, 400
+
+        bird_food = BirdFood.query.filter_by(name=name).first()
+        if bird_food:
+            return {'error': 'Bird food with this name already exists'}, 400
+
+        bird_food = BirdFood(name=name, active=data.get('active', True))
+        db.session.add(bird_food)
+        db.session.commit()
+
+        return {'message': 'Bird food added successfully'}, 201
+
+    @app.route('/api/birdfood/<int:birdfood_id>/toggle', methods=['PATCH'])
+    def toggle_birdfood(birdfood_id):
+        bird_food = BirdFood.query.get(birdfood_id)
+        if not bird_food:
+            return {'error': 'Bird food not found'}, 404
+
+        bird_food.active = not bird_food.active
+        db.session.commit()
+
+        return {'message': 'Bird food active status toggled successfully'}, 200
+
+    @app.route('/api/birdfood', methods=['GET'])
+    def get_birdfood():
+        bird_food = BirdFood.query.all()
+        bird_food_list = [{
+            'id': food.id,
+            'name': food.name,
+            'active': food.active
+        } for food in bird_food]
+
+        return bird_food_list, 200
