@@ -33,7 +33,7 @@ class FrameProcessor:
     def run(self, img):
         if img is None:
             self.logger.error('Frame is missing in process_frame')
-            return
+            return False, False
 
         st = time.time()
         detections = self.detector.Detect(img, overlay="none")
