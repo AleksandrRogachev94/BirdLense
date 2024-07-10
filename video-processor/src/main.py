@@ -8,8 +8,8 @@ from jetson_utils import videoSource
 from frame_processor import FrameProcessor
 from motion_detector import MotionDetector
 from decision_maker import DecisionMaker
-from notifier import Notifier
 from fps_tracker import FPSTracker
+from api import API
 
 # Configure the root logger
 logging.basicConfig(
@@ -42,7 +42,7 @@ def main():
     frame_processor = FrameProcessor()
     motion_detector = MotionDetector()
     decision_maker = DecisionMaker()
-    notifier = Notifier()
+    api = API()
 
     while True:
         time.sleep(5)
@@ -55,7 +55,8 @@ def main():
                           '--input-codec=mjpeg', '--input-rate=30', f'--input-save={output}']
         video_capture = videoSource(args.input, argv=capture_config)
 
-        logging.info('Motion detected. Processing started. Reecording video to "{output}"')
+        logging.info(
+            'Motion detected. Processing started. Reecording video to "{output}"')
         start_time = datetime.now(timezone.utc)
 
         try:
@@ -68,24 +69,20 @@ def main():
 
                 decision_maker.update(has_bird, has_squirrel)
                 if decision_maker.decide_bird():
-                    notifier.notify_bird()
+                    api.notify_bird()
                 if decision_maker.decide_squirrel():
-                    notifier.notify_squirrel()
+                    api.notify_squirrel()
                 if decision_maker.decide_stop_recording() or not video_capture.IsStreaming():
                     break
                 # give CPU some time to do something else
                 time.sleep(0.005)
         finally:
             species_names = frame_processor.get_results()
-            logging.info(f'Processing stopped. Species: {", ".join(species_names)}')
-            requests.post(f"{os.environ['API_URL_BASE']}/videos", json={
-                'video_processor_version': '1',
-                'species_names': species_names,
-                'start_time': start_time.isoformat(),
-                'end_time': datetime.now(timezone.utc).isoformat(),
-                'video_path': output,
-                'audio_path': output,
-            })
+            logging.info(
+                f'Processing stopped. Species: {", ".join(species_names)}')
+            end_time = datetime.now(timezone.utc)
+            api.upload_video(species_names, start_time,
+                             end_time, output, output)
             frame_processor.get_results()
             frame_processor.reset()
             decision_maker.reset()
