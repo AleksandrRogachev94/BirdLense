@@ -14,9 +14,11 @@ services:
       - /var/run/avahi-daemon/socket:/var/run/avahi-daemon/socket
       - ./video-processor:/app
       - ./data:/app/data
-      # devices:
-      #   - /dev/video0:/dev/video0 # Adjust based on your device requirements
+    devices:
+      - /dev/video0:/dev/video0 # Adjust based on your device requirements
     command: python3 src/main.py data/videos/video3.mp4
+    environment:
+      - API_URL_BASE=http://web:8000/api
 
   web:
     build:
@@ -30,4 +32,5 @@ services:
     stop_signal: SIGINT
     ports:
       - '8000:8000'
+      - '8554:8554'
     command: flask run --host=0.0.0.0 --port=8000
