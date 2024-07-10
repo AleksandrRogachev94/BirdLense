@@ -22,9 +22,8 @@ def register_routes(app):
         end_time_str = data.get('end_time')
 
         try:
-            start_time = datetime.strptime(
-                start_time_str, '%Y-%m-%dT%H:%M:%SZ')
-            end_time = datetime.strptime(end_time_str, '%Y-%m-%dT%H:%M:%SZ')
+            start_time = datetime.fromisoformat(start_time_str)
+            end_time = datetime.fromisoformat(end_time_str)
         except ValueError as e:
             return {'error': f'Invalid datetime format: {e}'}, 400
 
@@ -103,3 +102,8 @@ def register_routes(app):
         } for food in bird_food]
 
         return bird_food_list, 200
+    
+    @app.route('/api/notify', methods=['POST'])
+    def notify():
+        detection = request.json.get('detection')
+        return {'message': f'Successfully received notification of {detection}'}, 200

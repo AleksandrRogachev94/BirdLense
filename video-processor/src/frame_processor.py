@@ -92,8 +92,8 @@ class FrameProcessor:
                            preds in self.tracks_to_preds.items() if len(preds) >= 5 * fps}
         most_common_preds = {track_id: Counter(preds).most_common(
             1)[0][0] for track_id, preds in tracks_to_preds.items()}
-        predictions_array = list(most_common_preds.values())
-        self.logger.info(predictions_array)
+        predictions_array = list(set(most_common_preds.values()))
+        return predictions_array
 
     def reset(self):
         self.tracks_to_preds = {}

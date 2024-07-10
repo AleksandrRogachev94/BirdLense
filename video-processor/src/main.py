@@ -1,7 +1,9 @@
 import time
+from datetime import datetime, timezone
 import argparse
 import logging
 import os
+import requests
 from jetson_utils import videoSource
 from frame_processor import FrameProcessor
 from motion_detector import MotionDetector
@@ -54,6 +56,7 @@ def main():
         video_capture = videoSource(args.input, argv=capture_config)
 
         logging.info('Motion detected. Processing started. Reecording video to "{output}"')
+        start_time = datetime.now(timezone.utc)
 
         try:
             while True:
@@ -73,7 +76,16 @@ def main():
                 # give CPU some time to do something else
                 time.sleep(0.005)
         finally:
-            logging.info('Processing stopped')
+            species_names = frame_processor.get_results()
+            logging.info(f'Processing stopped. Species: {", ".join(species_names)}')
+            requests.post(f"{os.environ['API_URL_BASE']}/videos", json={
+                'video_processor_version': '1',
+                'species_names': species_names,
+                'start_time': start_time.isoformat(),
+                'end_time': datetime.now(timezone.utc).isoformat(),
+                'video_path': output,
+                'audio_path': output,
+            })
             frame_processor.get_results()
             frame_processor.reset()
             decision_maker.reset()
