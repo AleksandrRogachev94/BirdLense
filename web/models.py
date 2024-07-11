@@ -12,16 +12,29 @@ class Base(DeclarativeBase):
 
 db = SQLAlchemy(model_class=Base)
 
-# Association tables for many-to-many relationships
-video_species_association = Table(
-    'video_species_association', Base.metadata,
-    Column('video_id', String, ForeignKey('videos.id')),
-    Column('species_id', String, ForeignKey('species.id'))
-)
 
+# Many-To-Many with additional columns
+class VideoSpecies(db.Model):
+    id: Mapped[int] = mapped_column(primary_key=True)
+    video_id: Mapped[int] = mapped_column(ForeignKey("video.id"))
+    species_id: Mapped[int] = mapped_column(ForeignKey("species.id"))
+    created_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False)
+    start_time: Mapped[Integer] = mapped_column(
+        Integer, nullable=False)  # relative to video.start_time
+    end_time: Mapped[Integer] = mapped_column(
+        Integer, nullable=False)  # relative to video.start_time
+    confidence: Mapped[float] = mapped_column(Float, nullable=False)
+    source: Mapped[str] = mapped_column(
+        String, nullable=False)  # video or audio
+    video: Mapped["Video"] = relationship(back_populates="video_species")
+    species: Mapped["Species"] = relationship(back_populates="video_species")
+
+
+# Many-To-Many
 video_bird_food_association = Table(
     'video_bird_food_association', Base.metadata,
-    Column('video_id', String, ForeignKey('videos.id')),
+    Column('video_id', String, ForeignKey('video.id')),
     Column('birdfood_id', String, ForeignKey('bird_food.id'))
 )
 
@@ -33,6 +46,8 @@ class Species(db.Model):
         DateTime(timezone=True), server_default=func.now(), nullable=False)
     photo: Mapped[str] = mapped_column(String(), nullable=True)
     description: Mapped[str] = mapped_column(String(), nullable=True)
+    video_species: Mapped[List["VideoSpecies"]
+                          ] = relationship(back_populates="species")
 
 
 class BirdFood(db.Model):
@@ -41,14 +56,16 @@ class BirdFood(db.Model):
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False)
     active: Mapped[bool] = mapped_column(
-        nullable=False, server_default='FALSE')
+        nullable=False, default=False)
 
 
-class Videos(db.Model):
+class Video(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False)
     video_processor_version: Mapped[str] = mapped_column(nullable=False)
+    audio_processed: Mapped[bool] = mapped_column(
+        nullable=False, default=False)
     start_time: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), nullable=False)
     end_time: Mapped[datetime.datetime] = mapped_column(
@@ -56,7 +73,7 @@ class Videos(db.Model):
     video_path: Mapped[str] = mapped_column(nullable=False)
     audio_path: Mapped[str] = mapped_column(nullable=False)
     favorite: Mapped[bool] = mapped_column(
-        nullable=False, server_default='FALSE')
+        nullable=False, default=False)
     # Weather data
     weather_main: Mapped[str] = mapped_column(
         String(), nullable=True)  # short category, e.g., Rain
@@ -74,7 +91,7 @@ class Videos(db.Model):
         Float(precision=2), nullable=True)  # wind speed, meter/sec
 
     # Relations
-    species: Mapped[List[Species]] = relationship(
-        secondary=video_species_association)
+    video_species: Mapped[List["VideoSpecies"]
+                          ] = relationship(back_populates="video")
     food: Mapped[List[BirdFood]] = relationship(
         secondary=video_bird_food_association)

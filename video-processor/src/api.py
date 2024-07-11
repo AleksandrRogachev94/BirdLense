@@ -17,10 +17,10 @@ class API():
         requests.post(
             f"{os.environ['API_URL_BASE']}/notify", json={'detection': 'squirrel'})
 
-    def upload_video(self, species_names, start_time, end_time, video_path, audio_path):
+    def create_video(self, species, start_time, end_time, video_path, audio_path):
         requests.post(f"{os.environ['API_URL_BASE']}/videos", json={
             'video_processor_version': '1',
-            'species_names': species_names,
+            'species': [{**sp, 'source': 'video'} for sp in species],
             'start_time': start_time.isoformat(),
             'end_time': end_time.isoformat(),
             'video_path': video_path,

@@ -3,6 +3,7 @@ TEMP_MODEL_FILE=/tmp/nv_jetson_model
 
 # Define the Docker Compose file (if you have a specific file, replace with its name)
 DOCKER_COMPOSE_FILE=docker-compose.yml
+DOCKER_COMPOSE_FILE_TEST=docker-compose.test.yml
 
 .PHONY: start stop build
 
@@ -20,6 +21,9 @@ start:
 	@echo "Starting Docker Compose services..."
 	@sudo docker-compose -f $(DOCKER_COMPOSE_FILE) up
 	@echo "Docker Compose services started."
+
+start-web:
+	@sudo docker-compose -f $(DOCKER_COMPOSE_FILE) up web
 
 # Stop the Docker Compose services
 stop:

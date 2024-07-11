@@ -60,6 +60,8 @@ def main():
         start_time = datetime.now(timezone.utc)
 
         try:
+            frame_processor.reset()
+            decision_maker.reset()
             while True:
                 frame = video_capture.Capture()
                 if frame is None:
@@ -76,16 +78,15 @@ def main():
                     break
                 # give CPU some time to do something else
                 time.sleep(0.005)
-        finally:
-            species_names = frame_processor.get_results()
-            logging.info(
-                f'Processing stopped. Species: {", ".join(species_names)}')
+
             end_time = datetime.now(timezone.utc)
-            api.upload_video(species_names, start_time,
+            species = frame_processor.get_results()
+            logging.info(
+                f'Processing stopped. Result: {species}')
+            # TODO delete video if no detections
+            api.create_video(species, start_time,
                              end_time, output, output)
-            frame_processor.get_results()
-            frame_processor.reset()
-            decision_maker.reset()
+        finally:
             video_capture.Close()
 
     frame_processor.close()

@@ -1,6 +1,6 @@
 from flask import request
 from datetime import datetime
-from models import db, BirdFood, Videos, Species
+from models import db, BirdFood, Video, Species, VideoSpecies
 from util import fetch_weather_data
 
 
@@ -14,7 +14,7 @@ def register_routes(app):
         return fetch_weather_data()
 
     @app.route('/api/videos', methods=['POST'])
-    def upload_video():
+    def create_video():
         data = request.json
 
         # Convert start_time and end_time strings to datetime objects
@@ -37,24 +37,39 @@ def register_routes(app):
             **fetch_weather_data()
         }
 
-        # List of species names detected in the video
-        species_names = data.get('species_names', [])
-        if not species_names:
+        # List of species detected in the video
+        species_list = data.get('species', [])
+        if not species_list:
             return {'error': 'Missing species'}, 400
 
         # Fetch all active bird foods from the database
         active_bird_foods = BirdFood.query.filter_by(active=True).all()
 
         # Create new Video instance
-        new_video = Videos(**video_data)
+        new_video = Video(**video_data)
 
         # Associate species and bird food with the new video
-        for species_name in species_names:
+        for sp in species_list:
+            species_name = sp['species_name']
+            start_time = sp['start_time']
+            end_time = sp['end_time']
+            confidence = sp['confidence']
+            source = sp['source']
+
             species = Species.query.filter_by(name=species_name).first()
             if not species:
                 species = Species(name=species_name)
                 db.session.add(species)
-            new_video.species.append(species)
+                db.session.flush()  # Ensure the species.id is available
+
+            video_species = VideoSpecies(
+                species_id=species.id,
+                start_time=start_time,
+                end_time=end_time,
+                confidence=confidence,
+                source=source
+            )
+            new_video.video_species.append(video_species)
 
         new_video.food.extend(active_bird_foods)
 
@@ -63,6 +78,52 @@ def register_routes(app):
         db.session.commit()
 
         return {'message': 'Video and associated data inserted successfully.'}, 201
+
+    @app.route('/api/videos/<int:video_id>', methods=['GET'])
+    def get_video_details(video_id):
+        # Fetch the video from the database
+        video = Video.query.get(video_id)
+
+        if not video:
+            return {'error': 'Video not found'}, 404
+
+        video_json = {
+            'id': video.id,
+            'created_at': video.created_at.isoformat(),
+            'video_processor_version': video.video_processor_version,
+            'audio_processed': video.audio_processed,
+            'start_time': video.start_time.isoformat(),
+            'end_time': video.end_time.isoformat(),
+            'video_path': video.video_path,
+            'audio_path': video.audio_path,
+            'favorite': video.favorite,
+            'weather': {
+                'main': video.weather_main,
+                'description': video.weather_description,
+                'temp': video.weather_temp,
+                'humidity': video.weather_humidity,
+                'pressure': video.weather_pressure,
+                'clouds': video.weather_clouds,
+                'wind_speed': video.weather_wind_speed
+            },
+            'species': [
+                {
+                    'species_id': vs.species.id,
+                    'species_name': vs.species.name,
+                    'start_time': vs.start_time,
+                    'end_time': vs.end_time,
+                    'confidence': vs.confidence,
+                    'source': vs.source
+                } for vs in video.video_species
+            ],
+            'food': [
+                {
+                    'id': bf.id,
+                    'name': bf.name
+                } for bf in video.food
+            ]
+        }
+        return video_json, 200
 
     @app.route('/api/birdfood', methods=['POST'])
     def add_birdfood():
@@ -102,7 +163,7 @@ def register_routes(app):
         } for food in bird_food]
 
         return bird_food_list, 200
-    
+
     @app.route('/api/notify', methods=['POST'])
     def notify():
         detection = request.json.get('detection')
