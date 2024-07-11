@@ -5,13 +5,15 @@ from jetson_inference import detectNet
 from jetson_utils import cudaAllocMapped, cudaCrop
 from classifier import Classifier
 
-MIN_TRACK_FRAMES = 5
+ROUGH_FPS = 10  # Approximate run() fps. Adjust based on hardware
+MIN_TRACK_SECONDS = 5  # Minimum number seconds for a track to be included in the results
+MIN_TRACK_FRAMES = ROUGH_FPS * MIN_TRACK_SECONDS
 
 
 class FrameProcessor:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
-        self.tracks_to_preds = {}
+        self.reset()
         self.logger.info('Loading models...')
         test_frame = cudaAllocMapped(width=1920, height=1080, format="rgb8")
 
@@ -32,20 +34,25 @@ class FrameProcessor:
 
     def run(self, img):
         if img is None:
-            self.logger.error('Frame is missing in process_frame')
-            return False, False
+            raise Exception('Frame is missing in process_frame')
 
+        # Detect
         st = time.time()
         detections = self.detector.Detect(img, overlay="none")
         self.logger.debug(
             f'Detection Time: {(time.time() - st) * 1000} [msec]')
 
         # Filter detections based on tracking criteria
+        for det in detections:
+            if det.TrackStatus == -1 and det.TrackID in self.tracks:
+                self.finish_track(det)
         detections = [det for det in detections if det.TrackID != -
-                      1 and det.TrackStatus == 1 and det.TrackFrames >= MIN_TRACK_FRAMES]
+                      1 and det.TrackStatus == 1]
         if len(detections) == 0:
+            self.logger.debug('No detections')
             return False, False
 
+        # Crop images
         st = time.time()
         imgs = []
         for det in detections:
@@ -80,23 +87,47 @@ class FrameProcessor:
 
             self.logger.debug(
                 f'Track Info: Track ID: {det.TrackID}, Status: {det.TrackStatus}, Frames: {det.TrackFrames}, Lost: {det.TrackLost}')
-            if det.TrackID not in self.tracks_to_preds:
-                self.tracks_to_preds[det.TrackID] = []
-            self.tracks_to_preds[det.TrackID].append(class_desc)
+            self.update_track(det, class_desc)
 
         return detected_bird, detected_squirrel
 
+    def finish_track(self, det):
+        self.tracks[det.TrackID]['end_time'] = round(
+            time.time() - self.start_time)
+
+    def update_track(self, det, class_desc):
+        if det.TrackID not in self.tracks:
+            self.tracks[det.TrackID] = {
+                'start_time': round(time.time() - self.start_time),
+                'preds': []
+            }
+        self.tracks[det.TrackID]['preds'].append(class_desc)
+
     def get_results(self):
-        fps = 10
-        tracks_to_preds = {track_id: preds for track_id,
-                           preds in self.tracks_to_preds.items() if len(preds) >= 5 * fps}
-        most_common_preds = {track_id: Counter(preds).most_common(
-            1)[0][0] for track_id, preds in tracks_to_preds.items()}
-        predictions_array = list(set(most_common_preds.values()))
-        return predictions_array
+        end_time = round(time.time() - self.start_time)
+        result = []
+        for track in self.tracks.values():
+            # Reduce false positives
+            if len(track['preds']) < MIN_TRACK_FRAMES:
+                continue
+
+            # Find most common prediction for each track
+            pred_counts = Counter(track['preds'])
+            species_name, count = pred_counts.most_common(1)[0]
+            confidence = count / len(track['preds'])
+
+            result.append({
+                'species_name': species_name,
+                'start_time': track['start_time'],
+                'end_time': track['end_time'] if 'end_time' in track else end_time,
+                'confidence': confidence
+            })
+
+        return result
 
     def reset(self):
-        self.tracks_to_preds = {}
+        self.tracks = {}
+        self.start_time = time.time()
 
     def close(self):
         self.logger.info('closing frame processor')
