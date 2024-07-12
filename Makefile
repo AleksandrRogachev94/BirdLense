@@ -25,6 +25,9 @@ start:
 start-web:
 	@sudo docker-compose -f $(DOCKER_COMPOSE_FILE) up web
 
+start-processor:
+	@sudo docker-compose -f $(DOCKER_COMPOSE_FILE) up video-processor
+
 # Stop the Docker Compose services
 stop:
 	@echo "Stopping Docker Compose services..."

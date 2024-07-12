@@ -4,7 +4,6 @@ services:
     build:
       context: ./video-processor
     runtime: nvidia
-    # network_mode: host
     volumes:
       - /tmp/argus_socket:/tmp/argus_socket
       - /etc/enctune.conf:/etc/enctune.conf
@@ -12,10 +11,13 @@ services:
       - /tmp/nv_jetson_model:/tmp/nv_jetson_model
       - /var/run/dbus:/var/run/dbus
       - /var/run/avahi-daemon/socket:/var/run/avahi-daemon/socket
+      - /dev/shm:/dev/shm # used by audio recording
       - ./video-processor:/app
       - ./data:/app/data
     devices:
-      - /dev/video0:/dev/video0 # Adjust based on your device requirements
+      - /dev/video0 # video
+      - /dev/snd # audio
+      - /dev/bus/usb # audio
     environment:
       - API_URL_BASE=http://web:8000/api
     command: python3 src/main.py data/videos/video3.mp4
@@ -25,11 +27,11 @@ services:
       context: ./web
     # flask requires SIGINT to stop gracefully
     # (default stop signal from Compose is SIGTERM)
+    stop_signal: SIGINT
     volumes:
       - ./web:/app
       - ./data:/app/data
     env_file: "./web/.env"
-    stop_signal: SIGINT
     ports:
       - '8000:8000'
       - '8554:8554'
