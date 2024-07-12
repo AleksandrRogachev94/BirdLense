@@ -18,9 +18,25 @@ services:
       - /dev/video0 # video
       - /dev/snd # audio
       - /dev/bus/usb # audio
+    env_file: ".env"
     environment:
       - API_URL_BASE=http://web:8000/api
-    command: python3 src/main.py data/videos/video3.mp4
+    command: python3 src/main.py data/samples/videos/video3.mp4
+    depends_on:
+      - web
+
+  audio-processor:
+    build:
+      context: ./audio-processor
+    volumes:
+      - ./audio-processor:/app
+      - ./data:/app/data
+    env_file: ".env"
+    environment:
+      - API_URL_BASE=http://web:8000/api
+    command: python3 src/main.py
+    depends_on:
+      - web
 
   web:
     build:
@@ -31,7 +47,7 @@ services:
     volumes:
       - ./web:/app
       - ./data:/app/data
-    env_file: "./web/.env"
+    env_file: ".env"
     ports:
       - '8000:8000'
       - '8554:8554'

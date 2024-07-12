@@ -20,13 +20,15 @@ class VideoSpecies(db.Model):
     species_id: Mapped[int] = mapped_column(ForeignKey("species.id"))
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False)
-    start_time: Mapped[Integer] = mapped_column(
-        Integer, nullable=False)  # relative to video.start_time
-    end_time: Mapped[Integer] = mapped_column(
-        Integer, nullable=False)  # relative to video.start_time
+    start_time: Mapped[float] = mapped_column(
+        Float, nullable=False)  # seconds, relative to video.start_time
+    end_time: Mapped[float] = mapped_column(
+        Float, nullable=False)  # seconds, relative to video.start_time
     confidence: Mapped[float] = mapped_column(Float, nullable=False)
     source: Mapped[str] = mapped_column(
         String, nullable=False)  # video or audio
+    spectrogram_path: Mapped[str] = mapped_column(
+        String, nullable=True)  # spectrogram image for for source = 'audio'
     video: Mapped["Video"] = relationship(back_populates="video_species")
     species: Mapped["Species"] = relationship(back_populates="video_species")
 
