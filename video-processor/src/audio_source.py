@@ -43,9 +43,9 @@ class AudioSource:
             self.arecord_process.terminate()
             try:
                 stdout, stderr = self.arecord_process.communicate(timeout=5)
-                if stderr:
-                    self.logger.error(
-                        f"arecord stderr: {stderr.decode('utf-8')}")
+                # if stderr:
+                #     self.logger.error(
+                #         f"arecord stderr: {stderr.decode('utf-8')}")
             except subprocess.TimeoutExpired:
                 self.arecord_process.kill()
                 stdout, stderr = self.arecord_process.communicate()
@@ -56,5 +56,5 @@ class AudioSource:
         if self.lame_process:
             # Wait for lame process to finish encoding
             stdout, stderr = self.lame_process.communicate()
-            if stderr:
-                self.logger.error(f"lame stderr: {stderr.decode('utf-8')}")
+            # if stderr:
+            #     self.logger.error(f"lame stderr: {stderr.decode('utf-8')}")

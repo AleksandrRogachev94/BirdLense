@@ -1,0 +1,5 @@
+librosa==0.10.2.post1
+resampy==0.4.3
+tflite-runtime==2.14.0
+numpy==1.26.4
+birdnetlib==0.17.2

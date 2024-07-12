@@ -2,6 +2,7 @@ import time
 from datetime import datetime, timezone
 import argparse
 import logging
+from logging.handlers import RotatingFileHandler
 import os
 import requests
 from jetson_utils import videoSource
@@ -18,20 +19,19 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
         logging.StreamHandler(),  # Logs to the console
-        # logging.handlers.RotatingFileHandler(
-        #     'app.log',            # Log file name
-        #     maxBytes=5*1024*1024, # Maximum file size in bytes (e.g., 5 MB)
-        #     backupCount=3         # Number of backup files to keep
-        # )
+        RotatingFileHandler(
+            'app.log',            # Log file name
+            maxBytes=5*1024*1024,  # Maximum file size in bytes (e.g., 5 MB)
+            backupCount=1         # Number of backup files to keep
+        )
     ]
 )
 
 
-def get_output(ext):
-    output_dir = "data/output/" + time.strftime("%Y/%m/%d")
+def get_output_path():
+    output_dir = "data/recordings/" + time.strftime("%Y/%m/%d/%H%M%S")
     os.makedirs(output_dir, exist_ok=True)
-    output_filename = time.strftime("%Y%m%d-%H%M%S")
-    return f"{output_dir}/{output_filename}.{ext}"
+    return output_dir
 
 
 def main():
@@ -46,13 +46,14 @@ def main():
     api = API()
 
     while True:
-        time.sleep(5)
+        time.sleep(60)
         if not motion_detector.detect():
             continue
 
         # Configure video sources
-        video_output = get_output('mp4')
-        audio_output = get_output('mp3')
+        output_path = get_output_path()
+        video_output = f"{output_path}/video.mp4"
+        audio_output = f"{output_path}/audio.mp4"
         # TODO best settings
         capture_config = ['--headless', '--input-width=1920', '--input-height=1080',
                           '--input-codec=mjpeg', '--input-rate=30', f'--input-save={video_output}']

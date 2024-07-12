@@ -8,7 +8,7 @@ detector = detectNet(detector_file, threshold=0.5, labels=labels, input_blob="in
 detector.SetTrackingEnabled(True)
 
 video_capture = jetson_utils.videoSource(
-    "./data/videos/video3.mp4", argv=['--headless'])
+    "./data/samples/videos/video3.mp4", argv=['--headless'])
 video_output = jetson_utils.videoOutput("./data/output/test_detector.mp4")
 
 while True:

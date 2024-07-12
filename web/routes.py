@@ -55,6 +55,8 @@ def register_routes(app):
             end_time = sp['end_time']
             confidence = sp['confidence']
             source = sp['source']
+            if species_name is None or start_time is None or end_time is None or confidence is None or source is None:
+                return {'error': 'Invalid species data'}, 400
 
             species = Species.query.filter_by(name=species_name).first()
             if not species:
@@ -78,6 +80,54 @@ def register_routes(app):
         db.session.commit()
 
         return {'message': 'Video and associated data inserted successfully.'}, 201
+
+    @app.route('/api/videos/<int:video_id>/audio_processed', methods=['POST'])
+    def set_audio_processed(video_id):
+        data = request.json
+        species_list = data.get('species')
+
+        if not species_list:
+            return {'error': 'Missing species list'}, 400
+
+        video = Video.query.get(video_id)
+        if not video:
+            return {'error': 'Video not found'}, 404
+
+        # Update audio_processed to true
+        video.audio_processed = True
+
+        # Insert VideoSpecies records
+        for species_data in species_list:
+            species_name = species_data.get('species_name')
+            start_time = species_data.get('start_time')
+            end_time = species_data.get('end_time')
+            confidence = species_data.get('confidence')
+            source = species_data.get('source')
+            spectrogram_path = species_data.get('spectrogram_path')
+
+            if species_name is None or start_time is None or end_time is None or confidence is None or source is None:
+                return {'error': 'Invalid species data'}, 400
+
+            species = Species.query.filter_by(name=species_name).first()
+            if not species:
+                species = Species(name=species_name)
+                db.session.add(species)
+                db.session.flush()  # Ensure species.id is available
+
+            video_species = VideoSpecies(
+                video_id=video.id,
+                species_id=species.id,
+                start_time=start_time,
+                end_time=end_time,
+                confidence=confidence,
+                source=source,
+                spectrogram_path=spectrogram_path
+            )
+            db.session.add(video_species)
+
+        db.session.commit()
+
+        return {'message': 'Video updated and VideoSpecies records inserted successfully.'}, 200
 
     @app.route('/api/videos/<int:video_id>', methods=['GET'])
     def get_video_details(video_id):
@@ -124,6 +174,16 @@ def register_routes(app):
             ]
         }
         return video_json, 200
+
+    @app.route('/api/videos/audio_pending', methods=['GET'])
+    def get_videos_audio_pending():
+        videos = Video.query.with_entities(
+            Video.id, Video.audio_path).filter_by(audio_processed=False).all()
+
+        video_list = [{'id': video.id,
+                       'audio_path': video.audio_path} for video in videos]
+
+        return video_list, 200
 
     @app.route('/api/birdfood', methods=['POST'])
     def add_birdfood():
