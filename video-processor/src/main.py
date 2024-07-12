@@ -10,6 +10,7 @@ from motion_detector import MotionDetector
 from decision_maker import DecisionMaker
 from fps_tracker import FPSTracker
 from api import API
+from audio_source import AudioSource
 
 # Configure the root logger
 logging.basicConfig(
@@ -26,11 +27,11 @@ logging.basicConfig(
 )
 
 
-def get_output():
+def get_output(ext):
     output_dir = "data/output/" + time.strftime("%Y/%m/%d")
     os.makedirs(output_dir, exist_ok=True)
-    output_filename = time.strftime("%Y%m%d-%H%M%S.mp4")
-    return f"{output_dir}/{output_filename}"
+    output_filename = time.strftime("%Y%m%d-%H%M%S")
+    return f"{output_dir}/{output_filename}.{ext}"
 
 
 def main():
@@ -50,13 +51,17 @@ def main():
             continue
 
         # Configure video sources
-        output = get_output()
+        video_output = get_output('mp4')
+        audio_output = get_output('mp3')
+        # TODO best settings
         capture_config = ['--headless', '--input-width=1920', '--input-height=1080',
-                          '--input-codec=mjpeg', '--input-rate=30', f'--input-save={output}']
+                          '--input-codec=mjpeg', '--input-rate=30', f'--input-save={video_output}']
         video_capture = videoSource(args.input, argv=capture_config)
+        audio_source = AudioSource(audio_output)
+        audio_source.start_recording()
 
         logging.info(
-            'Motion detected. Processing started. Reecording video to "{output}"')
+            f'Motion detected. Processing started. Reecording video to "{video_output}" and audio to "{audio_output}"')
         start_time = datetime.now(timezone.utc)
 
         try:
@@ -78,16 +83,20 @@ def main():
                     break
                 # give CPU some time to do something else
                 time.sleep(0.005)
+        finally:
+            video_capture.Close()
+            audio_source.stop_recording()
 
+        try:
             end_time = datetime.now(timezone.utc)
             species = frame_processor.get_results()
             logging.info(
                 f'Processing stopped. Result: {species}')
             # TODO delete video if no detections
             api.create_video(species, start_time,
-                             end_time, output, output)
-        finally:
-            video_capture.Close()
+                             end_time, video_output, audio_output)
+        except Exception as e:
+            logging.error(e)
 
     frame_processor.close()
 
