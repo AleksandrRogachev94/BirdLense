@@ -4,7 +4,7 @@ import argparse
 import logging
 from logging.handlers import RotatingFileHandler
 import os
-import requests
+import shutil
 from jetson_utils import videoSource
 from frame_processor import FrameProcessor
 from motion_detector import MotionDetector
@@ -93,9 +93,11 @@ def main():
             species = frame_processor.get_results()
             logging.info(
                 f'Processing stopped. Result: {species}')
-            # TODO delete video if no detections
-            api.create_video(species, start_time,
-                             end_time, video_output, audio_output)
+            if len(species) > 0:
+                api.create_video(species, start_time,
+                                 end_time, video_output, audio_output)
+            else:
+                shutil.rmtree(output_path)
         except Exception as e:
             logging.error(e)
 
