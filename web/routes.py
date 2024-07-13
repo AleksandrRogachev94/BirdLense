@@ -84,10 +84,7 @@ def register_routes(app):
     @app.route('/api/videos/<int:video_id>/audio_processed', methods=['POST'])
     def set_audio_processed(video_id):
         data = request.json
-        species_list = data.get('species')
-
-        if not species_list:
-            return {'error': 'Missing species list'}, 400
+        species_list = data.get('species', [])
 
         video = Video.query.get(video_id)
         if not video:
