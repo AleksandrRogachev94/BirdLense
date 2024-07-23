@@ -3,14 +3,7 @@ services:
   video-processor:
     build:
       context: ./video-processor
-    runtime: nvidia
     volumes:
-      - /tmp/argus_socket:/tmp/argus_socket
-      - /etc/enctune.conf:/etc/enctune.conf
-      - /etc/nv_tegra_release:/etc/nv_tegra_release
-      - /tmp/nv_jetson_model:/tmp/nv_jetson_model
-      - /var/run/dbus:/var/run/dbus
-      - /var/run/avahi-daemon/socket:/var/run/avahi-daemon/socket
       - /dev/shm:/dev/shm # used by audio recording
       - ./video-processor:/app
       - ./data:/app/data
@@ -18,6 +11,7 @@ services:
       - /dev/video0 # video
       - /dev/snd # audio
       - /dev/bus/usb # audio
+    ipc: host
     env_file: ".env"
     environment:
       - API_URL_BASE=http://web:8000/api

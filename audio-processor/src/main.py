@@ -28,7 +28,8 @@ API_BASE_URL = os.environ['API_URL_BASE']
 
 
 # All expected species in the region
-# logging.info(SpeciesList().return_list(lat=lat, lon=lon))
+logger.info("Regional species:")
+logging.info(SpeciesList().return_list(lat=lat, lon=lon))
 
 analyzer = Analyzer()
 

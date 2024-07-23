@@ -1,5 +1,5 @@
 # Use the base image
-FROM dustynv/jetson-inference:r32.7.1
+FROM ultralytics/ultralytics:latest-arm64
 
 # Install ALSA utilities and lame for audio recording
 RUN apt-get update && apt-get install -y \
