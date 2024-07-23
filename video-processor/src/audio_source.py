@@ -3,7 +3,7 @@ import logging
 
 
 class AudioSource:
-    def __init__(self, output_file, device='plughw:2,0'):
+    def __init__(self, output_file, device='plughw:3,0'):
         self.output_file = output_file
         self.arecord_process = None
         self.lame_process = None
