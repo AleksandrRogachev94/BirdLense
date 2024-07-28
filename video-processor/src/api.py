@@ -7,15 +7,10 @@ class API():
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 
-    def notify_bird(self):
-        self.logger.info('Notifying about bird presence')
+    def notify_species(self, species):
+        self.logger.info('Notifying about "{species}" presence')
         requests.post(
-            f"{os.environ['API_URL_BASE']}/notify", json={'detection': 'bird'})
-
-    def notify_squirrel(self):
-        self.logger.info('Notifying about squirrel presence')
-        requests.post(
-            f"{os.environ['API_URL_BASE']}/notify", json={'detection': 'squirrel'})
+            f"{os.environ['API_URL_BASE']}/notify", json={'detection': species})
 
     def create_video(self, species, start_time, end_time, video_path, audio_path):
         requests.post(f"{os.environ['API_URL_BASE']}/videos", json={
