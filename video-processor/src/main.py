@@ -5,17 +5,18 @@ import logging
 from logging.handlers import RotatingFileHandler
 import os
 import shutil
-from jetson_utils import videoSource
 from frame_processor import FrameProcessor
 from motion_detector import MotionDetector
 from decision_maker import DecisionMaker
 from fps_tracker import FPSTracker
 from api import API
-from audio_source import AudioSource
+from sources.audio_source import AudioSource
+from sources.camera_source import CameraSource
+from sources.video_file_source import VideoFileSource
 
 # Configure the root logger
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
         logging.StreamHandler(),  # Logs to the console
@@ -36,17 +37,19 @@ def get_output_path():
 
 def main():
     parser = argparse.ArgumentParser(description="Smart bird feeder program")
-    parser.add_argument('input', type=str,
+    parser.add_argument('input', type=str, nargs='?',
                         help='Input source, camera/video file')
     args = parser.parse_args()
 
     frame_processor = FrameProcessor()
     motion_detector = MotionDetector()
     decision_maker = DecisionMaker()
+    video_source = CameraSource() if not args.input else VideoFileSource(args.input)
+    audio_source = AudioSource()
     api = API()
 
     while True:
-        time.sleep(60)
+        time.sleep(10)
         if not motion_detector.detect():
             continue
 
@@ -54,12 +57,10 @@ def main():
         output_path = get_output_path()
         video_output = f"{output_path}/video.mp4"
         audio_output = f"{output_path}/audio.mp4"
-        # TODO best settings
-        capture_config = ['--headless', '--input-width=1920', '--input-height=1080',
-                          '--input-codec=mjpeg', '--input-rate=30', f'--input-save={video_output}']
-        video_capture = videoSource(args.input, argv=capture_config)
-        audio_source = AudioSource(audio_output)
-        audio_source.start_recording()
+
+        video_source.start_recording(video_output)
+        audio_source.start_recording(audio_output)
+        time.sleep(1)
 
         logging.info(
             f'Motion detected. Processing started. Reecording video to "{video_output}" and audio to "{audio_output}"')
@@ -69,28 +70,29 @@ def main():
             frame_processor.reset()
             decision_maker.reset()
             while True:
-                frame = video_capture.Capture()
+                frame = video_source.capture()
                 if frame is None:
                     break
                 with FPSTracker():
-                    has_bird, has_squirrel = frame_processor.run(frame)
+                    has_detections = frame_processor.run(frame)
 
-                decision_maker.update(has_bird, has_squirrel)
-                if decision_maker.decide_bird():
-                    api.notify_bird()
-                if decision_maker.decide_squirrel():
-                    api.notify_squirrel()
-                if decision_maker.decide_stop_recording() or not video_capture.IsStreaming():
+                decision_maker.update_has_detections(has_detections)
+
+                species = decision_maker.decide_species(frame_processor.tracks)
+                if species is not None:
+                    api.notify_species(species)
+
+                if decision_maker.decide_stop_recording():
                     break
                 # give CPU some time to do something else
                 time.sleep(0.005)
         finally:
-            video_capture.Close()
+            video_source.stop_recording()
             audio_source.stop_recording()
 
         try:
             end_time = datetime.now(timezone.utc)
-            species = frame_processor.get_results()
+            species = decision_maker.get_results(frame_processor.tracks)
             logging.info(
                 f'Processing stopped. Result: {species}')
             if len(species) > 0:
@@ -102,6 +104,7 @@ def main():
             logging.error(e)
 
     frame_processor.close()
+    video_source.close()
 
 
 if __name__ == "__main__":

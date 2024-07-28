@@ -1,48 +1,67 @@
+import time
+from collections import Counter
+
+ROUGH_FPS = 1.5  # Approximate FPS of frame processing. Adjust based on hardware
+MIN_TRACK_SECONDS = 3  # Minimum number seconds for a track to be included in the results
+MIN_TRACK_FRAMES = ROUGH_FPS * MIN_TRACK_SECONDS
+STOP_RECORDING_SECONDS = 5  # Number of seconds required to decide to stop recording
+STOP_RECORDING_FRAMES = ROUGH_FPS * STOP_RECORDING_SECONDS
+
+
 class DecisionMaker():
-    def __init__(self, trigger_frames=30):
-        self.trigger_frames = trigger_frames
+    def __init__(self):
         self.reset()
 
-    def reset(self):
+    def reset(self, max_seconds=60):
         self.no_detect_count = 0
-        self.bird_detected_cnt = 0
-        self.squirrel_detected_cnt = 0
-
         self.stop_recording_decided = False
-        self.bird_decided = False
-        self.squirrel_decided = False
+        self.species_decided = False
+        self.max_seconds = max_seconds
+        self.start_time = time.time()
 
-    def update(self, bird_detected, squirrel_detected):
-        if not bird_detected and not squirrel_detected:
+    def update_has_detections(self, has_detections):
+        if not has_detections:
             self.no_detect_count += 1
         else:
             self.no_detect_count = 0
-
-        if bird_detected:
-            self.bird_detected_cnt += 1
-        if squirrel_detected:
-            self.squirrel_detected_cnt += 1
 
     def decide_stop_recording(self):
         if self.stop_recording_decided:
             # already decided once
             return False
-        decision = not self.stop_recording_decided and self.no_detect_count >= self.trigger_frames
+        reached_max_seconds = (
+            time.time() - self.start_time) >= self.max_seconds
+        decision = self.no_detect_count >= STOP_RECORDING_FRAMES or reached_max_seconds
         self.stop_recording_decided = decision
         return decision
 
-    def decide_squirrel(self):
-        if self.squirrel_decided:
+    def decide_species(self, tracks):
+        if self.species_decided:
             # already decided once
-            return False
-        decision = not self.squirrel_decided and self.squirrel_detected_cnt >= self.trigger_frames
-        self.squirrel_decided = decision
-        return decision
+            return None
+        results = self.get_results(tracks)
+        if len(results) > 0:
+            self.species_decided = True
+            return results[0]['species_name']
+        return None
 
-    def decide_bird(self):
-        if self.bird_decided:
-            # already decided once
-            return False
-        decision = not self.bird_decided and self.bird_detected_cnt >= self.trigger_frames
-        self.bird_decided = decision
-        return decision
+    def get_results(self, tracks):
+        result = []
+        for track in tracks.values():
+            # Reduce false positives
+            if len(track['preds']) < MIN_TRACK_FRAMES:
+                continue
+
+            # Find most common prediction for each track
+            pred_counts = Counter(track['preds'])
+            species_name, count = pred_counts.most_common(1)[0]
+            confidence = count / len(track['preds'])
+
+            result.append({
+                'species_name': species_name,
+                'start_time': track['start_time'],
+                'end_time': track['end_time'],
+                'confidence': confidence
+            })
+
+        return result

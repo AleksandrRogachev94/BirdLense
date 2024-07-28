@@ -1,10 +1,10 @@
-version: '3'
 services:
   video-processor:
     build:
       context: ./video-processor
     volumes:
       - /dev/shm:/dev/shm # used by audio recording
+      - /run/udev:/run/udev:ro
       - ./video-processor:/app
       - ./data:/app/data
     devices:
@@ -15,7 +15,10 @@ services:
     env_file: ".env"
     environment:
       - API_URL_BASE=http://web:8000/api
-    command: python3 src/main.py data/samples/videos/video3.mp4
+      - LD_LIBRARY_PATH=/opt/vc/lib
+    # command: python3 src/main.py data/samples/videos/video3.mp4
+    command: python3 src/main.py
+    privileged: true
     depends_on:
       - web
 

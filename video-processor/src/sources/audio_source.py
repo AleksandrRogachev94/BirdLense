@@ -3,15 +3,14 @@ import logging
 
 
 class AudioSource:
-    def __init__(self, output_file, device='plughw:3,0'):
-        self.output_file = output_file
+    def __init__(self, device='plughw:1,0'):
         self.arecord_process = None
         self.lame_process = None
         self.device = device
         self.logger = logging.getLogger(__name__)
 
-    def start_recording(self):
-        # Example command: arecord -f S16_LE -c 1 -r 48000 -t wav -D plughw:2,0 | lame --preset=standard - data/test2.mp3
+    def start_recording(self, output_file):
+        # Example command: arecord -f S16_LE -c 1 -r 48000 -t wav -D plughw:1,0 | lame -V2 - data/test2.mp3
         # arecord command to capture audio in raw format
         arecord_cmd = [
             "arecord",
@@ -25,9 +24,9 @@ class AudioSource:
         # lame command to encode raw audio to MP3
         lame_cmd = [
             "lame",
-            "--preset", "standard",  # Use standard MP3 settings
+            "-V2",  # Use standard MP3 settings
             "-",                     # Read from standard input
-            self.output_file         # Output MP3 file
+            output_file         # Output MP3 file
         ]
 
         # Start arecord process
@@ -43,9 +42,9 @@ class AudioSource:
             self.arecord_process.terminate()
             try:
                 stdout, stderr = self.arecord_process.communicate(timeout=5)
-                # if stderr:
-                #     self.logger.error(
-                #         f"arecord stderr: {stderr.decode('utf-8')}")
+                if stderr:
+                    self.logger.error(
+                        f"arecord stderr: {stderr.decode('utf-8')}")
             except subprocess.TimeoutExpired:
                 self.arecord_process.kill()
                 stdout, stderr = self.arecord_process.communicate()
@@ -56,5 +55,5 @@ class AudioSource:
         if self.lame_process:
             # Wait for lame process to finish encoding
             stdout, stderr = self.lame_process.communicate()
-            # if stderr:
-            #     self.logger.error(f"lame stderr: {stderr.decode('utf-8')}")
+            if stderr:
+                self.logger.error(f"lame stderr: {stderr.decode('utf-8')}")
