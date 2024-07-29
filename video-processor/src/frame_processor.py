@@ -22,7 +22,8 @@ class FrameProcessor:
 
         # Detect
         st = time.time()
-        results = self.model.track(img, persist=True)
+        results = self.model.track(
+            img, persist=True, conf=0.2)
         if self.save_images:
             results[0].save(f'data/test/frame{str(self.cnt)}.jpg')
         if results[0].boxes.id is None:
