@@ -13,10 +13,11 @@ from api import API
 from sources.audio_source import AudioSource
 from sources.camera_source import CameraSource
 from sources.video_file_source import VideoFileSource
+from audio_processor import AudioProcessor
 
 # Configure the root logger
 logging.basicConfig(
-    level=logging.DEBUG,
+    level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
         logging.StreamHandler(),  # Logs to the console
@@ -41,11 +42,12 @@ def main():
                         help='Input source, camera/video file')
     args = parser.parse_args()
 
-    frame_processor = FrameProcessor()
+    frame_processor = FrameProcessor(save_images=True)
     motion_detector = MotionDetector()
     decision_maker = DecisionMaker()
     video_source = CameraSource() if not args.input else VideoFileSource(args.input)
     audio_source = AudioSource()
+    audio_processor = AudioProcessor()
     api = API()
 
     while True:
@@ -89,14 +91,22 @@ def main():
         finally:
             video_source.stop_recording()
             audio_source.stop_recording()
+            end_time = datetime.now(timezone.utc)
 
         try:
-            end_time = datetime.now(timezone.utc)
-            species = decision_maker.get_results(frame_processor.tracks)
+            audio_detections = audio_processor.run(audio_output)
+        except Exception as e:
+            logging.error(e)
+            audio_detections = []
+
+        try:
+            video_detections = decision_maker.get_results(
+                frame_processor.tracks)
+            detections = video_detections + audio_detections
             logging.info(
-                f'Processing stopped. Result: {species}')
-            if len(species) > 0:
-                api.create_video(species, start_time,
+                f'Processing stopped. Result: {detections}')
+            if len(detections) > 0:
+                api.create_video(detections, start_time,
                                  end_time, video_output, audio_output)
             else:
                 shutil.rmtree(output_path)

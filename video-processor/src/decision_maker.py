@@ -1,10 +1,10 @@
 import time
 from collections import Counter
 
-ROUGH_FPS = 1.5  # Approximate FPS of frame processing. Adjust based on hardware
+ROUGH_FPS = 1  # Approximate FPS of frame processing. Adjust based on hardware
 MIN_TRACK_SECONDS = 3  # Minimum number seconds for a track to be included in the results
 MIN_TRACK_FRAMES = ROUGH_FPS * MIN_TRACK_SECONDS
-STOP_RECORDING_SECONDS = 5  # Number of seconds required to decide to stop recording
+STOP_RECORDING_SECONDS = 30  # Number of seconds required to decide to stop recording
 STOP_RECORDING_FRAMES = ROUGH_FPS * STOP_RECORDING_SECONDS
 
 
@@ -61,7 +61,8 @@ class DecisionMaker():
                 'species_name': species_name,
                 'start_time': track['start_time'],
                 'end_time': track['end_time'],
-                'confidence': confidence
+                'confidence': confidence,
+                'source': 'video'
             })
 
         return result
