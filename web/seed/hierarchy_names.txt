@@ -1,0 +1,742 @@
+Ducks, Geese, and Swans|Birds
+Grouse, Quail, and Allies|Birds
+Loons|Birds
+Grebes|Birds
+Storks|Birds
+Frigatebirds, Boobies, Cormorants, Darters, and Allies|Birds
+Pelicans, Herons, Ibises, and Allies|Birds
+Hawks, Kites, Eagles, and Allies|Birds
+Caracaras and Falcons|Birds
+Cranes and Rails|Birds
+Plovers, Sandpipers, and Allies|Birds
+Skuas and Alcids|Birds
+Gulls, Terns, and Allies|Birds
+Pigeons and Doves|Birds
+Parrots|Birds
+Cuckoos|Birds
+Owls|Birds
+Nightjars|Birds
+Swifts and Hummingbirds|Birds
+Kingfishers and Allies|Birds
+Woodpeckers|Birds
+Perching Birds|Birds
+Black-bellied Plover|Plovers, Sandpipers, and Allies
+Black-bellied Whistling-Duck|Ducks, Geese, and Swans
+Tyrant Flycatchers|Perching Birds
+Semipalmated Plover|Plovers, Sandpipers, and Allies
+Greater White-fronted Goose|Ducks, Geese, and Swans
+Black Vulture|Hawks, Kites, Eagles, and Allies
+American White Pelican|Pelicans, Herons, Ibises, and Allies
+Killdeer|Plovers, Sandpipers, and Allies
+Red-headed Woodpecker|Woodpeckers
+Shrikes|Perching Birds
+Snow Goose|Ducks, Geese, and Swans
+Chimney Swift|Swifts and Hummingbirds
+American Oystercatcher|Plovers, Sandpipers, and Allies
+Ross's Goose|Ducks, Geese, and Swans
+Barn Owl|Owls
+Vireos|Perching Birds
+Black Oystercatcher|Plovers, Sandpipers, and Allies
+Turkey Vulture|Hawks, Kites, Eagles, and Allies
+Brown Pelican|Pelicans, Herons, Ibises, and Allies
+Brant|Ducks, Geese, and Swans
+Scaled Quail|Grouse, Quail, and Allies
+Northern Gannet|Frigatebirds, Boobies, Cormorants, Darters, and Allies
+Rock Pigeon|Pigeons and Doves
+Black-necked Stilt|Plovers, Sandpipers, and Allies
+Acorn Woodpecker|Woodpeckers
+Jays, Magpies, and Crows|Perching Birds
+Pied-billed Grebe|Grebes
+American Avocet|Plovers, Sandpipers, and Allies
+Cackling Goose|Ducks, Geese, and Swans
+Vaux's Swift|Swifts and Hummingbirds
+Osprey|Hawks, Kites, Eagles, and Allies
+Crested Caracara|Caracaras and Falcons
+Larks|Perching Birds
+Spotted Sandpiper|Plovers, Sandpipers, and Allies
+Canada Goose|Ducks, Geese, and Swans
+Great Blue Heron|Pelicans, Herons, Ibises, and Allies
+Solitary Sandpiper|Plovers, Sandpipers, and Allies
+Mute Swan|Ducks, Geese, and Swans
+Purple Gallinule|Cranes and Rails
+Western Screech-Owl|Owls
+Gila Woodpecker|Woodpeckers
+Swallows|Perching Birds
+Greater Yellowlegs|Plovers, Sandpipers, and Allies
+Swallow-tailed Kite|Hawks, Kites, Eagles, and Allies
+Trumpeter Swan|Ducks, Geese, and Swans
+White-throated Swift|Swifts and Hummingbirds
+Chickadees and Titmice|Perching Birds
+Willet|Plovers, Sandpipers, and Allies
+Great Egret|Pelicans, Herons, Ibises, and Allies
+Tundra Swan|Ducks, Geese, and Swans
+California Quail|Grouse, Quail, and Allies
+Red-throated Loon|Loons
+Brandt's Cormorant|Frigatebirds, Boobies, Cormorants, Darters, and Allies
+Band-tailed Pigeon|Pigeons and Doves
+Yellow-billed Cuckoo|Cuckoos
+Lesser Yellowlegs|Plovers, Sandpipers, and Allies
+Golden-fronted Woodpecker|Woodpeckers
+Verdin|Perching Birds
+Wood Duck|Ducks, Geese, and Swans
+Whimbrel|Plovers, Sandpipers, and Allies
+White-tailed Kite|Hawks, Kites, Eagles, and Allies
+Horned Grebe|Grebes
+Snowy Egret|Pelicans, Herons, Ibises, and Allies
+Long-billed Curlew|Plovers, Sandpipers, and Allies
+Gadwall|Ducks, Geese, and Swans
+Eastern Screech-Owl|Owls
+Bushtits|Perching Birds
+Broad-billed Hummingbird|Swifts and Hummingbirds
+Marbled Godwit|Plovers, Sandpipers, and Allies
+American Wigeon|Ducks, Geese, and Swans
+Mississippi Kite|Hawks, Kites, Eagles, and Allies
+American Kestrel|Caracaras and Falcons
+Red-bellied Woodpecker|Woodpeckers
+Nuthatches|Perching Birds
+Ruddy Turnstone|Plovers, Sandpipers, and Allies
+American Black Duck|Ducks, Geese, and Swans
+Little Blue Heron|Pelicans, Herons, Ibises, and Allies
+Black Turnstone|Plovers, Sandpipers, and Allies
+Creepers|Perching Birds
+Mallard|Ducks, Geese, and Swans
+Gambel's Quail|Grouse, Quail, and Allies
+Neotropic Cormorant|Frigatebirds, Boobies, Cormorants, Darters, and Allies
+Eurasian Collared-Dove|Pigeons and Doves
+Surfbird|Plovers, Sandpipers, and Allies
+Ruby-throated Hummingbird|Swifts and Hummingbirds
+Bald Eagle|Hawks, Kites, Eagles, and Allies
+Mottled Duck|Ducks, Geese, and Swans
+Common Gallinule|Cranes and Rails
+Great Horned Owl|Owls
+Yellow-bellied Sapsucker|Woodpeckers
+Wrens|Perching Birds
+Sanderling|Plovers, Sandpipers, and Allies
+Tricolored Heron|Pelicans, Herons, Ibises, and Allies
+Blue-winged Teal|Ducks, Geese, and Swans
+Semipalmated Sandpiper|Plovers, Sandpipers, and Allies
+Red-necked Grebe|Grebes
+Gnatcatchers|Perching Birds
+Northern Harrier|Hawks, Kites, Eagles, and Allies
+Western Sandpiper|Plovers, Sandpipers, and Allies
+Cinnamon Teal|Ducks, Geese, and Swans
+Black-chinned Hummingbird|Swifts and Hummingbirds
+Red-naped Sapsucker|Woodpeckers
+Dippers|Perching Birds
+Least Sandpiper|Plovers, Sandpipers, and Allies
+Reddish Egret|Pelicans, Herons, Ibises, and Allies
+Northern Shoveler|Ducks, Geese, and Swans
+Dunlin|Plovers, Sandpipers, and Allies
+Northern Pintail|Ducks, Geese, and Swans
+Northern Bobwhite|Grouse, Quail, and Allies
+Pacific Loon|Loons
+Wood Stork|Storks
+Double-crested Cormorant|Frigatebirds, Boobies, Cormorants, Darters, and Allies
+Sharp-shinned Hawk|Hawks, Kites, Eagles, and Allies
+Merlin|Caracaras and Falcons
+White-winged Dove|Pigeons and Doves
+Monk Parakeet|Parrots
+Black-billed Cuckoo|Cuckoos
+Snowy Owl|Owls
+Common Nighthawk|Nightjars
+Belted Kingfisher|Kingfishers and Allies
+Kinglets|Perching Birds
+Black Guillemot|Skuas and Alcids
+Black-legged Kittiwake|Gulls, Terns, and Allies
+Short-billed Dowitcher|Plovers, Sandpipers, and Allies
+Green-winged Teal|Ducks, Geese, and Swans
+Cattle Egret|Pelicans, Herons, Ibises, and Allies
+Wilson's Snipe|Plovers, Sandpipers, and Allies
+Red-breasted Sapsucker|Woodpeckers
+Old World Warblers|Perching Birds
+Anna's Hummingbird|Swifts and Hummingbirds
+Canvasback|Ducks, Geese, and Swans
+American Woodcock|Plovers, Sandpipers, and Allies
+Cooper's Hawk|Hawks, Kites, Eagles, and Allies
+Thrushes|Perching Birds
+Eared Grebe|Grebes
+Wilson's Phalarope|Plovers, Sandpipers, and Allies
+Redhead|Ducks, Geese, and Swans
+Green Heron|Pelicans, Herons, Ibises, and Allies
+Ring-necked Duck|Ducks, Geese, and Swans
+American Coot|Cranes and Rails
+Northern Pygmy-Owl|Owls
+Ladder-backed Woodpecker|Woodpeckers
+Mockingbirds, Thrashers, and Allies|Perching Birds
+Harris's Hawk|Hawks, Kites, Eagles, and Allies
+Costa's Hummingbird|Swifts and Hummingbirds
+Greater Scaup|Ducks, Geese, and Swans
+Ring-necked Pheasant|Grouse, Quail, and Allies
+Great Cormorant|Frigatebirds, Boobies, Cormorants, Darters, and Allies
+Mourning Dove|Pigeons and Doves
+Starlings and Allies|Perching Birds
+Black-crowned Night-Heron|Pelicans, Herons, Ibises, and Allies
+Lesser Scaup|Ducks, Geese, and Swans
+Red-shouldered Hawk|Hawks, Kites, Eagles, and Allies
+Peregrine Falcon|Caracaras and Falcons
+Nuttall's Woodpecker|Woodpeckers
+Wagtails and Pipits|Perching Birds
+Common Eider|Ducks, Geese, and Swans
+Calliope Hummingbird|Swifts and Hummingbirds
+Harlequin Duck|Ducks, Geese, and Swans
+Burrowing Owl|Owls
+Waxwings|Perching Birds
+Yellow-crowned Night-Heron|Pelicans, Herons, Ibises, and Allies
+Western Grebe|Grebes
+Broad-winged Hawk|Hawks, Kites, Eagles, and Allies
+Surf Scoter|Ducks, Geese, and Swans
+Downy Woodpecker|Woodpeckers
+Silky-Flycatchers|Perching Birds
+Pigeon Guillemot|Skuas and Alcids
+Bonaparte's Gull|Gulls, Terns, and Allies
+White-winged Scoter|Ducks, Geese, and Swans
+Ruffed Grouse|Grouse, Quail, and Allies
+Common Loon|Loons
+Pelagic Cormorant|Frigatebirds, Boobies, Cormorants, Darters, and Allies
+Inca Dove|Pigeons and Doves
+Greater Roadrunner|Cuckoos
+White Ibis|Pelicans, Herons, Ibises, and Allies
+Longspurs and Snow Buntings|Perching Birds
+Broad-tailed Hummingbird|Swifts and Hummingbirds
+Black Scoter|Ducks, Geese, and Swans
+Swainson's Hawk|Hawks, Kites, Eagles, and Allies
+Long-tailed Duck|Ducks, Geese, and Swans
+Sandhill Crane|Cranes and Rails
+Barred Owl|Owls
+Hairy Woodpecker|Woodpeckers
+Wood-Warblers|Perching Birds
+Glossy Ibis|Pelicans, Herons, Ibises, and Allies
+Bufflehead|Ducks, Geese, and Swans
+Red-tailed Hawk|Hawks, Kites, Eagles, and Allies
+Prairie Falcon|Caracaras and Falcons
+New World Sparrows and Allies|Perching Birds
+Rufous Hummingbird|Swifts and Hummingbirds
+Common Goldeneye|Ducks, Geese, and Swans
+Clark's Grebe|Grebes
+Northern Flicker|Woodpeckers
+Cardinals, Grosbeaks, and Allies|Perching Birds
+Laughing Gull|Gulls, Terns, and Allies
+Barrow's Goldeneye|Ducks, Geese, and Swans
+Wild Turkey|Grouse, Quail, and Allies
+Anhinga|Frigatebirds, Boobies, Cormorants, Darters, and Allies
+Common Ground-Dove|Pigeons and Doves
+White-faced Ibis|Pelicans, Herons, Ibises, and Allies
+Rough-legged Hawk|Hawks, Kites, Eagles, and Allies
+Hooded Merganser|Ducks, Geese, and Swans
+Northern Saw-whet Owl|Owls
+Blackbirds and Allies|Perching Birds
+Allen's Hummingbird|Swifts and Hummingbirds
+Common Merganser|Ducks, Geese, and Swans
+Pileated Woodpecker|Woodpeckers
+Finches and Allies|Perching Birds
+Heermann's Gull|Gulls, Terns, and Allies
+Roseate Spoonbill|Pelicans, Herons, Ibises, and Allies
+Golden Eagle|Hawks, Kites, Eagles, and Allies
+Red-breasted Merganser|Ducks, Geese, and Swans
+Old World Sparrows|Perching Birds
+Mew Gull|Gulls, Terns, and Allies
+Ruddy Duck|Ducks, Geese, and Swans
+Western Gull|Gulls, Terns, and Allies
+Ring-billed Gull|Gulls, Terns, and Allies
+California Gull|Gulls, Terns, and Allies
+Herring Gull|Gulls, Terns, and Allies
+Glaucous-winged Gull|Gulls, Terns, and Allies
+Great Black-backed Gull|Gulls, Terns, and Allies
+Caspian Tern|Gulls, Terns, and Allies
+Black Tern|Gulls, Terns, and Allies
+Common Tern|Gulls, Terns, and Allies
+Forster's Tern|Gulls, Terns, and Allies
+Royal Tern|Gulls, Terns, and Allies
+Black Skimmer|Gulls, Terns, and Allies
+Ovenbird|Wood-Warblers
+Green-tailed Towhee|New World Sparrows and Allies
+Louisiana Waterthrush|Wood-Warblers
+Bobolink|Blackbirds and Allies
+Gray-crowned Rosy-Finch|Finches and Allies
+Western Wood-Pewee|Tyrant Flycatchers
+Gray Jay|Jays, Magpies, and Crows
+Spotted Towhee|New World Sparrows and Allies
+Summer Tanager|Cardinals, Grosbeaks, and Allies
+Northern Waterthrush|Wood-Warblers
+Carolina Chickadee|Chickadees and Titmice
+Eastern Bluebird|Thrushes
+White-eyed Vireo|Vireos
+Purple Martin|Swallows
+Cactus Wren|Wrens
+Blue-winged Warbler|Wood-Warblers
+Eastern Towhee|New World Sparrows and Allies
+Red-winged Blackbird|Blackbirds and Allies
+Black Rosy-Finch|Finches and Allies
+Eastern Wood-Pewee|Tyrant Flycatchers
+Steller's Jay|Jays, Magpies, and Crows
+Black-and-white Warbler|Wood-Warblers
+Rufous-crowned Sparrow|New World Sparrows and Allies
+Scarlet Tanager|Cardinals, Grosbeaks, and Allies
+Gray Catbird|Mockingbirds, Thrashers, and Allies
+Prothonotary Warbler|Wood-Warblers
+Eastern Meadowlark|Blackbirds and Allies
+Black-capped Chickadee|Chickadees and Titmice
+Western Bluebird|Thrushes
+Brown-capped Rosy-Finch|Finches and Allies
+Least Flycatcher|Tyrant Flycatchers
+Canyon Towhee|New World Sparrows and Allies
+Tennessee Warbler|Wood-Warblers
+Red-breasted Nuthatch|Nuthatches
+Bell's Vireo|Vireos
+Blue Jay|Jays, Magpies, and Crows
+Tree Swallow|Swallows
+Canyon Wren|Wrens
+Orange-crowned Warbler|Wood-Warblers
+California Towhee|New World Sparrows and Allies
+Western Tanager|Cardinals, Grosbeaks, and Allies
+Western Meadowlark|Blackbirds and Allies
+Nashville Warbler|Wood-Warblers
+Pine Grosbeak|Finches and Allies
+Common Eider (Adult male)|Common Eider
+Long-tailed Duck (Winter male)|Long-tailed Duck
+Ruddy Duck (Breeding male)|Ruddy Duck
+Swainson's Hawk (Dark morph )|Swainson's Hawk
+Red-tailed Hawk (Light morph adult)|Red-tailed Hawk
+Pacific-slope Flycatcher|Tyrant Flycatchers
+Florida Scrub-Jay|Jays, Magpies, and Crows
+Abert's Towhee|New World Sparrows and Allies
+Mountain Chickadee|Chickadees and Titmice
+Mountain Bluebird|Thrushes
+MacGillivray's Warbler|Wood-Warblers
+Yellow-headed Blackbird|Blackbirds and Allies
+Yellow-throated Vireo|Vireos
+Mourning Warbler|Wood-Warblers
+American Tree Sparrow|New World Sparrows and Allies
+Northern Cardinal|Cardinals, Grosbeaks, and Allies
+Purple Finch|Finches and Allies
+Cordilleran Flycatcher|Tyrant Flycatchers
+Snow Goose (White morph)|Snow Goose
+Wood Duck (Breeding male)|Wood Duck
+Gadwall (Breeding male)|Gadwall
+American Wigeon (Breeding male)|American Wigeon
+Mallard (Breeding male)|Mallard
+Blue-winged Teal  (Male)|Blue-winged Teal
+Cinnamon Teal (Male)|Cinnamon Teal
+Northern Shoveler (Breeding male)|Northern Shoveler
+Northern Pintail (Breeding male)|Northern Pintail
+Green-winged Teal (Male)|Green-winged Teal
+Canvasback (Breeding male)|Canvasback
+Redhead (Breeding male)|Redhead
+Ring-necked Duck (Breeding male)|Ring-necked Duck
+Greater Scaup (Breeding male)|Greater Scaup
+Lesser Scaup (Breeding male)|Lesser Scaup
+Harlequin Duck (Male)|Harlequin Duck
+Surf Scoter (Male)|Surf Scoter
+White-winged Scoter (Male)|White-winged Scoter
+Black Scoter (Male)|Black Scoter
+Bufflehead (Breeding male)|Bufflehead
+Common Goldeneye (Breeding male)|Common Goldeneye
+Barrow's Goldeneye (Breeding male)|Barrow's Goldeneye
+Hooded Merganser (Breeding male)|Hooded Merganser
+Common Merganser (Breeding male)|Common Merganser
+Red-breasted Merganser (Breeding male)|Red-breasted Merganser
+California Quail (Male)|California Quail
+Gambel's Quail (Male)|Gambel's Quail
+Ring-necked Pheasant (Male)|Ring-necked Pheasant
+Red-throated Loon (Breeding)|Red-throated Loon
+Pacific Loon (Breeding)|Pacific Loon
+Common Loon (Breeding)|Common Loon
+Horned Grebe (Breeding)|Horned Grebe
+Red-necked Grebe (Breeding)|Red-necked Grebe
+Eared Grebe (Breeding)|Eared Grebe
+Northern Gannet (Adult, Subadult)|Northern Gannet
+Double-crested Cormorant (Immature)|Double-crested Cormorant
+Great Cormorant (Adult)|Great Cormorant
+Little Blue Heron (Adult)|Little Blue Heron
+Reddish Egret (Dark morph)|Reddish Egret
+Black-crowned Night-Heron (Adult)|Black-crowned Night-Heron
+Yellow-crowned Night-Heron (Adult)|Yellow-crowned Night-Heron
+White Ibis (Adult)|White Ibis
+Bald Eagle (Adult, subadult)|Bald Eagle
+Northern Harrier (Adult male)|Northern Harrier
+Sharp-shinned Hawk (Adult )|Sharp-shinned Hawk
+Cooper's Hawk (Adult)|Cooper's Hawk
+Red-shouldered Hawk (Adult )|Red-shouldered Hawk
+Broad-winged Hawk (Adult)|Broad-winged Hawk
+Rough-legged Hawk (Dark morph)|Rough-legged Hawk
+Golden Eagle (Adult)|Golden Eagle
+American Kestrel (Adult male)|American Kestrel
+Peregrine Falcon (Adult)|Peregrine Falcon
+Purple Gallinule (Adult)|Purple Gallinule
+Common Gallinule (Adult)|Common Gallinule
+Black-bellied Plover (Breeding)|Black-bellied Plover
+Spotted Sandpiper (Breeding)|Spotted Sandpiper
+Sanderling (Breeding)|Sanderling
+Dunlin (Breeding)|Dunlin
+Wilson's Phalarope (Breeding)|Wilson's Phalarope
+Broad-billed Hummingbird (Adult Male)|Broad-billed Hummingbird
+Ruby-throated Hummingbird (Adult Male)|Ruby-throated Hummingbird
+Black-chinned Hummingbird (Adult Male)|Black-chinned Hummingbird
+Anna's Hummingbird (Adult Male)|Anna's Hummingbird
+Costa's Hummingbird (Adult Male)|Costa's Hummingbird
+Calliope Hummingbird (Adult Male)|Calliope Hummingbird
+Broad-tailed Hummingbird (Adult Male)|Broad-tailed Hummingbird
+Rufous Hummingbird (Adult Male)|Rufous Hummingbird
+Allen's Hummingbird (Adult Male)|Allen's Hummingbird
+Red-headed Woodpecker (Adult)|Red-headed Woodpecker
+Northern Flicker (Yellow-shafted)|Northern Flicker
+Loggerhead Shrike|Shrikes
+Western Scrub-Jay|Jays, Magpies, and Crows
+Violet-green Swallow|Swallows
+Carolina Wren|Wrens
+Blue-gray Gnatcatcher|Gnatcatchers
+Golden-crowned Kinglet|Kinglets
+Northern Mockingbird|Mockingbirds, Thrashers, and Allies
+Bohemian Waxwing|Waxwings
+Common Yellowthroat|Wood-Warblers
+Black Guillemot (Breeding)|Black Guillemot
+Pigeon Guillemot (Breeding)|Pigeon Guillemot
+Black-legged Kittiwake (Adult)|Black-legged Kittiwake
+Laughing Gull (Breeding)|Laughing Gull
+Heermann's Gull (Adult)|Heermann's Gull
+Ring-billed Gull (Adult)|Ring-billed Gull
+Western Gull (Adult)|Western Gull
+California Gull (Adult)|California Gull
+Herring Gull (Adult)|Herring Gull
+Glaucous-winged Gull (Adult)|Glaucous-winged Gull
+Great Black-backed Gull (Adult)|Great Black-backed Gull
+Chipping Sparrow|New World Sparrows and Allies
+Rusty Blackbird|Blackbirds and Allies
+Hooded Warbler|Wood-Warblers
+Chestnut-backed Chickadee|Chickadees and Titmice
+Townsend's Solitaire|Thrushes
+Cassin's Finch|Finches and Allies
+Black Phoebe|Tyrant Flycatchers
+Clay-colored Sparrow|New World Sparrows and Allies
+Pyrrhuloxia|Cardinals, Grosbeaks, and Allies
+American Redstart|Wood-Warblers
+White-breasted Nuthatch|Nuthatches
+Plumbeous Vireo|Vireos
+Mexican Jay|Jays, Magpies, and Crows
+Brewer's Blackbird|Blackbirds and Allies
+Cape May Warbler|Wood-Warblers
+Brewer's Sparrow|New World Sparrows and Allies
+House Finch|Finches and Allies
+Eastern Phoebe|Tyrant Flycatchers
+Northern Rough-winged Swallow|Swallows
+Bewick's Wren|Wrens
+Northern Parula|Wood-Warblers
+Boreal Chickadee|Chickadees and Titmice
+Veery|Thrushes
+Field Sparrow|New World Sparrows and Allies
+Rose-breasted Grosbeak|Cardinals, Grosbeaks, and Allies
+Clark's Nutcracker|Jays, Magpies, and Crows
+Common Grackle|Blackbirds and Allies
+Magnolia Warbler|Wood-Warblers
+Vesper Sparrow|New World Sparrows and Allies
+Horned Lark|Larks
+Bushtit|Bushtits
+Brown Creeper|Creepers
+American Dipper|Dippers
+Wrentit|Old World Warblers
+Brown Thrasher|Mockingbirds, Thrashers, and Allies
+European Starling|Starlings and Allies
+American Pipit|Wagtails and Pipits
+Phainopepla|Silky-Flycatchers
+Snow Bunting|Longspurs and Snow Buntings
+Bay-breasted Warbler|Wood-Warblers
+Red Crossbill|Finches and Allies
+House Sparrow|Old World Sparrows
+Common Eider (Female/juvenile)|Common Eider
+Long-tailed Duck (Summer male)|Long-tailed Duck
+Ruddy Duck (Winter male)|Ruddy Duck
+Swainson's Hawk (Light morph )|Swainson's Hawk
+Red-tailed Hawk (Dark morph)|Red-tailed Hawk
+Say's Phoebe|Tyrant Flycatchers
+Cassin's Vireo|Vireos
+Blackburnian Warbler|Wood-Warblers
+Boat-tailed Grackle|Blackbirds and Allies
+Black-billed Magpie|Jays, Magpies, and Crows
+Lark Sparrow|New World Sparrows and Allies
+Black-headed Grosbeak|Cardinals, Grosbeaks, and Allies
+Bridled Titmouse|Chickadees and Titmice
+Swainson's Thrush|Thrushes
+Bank Swallow|Swallows
+House Wren|Wrens
+Yellow Warbler|Wood-Warblers
+White-winged Crossbill|Finches and Allies
+Vermilion Flycatcher|Tyrant Flycatchers
+Lark Bunting|New World Sparrows and Allies
+Chestnut-sided Warbler|Wood-Warblers
+Great-tailed Grackle|Blackbirds and Allies
+Pygmy Nuthatch|Nuthatches
+Blue-headed Vireo|Vireos
+Yellow-billed Magpie|Jays, Magpies, and Crows
+Blackpoll Warbler|Wood-Warblers
+Savannah Sparrow|New World Sparrows and Allies
+Blue Grosbeak|Cardinals, Grosbeaks, and Allies
+Common Redpoll|Finches and Allies
+Ash-throated Flycatcher|Tyrant Flycatchers
+Oak Titmouse|Chickadees and Titmice
+Hermit Thrush|Thrushes
+Black-throated Blue Warbler|Wood-Warblers
+Bronzed Cowbird|Blackbirds and Allies
+Fox Sparrow|New World Sparrows and Allies
+Cliff Swallow|Swallows
+Pacific Wren|Wrens
+Black-tailed Gnatcatcher|Gnatcatchers
+Ruby-crowned Kinglet|Kinglets
+Curve-billed Thrasher|Mockingbirds, Thrashers, and Allies
+Cedar Waxwing|Waxwings
+Palm Warbler|Wood-Warblers
+Black Guillemot (Nonbreeding, juvenile)|Black Guillemot
+Pigeon Guillemot (Nonbreeding, juvenile)|Pigeon Guillemot
+Black-legged Kittiwake (Immature)|Black-legged Kittiwake
+Laughing Gull (Nonbreeding/Immature)|Laughing Gull
+Heermann's Gull (Immature)|Heermann's Gull
+Ring-billed Gull (Immature)|Ring-billed Gull
+Western Gull (Immature)|Western Gull
+California Gull (Immature)|California Gull
+Herring Gull (Immature)|Herring Gull
+Glaucous-winged Gull (Immature)|Glaucous-winged Gull
+Great Black-backed Gull (Immature)|Great Black-backed Gull
+Snow Goose (Blue morph)|Snow Goose
+Wood Duck (Female/Eclipse male)|Wood Duck
+Gadwall (Female/Eclipse male)|Gadwall
+American Wigeon (Female/Eclipse male)|American Wigeon
+Mallard (Female/Eclipse male)|Mallard
+Blue-winged Teal  (Female/juvenile)|Blue-winged Teal
+Cinnamon Teal (Female/juvenile)|Cinnamon Teal
+Northern Shoveler (Female/Eclipse male)|Northern Shoveler
+Northern Pintail (Female/Eclipse male)|Northern Pintail
+Green-winged Teal  (Female/juvenile)|Green-winged Teal
+Canvasback (Female/Eclipse male)|Canvasback
+Redhead (Female/Eclipse male)|Redhead
+Ring-necked Duck (Female/Eclipse male)|Ring-necked Duck
+Greater Scaup (Female/Eclipse male)|Greater Scaup
+Lesser Scaup (Female/Eclipse male)|Lesser Scaup
+Harlequin Duck (Female/juvenile)|Harlequin Duck
+Surf Scoter (Female/immature)|Surf Scoter
+White-winged Scoter (Female/juvenile)|White-winged Scoter
+Black Scoter (Female/juvenile)|Black Scoter
+Bufflehead (Female/immature male)|Bufflehead
+Common Goldeneye (Female/Eclipse male)|Common Goldeneye
+Barrow's Goldeneye (Female/Eclipse male)|Barrow's Goldeneye
+Hooded Merganser (Female/immature male)|Hooded Merganser
+Common Merganser (Female/immature male)|Common Merganser
+Red-breasted Merganser (Female/immature male)|Red-breasted Merganser
+California Quail (Female/juvenile)|California Quail
+Gambel's Quail (Female/juvenile)|Gambel's Quail
+Ring-necked Pheasant (Female/juvenile)|Ring-necked Pheasant
+Red-throated Loon (Nonbreeding/juvenile)|Red-throated Loon
+Pacific Loon (Nonbreeding/juvenile)|Pacific Loon
+Common Loon (Nonbreeding/juvenile)|Common Loon
+Horned Grebe (Nonbreeding/juvenile)|Horned Grebe
+Red-necked Grebe (Nonbreeding/juvenile)|Red-necked Grebe
+Eared Grebe (Nonbreeding/juvenile)|Eared Grebe
+Northern Gannet (Immature/Juvenile)|Northern Gannet
+Double-crested Cormorant (Adult)|Double-crested Cormorant
+Great Cormorant (Immature)|Great Cormorant
+Little Blue Heron (Immature)|Little Blue Heron
+Reddish Egret (White morph)|Reddish Egret
+Black-crowned Night-Heron (Immature)|Black-crowned Night-Heron
+Yellow-crowned Night-Heron (Immature)|Yellow-crowned Night-Heron
+White Ibis (Immature)|White Ibis
+Bald Eagle (Immature, juvenile)|Bald Eagle
+Northern Harrier (Female, immature)|Northern Harrier
+Sharp-shinned Hawk (Immature)|Sharp-shinned Hawk
+Cooper's Hawk (Immature)|Cooper's Hawk
+Red-shouldered Hawk (Immature)|Red-shouldered Hawk
+Broad-winged Hawk (Immature)|Broad-winged Hawk
+Rough-legged Hawk (Light morph)|Rough-legged Hawk
+Golden Eagle (Immature)|Golden Eagle
+American Kestrel (Female, immature)|American Kestrel
+Peregrine Falcon (Immature)|Peregrine Falcon
+Purple Gallinule (Immature)|Purple Gallinule
+Common Gallinule (Immature)|Common Gallinule
+Black-bellied Plover (Nonbreeding/juvenile)|Black-bellied Plover
+Spotted Sandpiper (Nonbreeding/juvenile)|Spotted Sandpiper
+Sanderling (Nonbreeding/juvenile)|Sanderling
+Dunlin (Nonbreeding/juvenile)|Dunlin
+Wilson's Phalarope (Nonbreeding, juvenile)|Wilson's Phalarope
+Broad-billed Hummingbird (Female, immature)|Broad-billed Hummingbird
+Ruby-throated Hummingbird (Female, immature)|Ruby-throated Hummingbird
+Black-chinned Hummingbird (Female, immature)|Black-chinned Hummingbird
+Anna's Hummingbird (Female, immature)|Anna's Hummingbird
+Costa's Hummingbird (Female, immature)|Costa's Hummingbird
+Calliope Hummingbird (Female, immature)|Calliope Hummingbird
+Broad-tailed Hummingbird (Female, immature)|Broad-tailed Hummingbird
+Rufous Hummingbird (Female, immature)|Rufous Hummingbird
+Allen's Hummingbird (Female, immature)|Allen's Hummingbird
+Red-headed Woodpecker (Immature)|Red-headed Woodpecker
+Northern Flicker (Red-shafted)|Northern Flicker
+Northern Shrike|Shrikes
+American Crow|Jays, Magpies, and Crows
+Great Crested Flycatcher|Tyrant Flycatchers
+Hoary Redpoll|Finches and Allies
+Song Sparrow|New World Sparrows and Allies
+Lazuli Bunting|Cardinals, Grosbeaks, and Allies
+Pine Warbler|Wood-Warblers
+Hutton's Vireo|Vireos
+Brown-headed Cowbird|Blackbirds and Allies
+Yellow-rumped Warbler|Wood-Warblers
+Juniper Titmouse|Chickadees and Titmice
+Wood Thrush|Thrushes
+Lincoln's Sparrow|New World Sparrows and Allies
+Northwestern Crow|Jays, Magpies, and Crows
+Common Eider (Immature/Eclipse male)|Common Eider
+Long-tailed Duck (Female/juvenile)|Long-tailed Duck
+Ruddy Duck (Female/juvenile)|Ruddy Duck
+Swainson's Hawk (Immature)|Swainson's Hawk
+Red-tailed Hawk (Light morph immature)|Red-tailed Hawk
+Cassin's Kingbird|Tyrant Flycatchers
+Yellow-throated Warbler|Wood-Warblers
+Pine Siskin|Finches and Allies
+Orchard Oriole|Blackbirds and Allies
+Swamp Sparrow|New World Sparrows and Allies
+Indigo Bunting|Cardinals, Grosbeaks, and Allies
+Cave Swallow|Swallows
+Winter Wren|Wrens
+Prairie Warbler|Wood-Warblers
+Fish Crow|Jays, Magpies, and Crows
+Brown-headed Nuthatch|Nuthatches
+Warbling Vireo|Vireos
+Black-throated Gray Warbler|Wood-Warblers
+White-throated Sparrow|New World Sparrows and Allies
+Lesser Goldfinch|Finches and Allies
+Western Kingbird|Tyrant Flycatchers
+Tufted Titmouse|Chickadees and Titmice
+American Robin|Thrushes
+Hooded Oriole|Blackbirds and Allies
+California Thrasher|Mockingbirds, Thrashers, and Allies
+Townsend's Warbler|Wood-Warblers
+Harris's Sparrow|New World Sparrows and Allies
+Painted Bunting|Cardinals, Grosbeaks, and Allies
+Hermit Warbler|Wood-Warblers
+Chihuahuan Raven|Jays, Magpies, and Crows
+American Goldfinch|Finches and Allies
+Eastern Kingbird|Tyrant Flycatchers
+Bullock's Oriole|Blackbirds and Allies
+White-crowned Sparrow|New World Sparrows and Allies
+Barn Swallow|Swallows
+Marsh Wren|Wrens
+Black-throated Green Warbler|Wood-Warblers
+Red-eyed Vireo|Vireos
+Black-crested Titmouse|Chickadees and Titmice
+Varied Thrush|Thrushes
+Canada Warbler|Wood-Warblers
+Golden-crowned Sparrow|New World Sparrows and Allies
+Dickcissel|Cardinals, Grosbeaks, and Allies
+Common Raven|Jays, Magpies, and Crows
+Evening Grosbeak|Finches and Allies
+Scissor-tailed Flycatcher|Tyrant Flycatchers
+Baltimore Oriole|Blackbirds and Allies
+Wilson's Warbler|Wood-Warblers
+Dark-eyed Junco|New World Sparrows and Allies
+Yellow-breasted Chat|Wood-Warblers
+Dark-eyed Junco (Slate-colored)|Dark-eyed Junco
+Yellow-rumped Warbler (Breeding Myrtle)|Yellow-rumped Warbler
+European Starling (Breeding Adult)|European Starling
+Fox Sparrow (Red)|Fox Sparrow
+Summer Tanager (Adult Male)|Summer Tanager
+Orchard Oriole (Adult Male)|Orchard Oriole
+Purple Martin (Adult male)|Purple Martin
+American Robin (Adult)|American Robin
+Phainopepla (Female/juvenile)|Phainopepla
+Snow Bunting (Breeding adult)|Snow Bunting
+Common Yellowthroat (Adult Male)|Common Yellowthroat
+American Redstart (Adult Male)|American Redstart
+Magnolia Warbler (Breeding male)|Magnolia Warbler
+Bay-breasted Warbler (Breeding male)|Bay-breasted Warbler
+Chestnut-sided Warbler (Breeding male)|Chestnut-sided Warbler
+Blackpoll Warbler (Breeding male)|Blackpoll Warbler
+Black-throated Blue Warbler (Adult Male)|Black-throated Blue Warbler
+Lark Bunting (Breeding male)|Lark Bunting
+White-throated Sparrow (White-striped)|White-throated Sparrow
+Harris's Sparrow (Adult)|Harris's Sparrow
+White-crowned Sparrow (Adult)|White-crowned Sparrow
+Golden-crowned Sparrow (Adult)|Golden-crowned Sparrow
+Dark-eyed Junco (Oregon)|Dark-eyed Junco
+Chipping Sparrow (Breeding)|Chipping Sparrow
+Scarlet Tanager (Breeding Male)|Scarlet Tanager
+Western Tanager (Breeding Male)|Western Tanager
+Northern Cardinal (Adult Male)|Northern Cardinal
+Rose-breasted Grosbeak (Adult Male)|Rose-breasted Grosbeak
+Black-headed Grosbeak (Adult Male)|Black-headed Grosbeak
+Blue Grosbeak (Adult Male)|Blue Grosbeak
+Lazuli Bunting (Adult Male)|Lazuli Bunting
+Indigo Bunting (Adult Male)|Indigo Bunting
+Painted Bunting (Adult Male)|Painted Bunting
+Bobolink (Breeding male)|Bobolink
+Red-winged Blackbird (Male)|Red-winged Blackbird
+Yellow-headed Blackbird (Adult Male)|Yellow-headed Blackbird
+Brewer's Blackbird (Female/Juvenile)|Brewer's Blackbird
+Brown-headed Cowbird (Male)|Brown-headed Cowbird
+Hooded Oriole (Adult male)|Hooded Oriole
+Bullock's Oriole (Adult male)|Bullock's Oriole
+Baltimore Oriole (Adult male)|Baltimore Oriole
+Pine Grosbeak (Adult Male)|Pine Grosbeak
+Purple Finch (Adult Male)|Purple Finch
+Cassin's Finch (Adult Male)|Cassin's Finch
+House Finch (Adult Male)|House Finch
+Red Crossbill (Adult Male)|Red Crossbill
+White-winged Crossbill (Adult Male)|White-winged Crossbill
+Lesser Goldfinch (Adult Male)|Lesser Goldfinch
+American Goldfinch (Breeding Male)|American Goldfinch
+Evening Grosbeak (Adult Male)|Evening Grosbeak
+House Sparrow (Male)|House Sparrow
+Vermilion Flycatcher (Adult male)|Vermilion Flycatcher
+Yellow-rumped Warbler (Winter/juvenile Myrtle)|Yellow-rumped Warbler
+European Starling (Nonbreeding Adult)|European Starling
+Fox Sparrow (Sooty)|Fox Sparrow
+Dark-eyed Junco (Pink-sided)|Dark-eyed Junco
+Summer Tanager (Female)|Summer Tanager
+Orchard Oriole (Immature Male)|Orchard Oriole
+Yellow-rumped Warbler (Breeding Audubon's)|Yellow-rumped Warbler
+Purple Martin (Female/juvenile)|Purple Martin
+American Robin (Juvenile)|American Robin
+Phainopepla (Male)|Phainopepla
+Snow Bunting (Nonbreeding)|Snow Bunting
+Common Yellowthroat (Female/immature male)|Common Yellowthroat
+American Redstart (Female/juvenile)|American Redstart
+Magnolia Warbler (Female/immature male)|Magnolia Warbler
+Bay-breasted Warbler (Female, Nonbreeding male, Immature)|Bay-breasted Warbler
+Chestnut-sided Warbler (Female/immature male)|Chestnut-sided Warbler
+Blackpoll Warbler (Female/juvenile)|Blackpoll Warbler
+Black-throated Blue Warbler (Female/Immature male)|Black-throated Blue Warbler
+Lark Bunting (Female/Nonbreeding male)|Lark Bunting
+White-throated Sparrow (Tan-striped/immature)|White-throated Sparrow
+Harris's Sparrow (Immature)|Harris's Sparrow
+White-crowned Sparrow (Immature)|White-crowned Sparrow
+Golden-crowned Sparrow (Immature)|Golden-crowned Sparrow
+Dark-eyed Junco (White-winged)|Dark-eyed Junco
+Chipping Sparrow (Immature/nonbreeding adult)|Chipping Sparrow
+Scarlet Tanager (Female/Nonbreeding Male)|Scarlet Tanager
+Western Tanager (Female/Nonbreeding Male)|Western Tanager
+Northern Cardinal (Female/Juvenile)|Northern Cardinal
+Rose-breasted Grosbeak (Female/immature male)|Rose-breasted Grosbeak
+Black-headed Grosbeak (Female/immature male)|Black-headed Grosbeak
+Blue Grosbeak (Female/juvenile)|Blue Grosbeak
+Lazuli Bunting (Female/juvenile)|Lazuli Bunting
+Indigo Bunting (Female/juvenile)|Indigo Bunting
+Painted Bunting (Female/juvenile)|Painted Bunting
+Bobolink (Female/juvenile/nonbreeding male)|Bobolink
+Red-winged Blackbird (Female/juvenile)|Red-winged Blackbird
+Yellow-headed Blackbird (Female/Immature Male)|Yellow-headed Blackbird
+Brewer's Blackbird (Male)|Brewer's Blackbird
+Brown-headed Cowbird (Female/Juvenile)|Brown-headed Cowbird
+Hooded Oriole (Female/Immature male)|Hooded Oriole
+Bullock's Oriole (Female/Immature male)|Bullock's Oriole
+Baltimore Oriole (Female/Immature male)|Baltimore Oriole
+Pine Grosbeak (Female/juvenile)|Pine Grosbeak
+Purple Finch (Female/immature)|Purple Finch
+Cassin's Finch (Female/immature)|Cassin's Finch
+House Finch (Female/immature)|House Finch
+Red Crossbill (Female/juvenile)|Red Crossbill
+White-winged Crossbill (Female/juvenile)|White-winged Crossbill
+Lesser Goldfinch (Female/juvenile)|Lesser Goldfinch
+American Goldfinch (Female/Nonbreeding Male)|American Goldfinch
+Evening Grosbeak (Female/Juvenile)|Evening Grosbeak
+House Sparrow (Female/Juvenile)|House Sparrow
+Vermilion Flycatcher (Female, immature)|Vermilion Flycatcher
+European Starling (Juvenile)|European Starling
+Fox Sparrow (Thick-billed/Slate-colored)|Fox Sparrow
+Summer Tanager (Immature Male)|Summer Tanager
+Orchard Oriole (Female/Juvenile)|Orchard Oriole
+Yellow-rumped Warbler (Winter/juvenile Audubon's)|Yellow-rumped Warbler
+Dark-eyed Junco (Red-backed/Gray-headed)|Dark-eyed Junco

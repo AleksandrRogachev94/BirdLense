@@ -16,9 +16,10 @@ class AudioProcessor:
         self.lon = lon
         self.logger = logging.getLogger(__name__)
         self.analyzer = Analyzer()
+        self.species_list = SpeciesList()
 
     def get_regional_species(self):
-        return SpeciesList().return_list(lat=self.lat, lon=self.lon, date=datetime.now())
+        return self.species_list.return_list(lat=self.lat, lon=self.lon, date=datetime.now())
 
     def run(self, audio_path):
         self.logger.info(f'Processing audio...')
