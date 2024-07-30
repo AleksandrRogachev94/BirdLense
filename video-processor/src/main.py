@@ -42,12 +42,13 @@ def main():
                         help='Input source, camera/video file')
     args = parser.parse_args()
 
-    frame_processor = FrameProcessor(save_images=True)
     motion_detector = MotionDetector()
     decision_maker = DecisionMaker()
     video_source = CameraSource() if not args.input else VideoFileSource(args.input)
     audio_source = AudioSource()
     audio_processor = AudioProcessor()
+    frame_processor = FrameProcessor(
+        regional_species=audio_processor.get_regional_species(), save_images=True)
     api = API()
 
     while True:

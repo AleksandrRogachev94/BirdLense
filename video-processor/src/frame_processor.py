@@ -5,15 +5,22 @@ from ultralytics import YOLO
 
 
 class FrameProcessor:
-    def __init__(self, save_images=False):
+    def __init__(self, regional_species=None, save_images=False):
         self.save_images = save_images
         self.logger = logging.getLogger(__name__)
         self.reset()
-        self.logger.info('Loading models...')
+        self.logger.info('Loading model...')
         self.model = YOLO(
             "models/detection/nabirds_yolov8n_ncnn_model", task="detect")
         self.model.predict(np.zeros((640, 640, 3)))  # warm up with test frame
-        self.logger.info('Done loading models.')
+        self.logger.info('Done loading model.')
+        if regional_species:
+            # Filter used classes using substrings since .
+            self.classes = [id for id, label in self.model.names.items() if any(
+                reg_species in label for reg_species in regional_species)]
+            self.logger.info(f'Regional species: {regional_species}')
+            self.logger.info(
+                f'Filtered video classes: {[self.model.names[cls] for cls in self.classes]}')
 
     def run(self, img):
         if img is None:
@@ -23,7 +30,7 @@ class FrameProcessor:
         # Detect
         st = time.time()
         results = self.model.track(
-            img, persist=True, conf=0.2)
+            img, persist=True, conf=0.01, classes=self.classes)
         if self.save_images:
             results[0].save(f'data/test/frame{str(self.cnt)}.jpg')
         if results[0].boxes.id is None:
