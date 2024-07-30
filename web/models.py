@@ -44,12 +44,18 @@ video_bird_food_association = Table(
 class Species(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(unique=True, nullable=False)
+    parent_id = mapped_column(Integer, ForeignKey("species.id"))
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False)
     photo: Mapped[str] = mapped_column(String(), nullable=True)
     description: Mapped[str] = mapped_column(String(), nullable=True)
+    active: Mapped[bool] = mapped_column(
+        nullable=False, default=False)
     video_species: Mapped[List["VideoSpecies"]
                           ] = relationship(back_populates="species")
+    children = relationship("Species", back_populates="parent")
+    parent = relationship(
+        "Species", back_populates="children", remote_side=[id])
 
 
 class BirdFood(db.Model):

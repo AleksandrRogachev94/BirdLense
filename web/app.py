@@ -1,8 +1,10 @@
-from routes import register_routes
-from models import db
 from flask import Flask
 import logging
 from logging.handlers import RotatingFileHandler
+from routes import register_routes
+from models import db
+from seed.seed import seed
+
 
 # Configure the root logger
 logging.basicConfig(
@@ -26,6 +28,7 @@ def create_app():
     db.init_app(app)
     with app.app_context():
         db.create_all()
+        seed()
 
     register_routes(app)
 
