@@ -8,7 +8,7 @@ class API():
         self.logger = logging.getLogger(__name__)
 
     def notify_species(self, species):
-        self.logger.info('Notifying about "{species}" presence')
+        self.logger.info(f'Notifying about "{species}" presence')
         requests.post(
             f"{os.environ['API_URL_BASE']}/notify", json={'detection': species})
 

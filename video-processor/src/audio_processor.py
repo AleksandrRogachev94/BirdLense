@@ -19,7 +19,9 @@ class AudioProcessor:
         self.species_list = SpeciesList()
 
     def get_regional_species(self):
-        return self.species_list.return_list(lat=self.lat, lon=self.lon, date=datetime.now())
+        species = self.species_list.return_list(
+            lat=self.lat, lon=self.lon, date=datetime.now())
+        return [s['common_name'] for s in species]
 
     def run(self, audio_path):
         self.logger.info(f'Processing audio...')
