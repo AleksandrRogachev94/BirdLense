@@ -72,8 +72,6 @@ class Video(db.Model):
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False)
     video_processor_version: Mapped[str] = mapped_column(nullable=False)
-    audio_processed: Mapped[bool] = mapped_column(
-        nullable=False, default=False)
     start_time: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), nullable=False)
     end_time: Mapped[datetime.datetime] = mapped_column(
