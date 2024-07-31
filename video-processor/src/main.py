@@ -54,7 +54,6 @@ def main():
     api.set_active_species(regional_species)
 
     while True:
-        time.sleep(10)
         if not motion_detector.detect():
             continue
 
@@ -65,10 +64,9 @@ def main():
 
         video_source.start_recording(video_output)
         audio_source.start_recording(audio_output)
-        time.sleep(1)
 
         logging.info(
-            f'Motion detected. Processing started. Reecording video to "{video_output}" and audio to "{audio_output}"')
+            f'Motion detected. Processing started. Recording video to "{video_output}" and audio to "{audio_output}"')
         start_time = datetime.now(timezone.utc)
 
         try:
