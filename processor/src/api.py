@@ -15,7 +15,7 @@ class API():
     def create_video(self, species, start_time, end_time, video_path, audio_path):
         self.logger.info(f'Creating video record')
         requests.post(f"{os.environ['API_URL_BASE']}/videos", json={
-            'video_processor_version': '1',
+            'processor_version': '1',
             'species': [{**sp, 'source': 'video'} for sp in species],
             'start_time': start_time.isoformat(),
             'end_time': end_time.isoformat(),

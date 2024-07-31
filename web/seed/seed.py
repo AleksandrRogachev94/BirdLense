@@ -24,4 +24,4 @@ def seed():
         tree = build_hierarchy_tree()
         dfs_traverse_and_insert(tree)
         db.session.commit()
-        logging.info('Seeding complete...')
+        logging.info('Seeding complete.')

@@ -1,11 +1,11 @@
 services:
-  video-processor:
+  processor:
     build:
-      context: ./video-processor
+      context: ./processor
     volumes:
       - /dev/shm:/dev/shm # used by audio recording
       - /run/udev:/run/udev:ro
-      - ./video-processor:/app
+      - ./processor:/app
       - ./app_config:/app/src/app_config
       - ./data:/app/data
     devices:
