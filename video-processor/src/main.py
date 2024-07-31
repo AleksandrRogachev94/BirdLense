@@ -47,9 +47,11 @@ def main():
     video_source = CameraSource() if not args.input else VideoFileSource(args.input)
     audio_source = AudioSource()
     audio_processor = AudioProcessor()
+    regional_species = audio_processor.get_regional_species()
     frame_processor = FrameProcessor(
-        regional_species=audio_processor.get_regional_species(), save_images=True)
+        regional_species=regional_species, save_images=True)
     api = API()
+    api.set_active_species(regional_species)
 
     while True:
         time.sleep(10)

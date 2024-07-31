@@ -61,9 +61,7 @@ def register_routes(app):
 
             species = Species.query.filter_by(name=species_name).first()
             if not species:
-                species = Species(name=species_name)
-                db.session.add(species)
-                db.session.flush()  # Ensure the species.id is available
+                return {'error': f'Unknown species "{species_name}"'}, 400
 
             video_species = VideoSpecies(
                 species_id=species.id,
@@ -82,6 +80,40 @@ def register_routes(app):
         db.session.commit()
 
         return {'message': 'Video and associated data inserted successfully.'}, 201
+
+    @app.route('/api/species/active', methods=['PUT'])
+    def set_active_species():
+        active_names = request.json
+
+        # Step 1: Mark all species as inactive
+        db.session.query(Species).update({'active': False})
+
+        def activate_species_and_descendants(species_id):
+            species = db.session.query(
+                Species).filter_by(id=species_id).first()
+            if species:
+                species.active = True
+                # Recursively update all descendants to active
+                children = db.session.query(Species).filter_by(
+                    parent_id=species_id).all()
+                for child in children:
+                    activate_species_and_descendants(child.id)
+
+        for name in active_names:
+            # Step 2: Find or create the species
+            species = db.session.query(Species).filter_by(name=name).first()
+            if not species:
+                # Create the species if it does not exist.
+                species = Species(name=name, active=True)
+                db.session.add(species)
+            else:
+                # Ensure this species and its descendants are marked as active
+                activate_species_and_descendants(species.id)
+
+        # Commit all changes at the end
+        db.session.commit()
+
+        return {"message": "success"}, 200
 
     @app.route('/api/videos/<int:video_id>', methods=['GET'])
     def get_video_details(video_id):
