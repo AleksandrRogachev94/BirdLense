@@ -14,6 +14,7 @@ from sources.audio_source import AudioSource
 from sources.camera_source import CameraSource
 from sources.video_file_source import VideoFileSource
 from audio_processor import AudioProcessor
+from app_config.app_config import app_config
 
 # Configure the root logger
 logging.basicConfig(
@@ -42,17 +43,24 @@ def main():
                         help='Input source, camera/video file')
     args = parser.parse_args()
 
+    # Instantiate all helper classes
     motion_detector = MotionDetector()
-    decision_maker = DecisionMaker()
-    video_source = CameraSource() if not args.input else VideoFileSource(args.input)
+    decision_maker = DecisionMaker(max_record_seconds=app_config.get(
+        'processor.max_record_seconds'), max_inactive_seconds=app_config.get('processor.max_inactive_seconds'))
+    main_size = (app_config.get('processor.video_width'),
+                 app_config.get('processor.video_height'))
+    video_source = CameraSource(main_size=main_size) if not args.input else VideoFileSource(
+        args.input, main_size=main_size)
     audio_source = AudioSource()
-    audio_processor = AudioProcessor()
+    audio_processor = AudioProcessor(lat=app_config.get(
+        'secrets.latitude'), lon=app_config.get('secrets.longitude'))
     regional_species = audio_processor.get_regional_species()
     frame_processor = FrameProcessor(
-        regional_species=regional_species, save_images=True)
+        regional_species=regional_species, tracker=app_config.get('processor.tracker'), save_images=app_config.get('processor.save_images'))
     api = API()
     api.set_active_species(regional_species)
 
+    # Main motion detection loop
     while True:
         if not motion_detector.detect():
             continue
@@ -69,6 +77,7 @@ def main():
             f'Motion detected. Processing started. Recording video to "{video_output}" and audio to "{audio_output}"')
         start_time = datetime.now(timezone.utc)
 
+        # Video processing loop
         try:
             frame_processor.reset()
             decision_maker.reset()
@@ -110,6 +119,7 @@ def main():
                 api.create_video(detections, start_time,
                                  end_time, video_output, audio_output)
             else:
+                # no detections, delete folder and do nothing
                 shutil.rmtree(output_path)
         except Exception as e:
             logging.error(e)

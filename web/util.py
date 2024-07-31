@@ -1,13 +1,13 @@
-import os
 import requests
 import time
+from app_config.app_config import app_config
 
 api_url = f'https://api.openweathermap.org/data/2.5/weather'
 
 default_params = {
-    'lat': os.environ['LATITUDE'],
-    'lon': os.environ['LONGITUDE'],
-    'appid': os.environ['OPENWEATHERMAP_KEY'],
+    'lat': app_config.get('secrets.latitude'),
+    'lon': app_config.get('secrets.longitude'),
+    'appid': app_config.get('secrets.openweather_api_key'),
     'units': 'metric'
 }
 

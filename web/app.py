@@ -4,7 +4,7 @@ from logging.handlers import RotatingFileHandler
 from routes import register_routes
 from models import db
 from seed.seed import seed
-
+from app_config.app_config import app_config
 
 # Configure the root logger
 logging.basicConfig(
@@ -37,4 +37,5 @@ def create_app():
 
 if __name__ == "__main__":
     app = create_app()
-    app.run(debug=True)
+    app.run(host=app_config.get('web.host'),
+            port=app_config.get('web.port'), debug=True)
