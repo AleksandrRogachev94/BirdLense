@@ -6,12 +6,9 @@ from birdnetlib import Recording
 from birdnetlib.analyzer import Analyzer
 from birdnetlib.species import SpeciesList
 
-lat = os.environ['LATITUDE']
-lon = os.environ['LONGITUDE']
-
 
 class AudioProcessor:
-    def __init__(self, lat=lat, lon=lon):
+    def __init__(self, lat, lon):
         self.lat = lat
         self.lon = lon
         self.logger = logging.getLogger(__name__)

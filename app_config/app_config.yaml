@@ -1,0 +1,22 @@
+# Web server settings
+web:
+  host: "0.0.0.0"
+  port: 8080
+
+# Video/Audio processor settings
+processor:
+  video_width: 1280
+  video_height: 720
+  # frame_rate: 30
+  tracker: "bytetrack.yaml"
+  max_record_seconds: 60 # maximum length of video/audio recording
+  max_inactive_seconds: 10 # maximum number of seconds with no activity before stopping recording
+  save_images: true
+  
+
+
+# Add your secrets and other configurations here
+secrets:
+  openweather_api_key: "YOUR_API_KEY_HERE"
+  latitude: "YOUR_LATITUDE_HERE"
+  longitude: "YOUR_LONGITUDE_HERE"

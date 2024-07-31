@@ -1,37 +1,35 @@
 import time
 from collections import Counter
 
-ROUGH_FPS = 1  # Approximate FPS of frame processing. Adjust based on hardware
-MIN_TRACK_SECONDS = 0  # Minimum number seconds for a track to be included in the results
-MIN_TRACK_FRAMES = ROUGH_FPS * MIN_TRACK_SECONDS
-STOP_RECORDING_SECONDS = 15  # Number of seconds required to decide to stop recording
-STOP_RECORDING_FRAMES = ROUGH_FPS * STOP_RECORDING_SECONDS
-
 
 class DecisionMaker():
-    def __init__(self):
+    def __init__(self,  max_record_seconds=60, max_inactive_seconds=10):
+        self.max_record_seconds = max_record_seconds
+        self.max_inactive_seconds = max_inactive_seconds
         self.reset()
 
-    def reset(self, max_seconds=60):
-        self.no_detect_count = 0
+    def reset(self):
         self.stop_recording_decided = False
         self.species_decided = False
-        self.max_seconds = max_seconds
         self.start_time = time.time()
+        self.inactive_start_time = None
 
     def update_has_detections(self, has_detections):
         if not has_detections:
-            self.no_detect_count += 1
+            if self.inactive_start_time is None:
+                self.inactive_start_time = time.time()
         else:
-            self.no_detect_count = 0
+            self.inactive_start_time = None
 
     def decide_stop_recording(self):
         if self.stop_recording_decided:
             # already decided once
             return False
-        reached_max_seconds = (
-            time.time() - self.start_time) >= self.max_seconds
-        decision = self.no_detect_count >= STOP_RECORDING_FRAMES or reached_max_seconds
+        reached_max_record_seconds = (
+            time.time() - self.start_time) >= self.max_record_seconds
+        reached_max_inactive_seconds = self.inactive_start_time and (
+            time.time() - self.inactive_start_time) >= self.max_inactive_seconds
+        decision = reached_max_inactive_seconds or reached_max_record_seconds
         self.stop_recording_decided = decision
         return decision
 
@@ -48,10 +46,6 @@ class DecisionMaker():
     def get_results(self, tracks):
         result = []
         for track in tracks.values():
-            # Reduce false positives
-            if len(track['preds']) < MIN_TRACK_FRAMES:
-                continue
-
             # Find most common prediction for each track
             pred_counts = Counter(track['preds'])
             species_name, count = pred_counts.most_common(1)[0]
