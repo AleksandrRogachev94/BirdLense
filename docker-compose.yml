@@ -16,7 +16,7 @@ services:
     environment:
       - API_URL_BASE=http://web:8000/api
       - LD_LIBRARY_PATH=/opt/vc/lib
-    command: python3 src/main.py data/samples/videos/video4.mp4
+    command: python3 src/main.py data/samples/videos/cardinal.mp4
     # command: python3 src/main.py
     privileged: true
     depends_on:
