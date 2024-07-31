@@ -23,10 +23,6 @@ start:
 
 start-web:
 	@sudo docker compose -f $(DOCKER_COMPOSE_FILE) up web
-start-video-processor:
-	@sudo docker compose -f $(DOCKER_COMPOSE_FILE) up web video-processor
-start-audio-processor:
-	@sudo docker compose -f $(DOCKER_COMPOSE_FILE) up web audio-processor
 
 # Stop the Docker Compose services
 stop:

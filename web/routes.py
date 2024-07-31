@@ -29,7 +29,7 @@ def register_routes(app):
 
         # Extract data from JSON request
         video_data = {
-            'video_processor_version': data['video_processor_version'],
+            'processor_version': data['processor_version'],
             'start_time': start_time,
             'end_time': end_time,
             'video_path': data['video_path'],
@@ -126,7 +126,7 @@ def register_routes(app):
         video_json = {
             'id': video.id,
             'created_at': video.created_at.isoformat(),
-            'video_processor_version': video.video_processor_version,
+            'processor_version': video.processor_version,
             'start_time': video.start_time.isoformat(),
             'end_time': video.end_time.isoformat(),
             'video_path': video.video_path,
