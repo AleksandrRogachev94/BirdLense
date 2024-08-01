@@ -1,40 +1,24 @@
-version: '3'
 services:
-  video-processor:
+  processor:
     build:
-      context: ./video-processor
-    runtime: nvidia
+      context: ./processor
     volumes:
-      - /tmp/argus_socket:/tmp/argus_socket
-      - /etc/enctune.conf:/etc/enctune.conf
-      - /etc/nv_tegra_release:/etc/nv_tegra_release
-      - /tmp/nv_jetson_model:/tmp/nv_jetson_model
-      - /var/run/dbus:/var/run/dbus
-      - /var/run/avahi-daemon/socket:/var/run/avahi-daemon/socket
       - /dev/shm:/dev/shm # used by audio recording
-      - ./video-processor:/app
+      - /run/udev:/run/udev:ro
+      - ./processor:/app
+      - ./app_config:/app/src/app_config
       - ./data:/app/data
     devices:
       - /dev/video0 # video
       - /dev/snd # audio
       - /dev/bus/usb # audio
-    env_file: ".env"
+    ipc: host
     environment:
       - API_URL_BASE=http://web:8000/api
-    command: python3 src/main.py data/samples/videos/video3.mp4
-    depends_on:
-      - web
-
-  audio-processor:
-    build:
-      context: ./audio-processor
-    volumes:
-      - ./audio-processor:/app
-      - ./data:/app/data
-    env_file: ".env"
-    environment:
-      - API_URL_BASE=http://web:8000/api
-    command: python3 src/main.py
+      - LD_LIBRARY_PATH=/opt/vc/lib
+    command: python3 src/main.py data/samples/videos/cardinal.mp4
+    # command: python3 src/main.py
+    privileged: true
     depends_on:
       - web
 
@@ -46,8 +30,8 @@ services:
     stop_signal: SIGINT
     volumes:
       - ./web:/app
+      - ./app_config:/app/app_config
       - ./data:/app/data
-    env_file: ".env"
     ports:
       - '8000:8000'
       - '8554:8554'
