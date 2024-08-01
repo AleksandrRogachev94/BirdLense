@@ -1,0 +1,10 @@
+pyyaml==6.0.1
+lapx==0.5.9.post1
+ncnn==1.0.20240410
+
+# for audio processing
+librosa==0.10.2.post1
+resampy==0.4.3
+tflite-runtime==2.14.0
+numpy==1.26.4
+birdnetlib==0.17.2
