@@ -23,6 +23,6 @@ for child_id, parent_id in relationships:
       new_relationships.append((child_name, parent_name))
 
 # Step 4: Write the new relationships to a new hierarchy.txt file
-with open('hierarchy_labels.txt', 'w') as f:
+with open('hierarchy_names.txt', 'w') as f:
     for child_name, parent_name in new_relationships:
         f.write(f"{child_name}|{parent_name}\n")

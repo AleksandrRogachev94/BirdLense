@@ -1,6 +1,6 @@
 # Birds Detection Dataset Scripts
 
-The base object detection dataset that was used was [NABirds](https://dl.allaboutbirds.org/nabirds). This folder contain various scripts to convert it to YOLO format, clean it up for better training results, and augment it with additional classes such "squirrel". I added these files in the repo for future reference in case I need to improve the model further.
+[NABirds](https://dl.allaboutbirds.org/nabirds) was used as the base dataset for object detection model training. This folder contain various scripts to convert it to YOLO format, clean it up for better training results, and augment it with additional classes such "squirrel". I added these files in the repo for future reference in case I need to further improve the model.
 
 ## convert_nabirds_yolo.py
 
