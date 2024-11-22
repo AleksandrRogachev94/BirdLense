@@ -1,10 +1,17 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
+import {
+  Container,
+  CssBaseline,
+  ThemeProvider,
+  createTheme,
+} from '@mui/material';
 import { Navigation } from './components/Navigation';
 import { HomePage } from './pages/HomePage';
 import { FoodManagement } from './pages/FoodManagement';
 import { BirdDirectory } from './pages/BirdDirectory';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 const theme = createTheme({
   palette: {
@@ -18,20 +25,27 @@ const theme = createTheme({
 });
 
 function App() {
+  const queryClient = new QueryClient();
+
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <BrowserRouter>
-        <Navigation />
-        <main>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/food" element={<FoodManagement />} />
-            <Route path="/birds" element={<BirdDirectory />} />
-          </Routes>
-        </main>
-      </BrowserRouter>
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <BrowserRouter>
+          <Navigation />
+          <main>
+            <Container>
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/food" element={<FoodManagement />} />
+                <Route path="/birds" element={<BirdDirectory />} />
+              </Routes>
+            </Container>
+          </main>
+        </BrowserRouter>
+        <ReactQueryDevtools initialIsOpen={false} />
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 }
 
