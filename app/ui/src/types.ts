@@ -1,12 +1,22 @@
 export interface BirdSighting {
   id: string;
-  species: string;
-  timestamp: string;
-  duration: number;
-  imageUrl: string;
+  video_id: string;
+  start_time: string;
+  end_time: string;
   confidence: number;
-  feedAmount?: number;
-  foodItemId?: string;
+  source: string;
+  weather: {
+    temp: number;
+    clouds: number;
+  };
+  species: {
+    id: string;
+    name: string;
+  };
+  food: {
+    id: string;
+    name: string;
+  };
 }
 
 export interface TimelineGroup {
