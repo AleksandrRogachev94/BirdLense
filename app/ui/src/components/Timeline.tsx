@@ -42,6 +42,11 @@ export function Timeline({ sightings }: { sightings: BirdSighting[] }) {
                     </Typography>
                     <Box display="flex" gap={1} mt={1}>
                       <Chip
+                        label={`${(sighting.confidence * 100).toFixed(1)}%`}
+                        size="small"
+                        color="success"
+                      />
+                      <Chip
                         icon={<AccessTime />}
                         label={`${(new Date(sighting.end_time).getTime() - new Date(sighting.start_time).getTime()) / 1000}s`}
                         size="small"
@@ -54,9 +59,11 @@ export function Timeline({ sightings }: { sightings: BirdSighting[] }) {
                         />
                       )}
                       <Chip
-                        label={`${(sighting.confidence * 100).toFixed(1)}%`}
+                        label={`${sighting.source}`}
                         size="small"
-                        color="success"
+                        color={
+                          sighting.source === 'video' ? 'primary' : 'secondary'
+                        }
                       />
                     </Box>
                   </Box>
