@@ -71,7 +71,7 @@ export function Navigation() {
   );
 
   return (
-    <AppBar position="static" color="primary">
+    <AppBar position="static" color="primary" sx={{ mb: 4 }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <EmojiNatureIcon

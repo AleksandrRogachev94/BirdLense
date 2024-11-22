@@ -15,20 +15,17 @@ import {
   Chip,
   Box,
 } from '@mui/material';
-import { Clock, Leaf } from 'lucide-react';
+import AccessTime from '@mui/icons-material/AccessTime';
+import Thermostat from '@mui/icons-material/Thermostat';
 import { BirdSighting } from '../types';
 
-interface TimelineProps {
-  sightings: BirdSighting[];
-}
-
-export function Timeline({ sightings }: TimelineProps) {
+export function Timeline({ sightings }: { sightings: BirdSighting[] }) {
   return (
     <MuiTimeline position="alternate">
       {sightings.map((sighting) => (
-        <TimelineItem key={sighting.id}>
+        <TimelineItem key={sighting.video_id}>
           <TimelineOppositeContent color="text.secondary">
-            {new Date(sighting.timestamp).toLocaleTimeString()}
+            {new Date(sighting.start_time).toLocaleTimeString()}
           </TimelineOppositeContent>
           <TimelineSeparator>
             <TimelineDot color="primary" />
@@ -38,22 +35,21 @@ export function Timeline({ sightings }: TimelineProps) {
             <Card>
               <CardContent>
                 <Box display="flex" alignItems="center" gap={2}>
-                  <Avatar
-                    src={sighting.imageUrl}
-                    sx={{ width: 56, height: 56 }}
-                  />
+                  <Avatar src={''} sx={{ width: 56, height: 56 }} />
                   <Box>
-                    <Typography variant="h6">{sighting.species}</Typography>
+                    <Typography variant="h6">
+                      {sighting.species.name}
+                    </Typography>
                     <Box display="flex" gap={1} mt={1}>
                       <Chip
-                        icon={<Clock className="w-4 h-4" />}
-                        label={`${sighting.duration}s`}
+                        icon={<AccessTime />}
+                        label={`${(new Date(sighting.end_time).getTime() - new Date(sighting.start_time).getTime()) / 1000}s`}
                         size="small"
                       />
-                      {sighting.feedAmount && (
+                      {sighting.weather && (
                         <Chip
-                          icon={<Leaf className="w-4 h-4" />}
-                          label={`${sighting.feedAmount}g`}
+                          icon={<Thermostat />}
+                          label={`${sighting.weather.temp}°C`}
                           size="small"
                         />
                       )}
