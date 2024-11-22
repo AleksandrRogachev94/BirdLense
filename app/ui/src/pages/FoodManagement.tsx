@@ -1,9 +1,27 @@
 import React, { useState } from 'react';
-import { 
-  Container, Paper, Typography, Table, TableBody, TableCell, TableContainer, 
-  TableHead, TableRow, Button, Chip, IconButton, Dialog, DialogTitle, 
-  DialogContent, DialogActions, TextField, Select, MenuItem, FormControl, 
-  InputLabel, Box
+import {
+  Container,
+  Paper,
+  Typography,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Button,
+  Chip,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Box,
 } from '@mui/material';
 import { Edit, Plus, Trash } from 'lucide-react';
 import { FoodItem } from '../types';
@@ -16,7 +34,7 @@ const mockFoodItems: FoodItem[] = [
     quantity: 1000,
     unit: 'g',
     lastRefillDate: '2024-03-10T08:30:00Z',
-    preferredBy: ['Northern Cardinal', 'Blue Jay', 'American Goldfinch']
+    preferredBy: ['Northern Cardinal', 'Blue Jay', 'American Goldfinch'],
   },
   {
     id: '2',
@@ -25,8 +43,8 @@ const mockFoodItems: FoodItem[] = [
     quantity: 500,
     unit: 'g',
     lastRefillDate: '2024-03-09T14:20:00Z',
-    preferredBy: ['Woodpecker', 'Chickadee']
-  }
+    preferredBy: ['Woodpecker', 'Chickadee'],
+  },
 ];
 
 export function FoodManagement() {
@@ -46,21 +64,31 @@ export function FoodManagement() {
 
   const handleSave = (item: FoodItem) => {
     if (selectedItem) {
-      setFoodItems(items => items.map(i => i.id === item.id ? item : i));
+      setFoodItems((items) => items.map((i) => (i.id === item.id ? item : i)));
     } else {
-      setFoodItems(items => [...items, { ...item, id: Date.now().toString() }]);
+      setFoodItems((items) => [
+        ...items,
+        { ...item, id: Date.now().toString() },
+      ]);
     }
     handleClose();
   };
 
   const handleDelete = (id: string) => {
-    setFoodItems(items => items.filter(item => item.id !== id));
+    setFoodItems((items) => items.filter((item) => item.id !== id));
   };
 
   return (
     <Container maxWidth="lg">
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
-        <Typography variant="h4" component="h1">Food Management</Typography>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={4}
+      >
+        <Typography variant="h4" component="h1">
+          Food Management
+        </Typography>
         <Button
           variant="contained"
           color="primary"
@@ -90,8 +118,12 @@ export function FoodManagement() {
                 <TableCell>
                   <Chip label={item.type} color="primary" size="small" />
                 </TableCell>
-                <TableCell>{item.quantity} {item.unit}</TableCell>
-                <TableCell>{new Date(item.lastRefillDate).toLocaleDateString()}</TableCell>
+                <TableCell>
+                  {item.quantity} {item.unit}
+                </TableCell>
+                <TableCell>
+                  {new Date(item.lastRefillDate).toLocaleDateString()}
+                </TableCell>
                 <TableCell>
                   <Box display="flex" gap={1} flexWrap="wrap">
                     {item.preferredBy.map((bird) => (
@@ -103,7 +135,11 @@ export function FoodManagement() {
                   <IconButton onClick={() => handleOpen(item)} size="small">
                     <Edit className="w-4 h-4" />
                   </IconButton>
-                  <IconButton onClick={() => handleDelete(item.id)} size="small" color="error">
+                  <IconButton
+                    onClick={() => handleDelete(item.id)}
+                    size="small"
+                    color="error"
+                  >
                     <Trash className="w-4 h-4" />
                   </IconButton>
                 </TableCell>
@@ -138,7 +174,7 @@ function FoodItemDialog({ open, onClose, onSave, item }: FoodItemDialogProps) {
       quantity: 0,
       unit: 'g',
       preferredBy: [],
-    }
+    },
   );
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -159,16 +195,23 @@ function FoodItemDialog({ open, onClose, onSave, item }: FoodItemDialogProps) {
             <TextField
               label="Name"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
               fullWidth
               required
             />
-            
+
             <FormControl fullWidth required>
               <InputLabel>Type</InputLabel>
               <Select
                 value={formData.type}
-                onChange={(e) => setFormData({ ...formData, type: e.target.value as FoodItem['type'] })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    type: e.target.value as FoodItem['type'],
+                  })
+                }
                 label="Type"
               >
                 <MenuItem value="seed">Seed</MenuItem>
@@ -184,16 +227,23 @@ function FoodItemDialog({ open, onClose, onSave, item }: FoodItemDialogProps) {
                 label="Quantity"
                 type="number"
                 value={formData.quantity}
-                onChange={(e) => setFormData({ ...formData, quantity: Number(e.target.value) })}
+                onChange={(e) =>
+                  setFormData({ ...formData, quantity: Number(e.target.value) })
+                }
                 required
                 fullWidth
               />
-              
+
               <FormControl fullWidth required>
                 <InputLabel>Unit</InputLabel>
                 <Select
                   value={formData.unit}
-                  onChange={(e) => setFormData({ ...formData, unit: e.target.value as FoodItem['unit'] })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      unit: e.target.value as FoodItem['unit'],
+                    })
+                  }
                   label="Unit"
                 >
                   <MenuItem value="g">Grams</MenuItem>

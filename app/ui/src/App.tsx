@@ -22,14 +22,14 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <BrowserRouter>
-          <Navigation />
-          <main>
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/food" element={<FoodManagement />} />
-              <Route path="/birds" element={<BirdDirectory />} />
-            </Routes>
-          </main>
+        <Navigation />
+        <main>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/food" element={<FoodManagement />} />
+            <Route path="/birds" element={<BirdDirectory />} />
+          </Routes>
+        </main>
       </BrowserRouter>
     </ThemeProvider>
   );
