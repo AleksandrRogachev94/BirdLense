@@ -1,7 +1,21 @@
 import React from 'react';
-import { Timeline as MuiTimeline, TimelineItem, TimelineSeparator, TimelineConnector, 
-  TimelineContent, TimelineDot, TimelineOppositeContent } from '@mui/lab';
-import { Card, CardContent, Typography, Avatar, Chip, Box } from '@mui/material';
+import {
+  Timeline as MuiTimeline,
+  TimelineItem,
+  TimelineSeparator,
+  TimelineConnector,
+  TimelineContent,
+  TimelineDot,
+  TimelineOppositeContent,
+} from '@mui/lab';
+import {
+  Card,
+  CardContent,
+  Typography,
+  Avatar,
+  Chip,
+  Box,
+} from '@mui/material';
 import { Clock, Leaf } from 'lucide-react';
 import { BirdSighting } from '../types';
 

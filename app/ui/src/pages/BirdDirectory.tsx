@@ -1,7 +1,17 @@
 import React, { useState } from 'react';
-import { 
-  Container, Grid, Card, CardContent, CardMedia, Typography, 
-  Chip, TextField, InputAdornment, Box, IconButton, Tooltip
+import {
+  Container,
+  Grid,
+  Card,
+  CardContent,
+  CardMedia,
+  Typography,
+  Chip,
+  TextField,
+  InputAdornment,
+  Box,
+  IconButton,
+  Tooltip,
 } from '@mui/material';
 import { Search, Info, Heart, Leaf } from 'lucide-react';
 import { BirdTaxonomy } from '../types';
@@ -13,10 +23,16 @@ const mockBirds: BirdTaxonomy[] = [
     scientificName: 'Cardinalis cardinalis',
     family: 'Cardinalidae',
     order: 'Passeriformes',
-    imageUrl: 'https://images.unsplash.com/photo-1549608276-5786777e6587?auto=format&fit=crop&q=80',
-    preferredFood: ['Black Oil Sunflower Seeds', 'Safflower Seeds', 'Cracked Corn'],
-    description: 'A distinctive, crested red bird with a black face mask and large orange-red conical bill. Females are more brownish but retain the red accents.',
-    isCommonVisitor: true
+    imageUrl:
+      'https://images.unsplash.com/photo-1549608276-5786777e6587?auto=format&fit=crop&q=80',
+    preferredFood: [
+      'Black Oil Sunflower Seeds',
+      'Safflower Seeds',
+      'Cracked Corn',
+    ],
+    description:
+      'A distinctive, crested red bird with a black face mask and large orange-red conical bill. Females are more brownish but retain the red accents.',
+    isCommonVisitor: true,
   },
   {
     id: '2',
@@ -24,10 +40,12 @@ const mockBirds: BirdTaxonomy[] = [
     scientificName: 'Cyanocitta cristata',
     family: 'Corvidae',
     order: 'Passeriformes',
-    imageUrl: 'https://images.unsplash.com/photo-1444464666168-49d633b86797?auto=format&fit=crop&q=80',
+    imageUrl:
+      'https://images.unsplash.com/photo-1444464666168-49d633b86797?auto=format&fit=crop&q=80',
     preferredFood: ['Peanuts', 'Sunflower Seeds', 'Acorns'],
-    description: 'Large, blue-crested songbird with complex blue, white, and black plumage. Known for their intelligence and varied vocalizations.',
-    isCommonVisitor: true
+    description:
+      'Large, blue-crested songbird with complex blue, white, and black plumage. Known for their intelligence and varied vocalizations.',
+    isCommonVisitor: true,
   },
   {
     id: '3',
@@ -35,20 +53,23 @@ const mockBirds: BirdTaxonomy[] = [
     scientificName: 'Spinus tristis',
     family: 'Fringillidae',
     order: 'Passeriformes',
-    imageUrl: 'https://images.unsplash.com/photo-1552727451-6f5671e14d83?auto=format&fit=crop&q=80',
+    imageUrl:
+      'https://images.unsplash.com/photo-1552727451-6f5671e14d83?auto=format&fit=crop&q=80',
     preferredFood: ['Nyjer Seeds', 'Sunflower Hearts', 'Thistle'],
-    description: 'Small finch with bright yellow breeding plumage in males. Females and winter birds are more dull olive-brown.',
-    isCommonVisitor: true
-  }
+    description:
+      'Small finch with bright yellow breeding plumage in males. Females and winter birds are more dull olive-brown.',
+    isCommonVisitor: true,
+  },
 ];
 
 export function BirdDirectory() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedBird, setSelectedBird] = useState<BirdTaxonomy | null>(null);
+  // const [selectedBird, setSelectedBird] = useState<BirdTaxonomy | null>(null);
 
-  const filteredBirds = mockBirds.filter(bird => 
-    bird.commonName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    bird.scientificName.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredBirds = mockBirds.filter(
+    (bird) =>
+      bird.commonName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      bird.scientificName.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   return (
@@ -85,19 +106,27 @@ export function BirdDirectory() {
                 className="h-48 object-cover"
               />
               <CardContent className="flex-grow">
-                <Box display="flex" justifyContent="space-between" alignItems="start">
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="start"
+                >
                   <div>
                     <Typography variant="h6" gutterBottom>
                       {bird.commonName}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      gutterBottom
+                    >
                       <em>{bird.scientificName}</em>
                     </Typography>
                   </div>
                   <Tooltip title="View Details">
-                    <IconButton 
-                      size="small" 
-                      onClick={() => setSelectedBird(bird)}
+                    <IconButton
+                      size="small"
+                      // onClick={() => setSelectedBird(bird)}
                       className="mt-1"
                     >
                       <Info className="w-5 h-5" />
@@ -106,9 +135,9 @@ export function BirdDirectory() {
                 </Box>
 
                 <Box display="flex" gap={1} mb={2}>
-                  <Chip 
+                  <Chip
                     icon={<Heart className="w-4 h-4" />}
-                    label={bird.isCommonVisitor ? 'Common' : 'Rare'} 
+                    label={bird.isCommonVisitor ? 'Common' : 'Rare'}
                     size="small"
                     color={bird.isCommonVisitor ? 'success' : 'default'}
                   />
@@ -135,7 +164,7 @@ export function BirdDirectory() {
         ))}
       </Grid>
 
-      {selectedBird && (
+      {/* {selectedBird && (
         <Dialog
           open={Boolean(selectedBird)}
           onClose={() => setSelectedBird(null)}
@@ -187,7 +216,7 @@ export function BirdDirectory() {
             <Button onClick={() => setSelectedBird(null)}>Close</Button>
           </DialogActions>
         </Dialog>
-      )}
+      )} */}
     </Container>
   );
 }
