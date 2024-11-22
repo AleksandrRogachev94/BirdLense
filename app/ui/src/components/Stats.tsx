@@ -1,46 +1,77 @@
-import { Bird, Clock, Leaf } from 'lucide-react';
+import Grid from '@mui/material/Grid2';
 import { BirdSighting } from '../types';
+import { Box, Card, CardContent, Typography } from '@mui/material';
+import { AccessTime, Pets } from '@mui/icons-material';
 
-interface StatsProps {
-  sightings: BirdSighting[];
-}
+const calculateSpeciesSpotted = (data: BirdSighting[]) => {
+  const speciesSet = new Set<string>();
+  data.forEach((entry) => {
+    speciesSet.add(entry.species.id);
+  });
+  return speciesSet.size;
+};
 
-export function Stats({ sightings }: StatsProps) {
-  const uniqueSpecies = new Set(sightings.map((s) => s.species)).size;
-  const totalDuration = sightings.reduce((sum, s) => sum + s.duration, 0);
-  const totalFeed = sightings.reduce((sum, s) => sum + (s.feedAmount || 0), 0);
+const calculateTotalDurationMin = (data: BirdSighting[]) => {
+  let totalDuration = 0;
+  data.forEach((entry) => {
+    const start = new Date(entry.start_time).getTime();
+    const end = new Date(entry.end_time).getTime();
+    totalDuration += (end - start) / 1000;
+  });
+  return Math.round(totalDuration / 60);
+};
+
+export const Stats = ({ sightings }: { sightings: BirdSighting[] }) => {
+  const speciesSpotted = calculateSpeciesSpotted(sightings);
+  const totalDurationMin = calculateTotalDurationMin(sightings);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-7xl mx-auto px-4 mb-8">
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <div className="flex items-center gap-3">
-          <Bird className="w-6 h-6 text-emerald-600" />
-          <h3 className="text-lg font-semibold text-gray-800">
-            Species Spotted
-          </h3>
-        </div>
-        <p className="text-3xl font-bold text-gray-900 mt-2">{uniqueSpecies}</p>
-      </div>
-
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <div className="flex items-center gap-3">
-          <Clock className="w-6 h-6 text-emerald-600" />
-          <h3 className="text-lg font-semibold text-gray-800">
-            Total Duration
-          </h3>
-        </div>
-        <p className="text-3xl font-bold text-gray-900 mt-2">
-          {Math.round(totalDuration / 60)}m
-        </p>
-      </div>
-
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <div className="flex items-center gap-3">
-          <Leaf className="w-6 h-6 text-emerald-600" />
-          <h3 className="text-lg font-semibold text-gray-800">Feed Consumed</h3>
-        </div>
-        <p className="text-3xl font-bold text-gray-900 mt-2">{totalFeed}g</p>
-      </div>
-    </div>
+    <Grid container spacing={3} mb={5}>
+      <Grid size={{ xs: 12, sm: 4 }}>
+        <Card>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>
+              <Box display="flex" alignItems="center">
+                <Pets fontSize="large" sx={{ mr: 1 }} color="primary" />
+                <span>Total Sightings</span>
+              </Box>
+            </Typography>
+            <Typography variant="h5">
+              <strong>{sightings.length}</strong>
+            </Typography>
+          </CardContent>
+        </Card>
+      </Grid>
+      <Grid size={{ xs: 12, sm: 4 }}>
+        <Card>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>
+              <Box display="flex" alignItems="center">
+                <Pets fontSize="large" sx={{ mr: 1 }} color="primary" />
+                <span>Species Spotted</span>
+              </Box>
+            </Typography>
+            <Typography variant="h5">
+              <strong>{speciesSpotted}</strong>
+            </Typography>
+          </CardContent>
+        </Card>
+      </Grid>
+      <Grid size={{ xs: 12, sm: 4 }}>
+        <Card>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>
+              <Box display="flex" alignItems="center">
+                <AccessTime fontSize="large" sx={{ mr: 1 }} color="primary" />
+                <span>Total Duration</span>
+              </Box>
+            </Typography>
+            <Typography variant="h5">
+              <strong>{totalDurationMin}m</strong>
+            </Typography>
+          </CardContent>
+        </Card>
+      </Grid>
+    </Grid>
   );
-}
+};
