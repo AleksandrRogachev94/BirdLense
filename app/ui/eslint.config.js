@@ -26,6 +26,7 @@ export default [
       prettier: prettierPlugin,
     },
     rules: {
+      'react/react-in-jsx-scope': 'off', // Disable 'React must be in scope when using JSX'
       'prettier/prettier': 'warn', // Report Prettier issues as warnings
     },
   },

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Bird, Clock, Leaf } from 'lucide-react';
 import { BirdSighting } from '../types';
 
