@@ -12,6 +12,7 @@ import { FoodManagement } from './pages/FoodManagement';
 import { BirdDirectory } from './pages/BirdDirectory';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { VideoDetails } from './pages/VideoDetails';
 
 const theme = createTheme({
   palette: {
@@ -37,6 +38,7 @@ function App() {
             <Container>
               <Routes>
                 <Route path="/" element={<HomePage />} />
+                <Route path="/videos/:id" element={<VideoDetails />} />
                 <Route path="/food" element={<FoodManagement />} />
                 <Route path="/birds" element={<BirdDirectory />} />
               </Routes>

@@ -35,7 +35,11 @@ export function Navigation() {
   const handleCloseNavMenu = () => setAnchorElNav(null);
 
   const renderTabs = () => (
-    <Tabs value={currentTab} textColor="inherit" indicatorColor="secondary">
+    <Tabs
+      value={Math.max(currentTab, 0)}
+      textColor="inherit"
+      indicatorColor="secondary"
+    >
       {pages.map((page) => (
         <Tab
           key={page.label}
