@@ -1,13 +1,11 @@
 import { useForm } from '@tanstack/react-form';
-import {
-  Box,
-  Button,
-  Divider,
-  Grid,
-  Switch,
-  TextField,
-  Typography,
-} from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+import Grid from '@mui/material/Grid2';
+import Switch from '@mui/material/Switch';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import { Settings } from '../types';
 import { fetchCoordinatesByZip } from '../api/api';
 
@@ -53,7 +51,7 @@ export const SettingsForm = ({
         Secrets
       </Typography>
       <Grid container spacing={2}>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <form.Field name="secrets.openweather_api_key">
             {(field) => (
               <>
@@ -70,7 +68,7 @@ export const SettingsForm = ({
             )}
           </form.Field>
         </Grid>
-        <Grid item xs={6}>
+        <Grid size={{ xs: 6 }}>
           <form.Field name="secrets.zip">
             {(field) => (
               <>
@@ -87,7 +85,7 @@ export const SettingsForm = ({
             )}
           </form.Field>
         </Grid>
-        <Grid item xs={6}>
+        <Grid size={{ xs: 6 }}>
           <Button
             fullWidth
             sx={{ height: '100%' }}
@@ -97,7 +95,7 @@ export const SettingsForm = ({
             Convert ZIP to Lat/Lon
           </Button>
         </Grid>
-        <Grid item xs={6}>
+        <Grid size={{ xs: 6 }}>
           <form.Field name="secrets.latitude">
             {(field) => (
               <>
@@ -114,7 +112,7 @@ export const SettingsForm = ({
             )}
           </form.Field>
         </Grid>
-        <Grid item xs={6}>
+        <Grid size={{ xs: 6 }}>
           <form.Field name="secrets.longitude">
             {(field) => (
               <>
@@ -140,7 +138,7 @@ export const SettingsForm = ({
         Web Server Settings
       </Typography>
       <Grid container spacing={2}>
-        <Grid item xs={6}>
+        <Grid size={{ xs: 6 }}>
           <form.Field name="web.host">
             {(field) => (
               <>
@@ -157,7 +155,7 @@ export const SettingsForm = ({
             )}
           </form.Field>
         </Grid>
-        <Grid item xs={6}>
+        <Grid size={{ xs: 6 }}>
           <form.Field name="web.port">
             {(field) => (
               <>
@@ -183,7 +181,7 @@ export const SettingsForm = ({
         Processor Settings
       </Typography>
       <Grid container spacing={2}>
-        <Grid item xs={6}>
+        <Grid size={{ xs: 6 }}>
           <form.Field name="processor.video_width">
             {(field) => (
               <>
@@ -200,7 +198,7 @@ export const SettingsForm = ({
             )}
           </form.Field>
         </Grid>
-        <Grid item xs={6}>
+        <Grid size={{ xs: 6 }}>
           <form.Field name="processor.video_height">
             {(field) => (
               <>
@@ -217,7 +215,7 @@ export const SettingsForm = ({
             )}
           </form.Field>
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 6 }}>
           <form.Field name="processor.tracker">
             {(field) => (
               <>
@@ -234,7 +232,7 @@ export const SettingsForm = ({
             )}
           </form.Field>
         </Grid>
-        <Grid item xs={6}>
+        <Grid size={{ xs: 6 }}>
           <form.Field name="processor.max_record_seconds">
             {(field) => (
               <>
@@ -251,7 +249,7 @@ export const SettingsForm = ({
             )}
           </form.Field>
         </Grid>
-        <Grid item xs={6}>
+        <Grid size={{ xs: 6 }}>
           <form.Field name="processor.max_inactive_seconds">
             {(field) => (
               <>
@@ -268,7 +266,7 @@ export const SettingsForm = ({
             )}
           </form.Field>
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 6 }}>
           <form.Field name="processor.save_images">
             {(field) => (
               <>
