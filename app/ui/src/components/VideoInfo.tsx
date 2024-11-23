@@ -3,9 +3,6 @@ import Grid from '@mui/material/Grid2';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import Divider from '@mui/material/Divider';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
 import Chip from '@mui/material/Chip';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import WeatherIcon from '@mui/icons-material/WbSunny';
@@ -14,7 +11,6 @@ import HumidityIcon from '@mui/icons-material/Opacity';
 import CloudIcon from '@mui/icons-material/Cloud';
 import WindIcon from '@mui/icons-material/Air';
 import FoodIcon from '@mui/icons-material/Fastfood';
-import SpeciesIcon from '@mui/icons-material/Pets';
 import { Video } from '../types';
 
 export const VideoInfo = ({ video }: { video: Video }) => {
@@ -29,6 +25,40 @@ export const VideoInfo = ({ video }: { video: Video }) => {
   } = video;
 
   const formatDate = (date: string) => new Date(date).toLocaleString();
+
+  const groupedSpecies = species.reduce((groups: any[], sp) => {
+    let group = groups.find((g) => g.species_id === sp.species_id);
+    if (!group) {
+      group = {
+        ...sp,
+        start_time: new Date(sp.start_time), // Parse to Date object
+        end_time: new Date(sp.end_time), // Parse to Date object
+        detections: [],
+        confidenceRange: '',
+      };
+      groups.push(group);
+    }
+
+    group.detections.push(sp);
+
+    // Update start and end times to the earliest and latest, respectively
+    group.start_time = new Date(
+      Math.min(group.start_time.getTime(), new Date(sp.start_time).getTime()),
+    );
+    group.end_time = new Date(
+      Math.max(group.end_time.getTime(), new Date(sp.end_time).getTime()),
+    );
+
+    return groups;
+  }, []);
+
+  // Calculate confidence range
+  groupedSpecies.forEach((group) => {
+    const confidences = group.detections.map((d) => d.confidence * 100);
+    group.confidenceRange = `${Math.min(...confidences).toFixed(1)}% - ${Math.max(...confidences).toFixed(1)}%`;
+  });
+
+  console.log(groupedSpecies);
 
   return (
     <Box sx={{ padding: 4 }}>
@@ -51,6 +81,54 @@ export const VideoInfo = ({ video }: { video: Video }) => {
       <Divider sx={{ marginBottom: 4 }} />
 
       <Grid container spacing={2}>
+        {/* Species Section */}
+        <Grid size={{ xs: 12, md: 12 }}>
+          <Typography variant="h6" gutterBottom>
+            Detected Species
+          </Typography>
+          {groupedSpecies.map((group) => (
+            <Paper
+              key={group.species_id}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                padding: 2,
+                marginBottom: 2,
+                borderRadius: 2,
+                boxShadow: 2,
+              }}
+            >
+              {/* Bird Photo */}
+              <Box sx={{ width: 100, height: 100, marginRight: 2 }}>
+                <img
+                  src={group.image_url}
+                  alt={group.species_name}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    borderRadius: 8,
+                  }}
+                />
+              </Box>
+
+              {/* Details Section */}
+              <Box>
+                <Typography variant="h6" sx={{ fontWeight: 'medium' }}>
+                  {group.species_name} ({group.detections.length} detections)
+                </Typography>
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  Confidence Range: {group.confidenceRange}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Seen from {formatDate(group.start_time)} to{' '}
+                  {formatDate(group.end_time)}
+                </Typography>
+              </Box>
+            </Paper>
+          ))}
+        </Grid>
+
         {/* General Info Section */}
         <Grid size={{ xs: 12, md: 6 }}>
           <Paper sx={{ padding: 2 }}>
@@ -111,25 +189,6 @@ export const VideoInfo = ({ video }: { video: Video }) => {
                 />
               ))}
             </Box>
-          </Paper>
-        </Grid>
-        {/* Species Section */}
-        <Grid size={{ xs: 12, md: 12 }}>
-          <Paper sx={{ padding: 2 }}>
-            <Typography variant="h6" gutterBottom>
-              Detected Species
-            </Typography>
-            <List>
-              {species.map((sp) => (
-                <ListItem key={sp.species_id}>
-                  <SpeciesIcon sx={{ marginRight: 2, color: 'green' }} />
-                  <ListItemText
-                    primary={`${sp.species_name} (Confidence: ${(sp.confidence * 100).toFixed(1)}%)`}
-                    secondary={`From: ${formatDate(sp.start_time)} to ${formatDate(sp.end_time)} (Source: ${sp.source})`}
-                  />
-                </ListItem>
-              ))}
-            </List>
           </Paper>
         </Grid>
       </Grid>
