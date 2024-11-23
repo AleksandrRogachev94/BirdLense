@@ -19,6 +19,39 @@ export interface BirdSighting {
   };
 }
 
+export interface VideoSpecies {
+  species_id: string;
+  species_name: string;
+  start_time: string;
+  end_time: string;
+  confidence: number;
+  source: string;
+}
+
+export interface Video {
+  id: string;
+  processor_version: string;
+  start_time: string;
+  end_time: string;
+  video_path: string;
+  audio_path: string;
+  favorite: boolean;
+  weather: {
+    main: string;
+    description: string;
+    temp: number;
+    humidity: number;
+    pressure: number;
+    clouds: number;
+    wind_speed: number;
+  };
+  species: VideoSpecies[];
+  food: {
+    id: string;
+    name: string;
+  }[];
+}
+
 export interface TimelineGroup {
   date: string;
   sightings: BirdSighting[];

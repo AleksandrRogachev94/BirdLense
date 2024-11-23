@@ -1,4 +1,4 @@
-import { BirdSighting } from '../types';
+import { BirdSighting, Video } from '../types';
 
 export const mockBirdSighting: BirdSighting[] = [
   {
@@ -82,3 +82,50 @@ export const mockBirdSighting: BirdSighting[] = [
     },
   },
 ];
+
+export const mockVideo: Video = {
+  id: 'abc123',
+  processor_version: 'v1.2.3',
+  start_time: '2024-11-22T10:00:00Z',
+  end_time: '2024-11-22T10:00:46Z',
+  video_path: 'https://www.youtube.com/watch?v=H6_YpVBzqNw',
+  audio_path: '/audio/abc123.mp3',
+  favorite: false,
+  weather: {
+    main: 'Clear',
+    description: 'Clear sky',
+    temp: 22.5,
+    humidity: 60,
+    pressure: 1013,
+    clouds: 0,
+    wind_speed: 2.5,
+  },
+  species: [
+    {
+      species_id: 'sparrow_001',
+      species_name: 'House Sparrow',
+      start_time: '2024-11-22T10:00:10Z',
+      end_time: '2024-11-22T10:00:20Z',
+      confidence: 0.98,
+      source: 'video',
+    },
+    {
+      species_id: 'robin_002',
+      species_name: 'European Robin',
+      start_time: '2024-11-22T10:00:30Z',
+      end_time: '2024-11-22T10:00:40Z',
+      confidence: 0.92,
+      source: 'audio',
+    },
+  ],
+  food: [
+    {
+      id: 'food_001',
+      name: 'Sunflower Seeds',
+    },
+    {
+      id: 'food_002',
+      name: 'Peanuts',
+    },
+  ],
+};
