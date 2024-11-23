@@ -73,7 +73,7 @@ export const VideoInfo = ({ video }: { video: Video }) => {
   });
 
   return (
-    <Box sx={{ padding: 4 }}>
+    <Box sx={{ padding: 2 }}>
       {/* Header */}
       <Typography variant="h4" gutterBottom>
         Video Information

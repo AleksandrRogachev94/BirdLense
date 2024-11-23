@@ -1,4 +1,4 @@
-import { BirdFood, BirdSighting, Video } from '../types';
+import { BirdFood, BirdSighting, Settings, Video } from '../types';
 
 export const mockBirdSighting: BirdSighting[] = [
   {
@@ -158,3 +158,23 @@ export const mockBirdFood: BirdFood[] = [
   { id: '3', name: 'Suet Cakes', active: false },
   { id: '4', name: 'Nyjer Seeds', active: false },
 ];
+
+export const mockSetttings: Settings = {
+  web: {
+    host: '0.0.0.0',
+    port: 8080,
+  },
+  processor: {
+    video_width: 1280,
+    video_height: 720,
+    tracker: 'bytetrack.yaml',
+    max_record_seconds: 60,
+    max_inactive_seconds: 10,
+    save_images: false,
+  },
+  secrets: {
+    openweather_api_key: 'YOUR_API_KEY_HERE',
+    latitude: 'YOUR_LATITUDE_HERE',
+    longitude: 'YOUR_LONGITUDE_HERE',
+  },
+};
