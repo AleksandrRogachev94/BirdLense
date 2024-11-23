@@ -26,6 +26,7 @@ interface GroupedSpecies {
   image_url?: string;
   detections: VideoSpecies[];
   confidenceRange: string;
+  totalDuration: number;
 }
 
 export const VideoInfo = ({ video }: { video: Video }) => {
@@ -50,11 +51,18 @@ export const VideoInfo = ({ video }: { video: Video }) => {
         ...sp,
         detections: [],
         confidenceRange: '',
+        totalDuration: 0, // Initialize total duration
       };
       groups.push(group);
     }
-
+    // Add detection to the group
     group.detections.push(sp);
+    // Calculate the duration for this detection (in seconds)
+    const detectionDuration =
+      (new Date(sp.end_time).getTime() - new Date(sp.start_time).getTime()) /
+      1000;
+    // Add the detection duration to the total duration
+    group.totalDuration += detectionDuration;
     return groups;
   }, []);
 
@@ -111,6 +119,12 @@ export const VideoInfo = ({ video }: { video: Video }) => {
                       sx={{ color: 'text.secondary' }}
                     >
                       Confidence Range: {group.confidenceRange}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{ color: 'text.secondary' }}
+                    >
+                      Total Duration: {group.totalDuration}s
                     </Typography>
                   </CardContent>
                   <CardActions>
