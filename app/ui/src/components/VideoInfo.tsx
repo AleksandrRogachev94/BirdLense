@@ -11,7 +11,17 @@ import HumidityIcon from '@mui/icons-material/Opacity';
 import CloudIcon from '@mui/icons-material/Cloud';
 import WindIcon from '@mui/icons-material/Air';
 import FoodIcon from '@mui/icons-material/Fastfood';
-import { Video } from '../types';
+import { Video, VideoSpecies } from '../types';
+
+interface GroupedSpecies {
+  species_id: string;
+  species_name: string;
+  image_url?: string;
+  start_time: Date;
+  end_time: Date;
+  detections: VideoSpecies[];
+  confidenceRange: string;
+}
 
 export const VideoInfo = ({ video }: { video: Video }) => {
   const {
@@ -24,10 +34,12 @@ export const VideoInfo = ({ video }: { video: Video }) => {
     food,
   } = video;
 
-  const formatDate = (date: string) => new Date(date).toLocaleString();
+  const formatDate = (date: string | Date) => new Date(date).toLocaleString();
 
-  const groupedSpecies = species.reduce((groups: any[], sp) => {
-    let group = groups.find((g) => g.species_id === sp.species_id);
+  const groupedSpecies = species.reduce((groups: GroupedSpecies[], sp) => {
+    let group = groups.find(
+      (g) => g.species_id === sp.species_id,
+    ) as GroupedSpecies;
     if (!group) {
       group = {
         ...sp,
