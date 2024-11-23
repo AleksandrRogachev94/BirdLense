@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import { fetchVideo } from '../api/api';
-import { CircularProgress } from '@mui/material';
+import { Box, CircularProgress } from '@mui/material';
 import { Video } from '../types';
 import { VideoInfo } from '../components/VideoInfo';
 import { VideoPlayer } from '../components/VideoPlayer';
@@ -17,7 +17,12 @@ export const VideoDetails = () => {
     queryFn: () => fetchVideo(params.id as string),
   });
 
-  if (isLoading) return <CircularProgress />;
+  if (isLoading)
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+        <CircularProgress />
+      </Box>
+    );
   if (error) return <div>Error loading sightings data.</div>;
 
   return (

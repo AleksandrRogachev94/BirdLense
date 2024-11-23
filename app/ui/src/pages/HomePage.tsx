@@ -24,7 +24,12 @@ export function HomePage() {
     enabled: !!date, // Only run the query if a date is selected
   });
 
-  if (isLoading) return <CircularProgress />;
+  if (isLoading)
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+        <CircularProgress />
+      </Box>
+    );
   if (error) return <div>Error loading sightings data.</div>;
 
   return (
