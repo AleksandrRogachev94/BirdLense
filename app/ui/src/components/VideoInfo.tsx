@@ -12,13 +12,18 @@ import CloudIcon from '@mui/icons-material/Cloud';
 import WindIcon from '@mui/icons-material/Air';
 import FoodIcon from '@mui/icons-material/Fastfood';
 import { Video, VideoSpecies } from '../types';
+import {
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardMedia,
+} from '@mui/material';
 
 interface GroupedSpecies {
   species_id: string;
   species_name: string;
   image_url?: string;
-  start_time: Date;
-  end_time: Date;
   detections: VideoSpecies[];
   confidenceRange: string;
 }
@@ -43,8 +48,6 @@ export const VideoInfo = ({ video }: { video: Video }) => {
     if (!group) {
       group = {
         ...sp,
-        start_time: new Date(sp.start_time), // Parse to Date object
-        end_time: new Date(sp.end_time), // Parse to Date object
         detections: [],
         confidenceRange: '',
       };
@@ -52,15 +55,6 @@ export const VideoInfo = ({ video }: { video: Video }) => {
     }
 
     group.detections.push(sp);
-
-    // Update start and end times to the earliest and latest, respectively
-    group.start_time = new Date(
-      Math.min(group.start_time.getTime(), new Date(sp.start_time).getTime()),
-    );
-    group.end_time = new Date(
-      Math.max(group.end_time.getTime(), new Date(sp.end_time).getTime()),
-    );
-
     return groups;
   }, []);
 
@@ -98,47 +92,34 @@ export const VideoInfo = ({ video }: { video: Video }) => {
           <Typography variant="h6" gutterBottom>
             Detected Species
           </Typography>
-          {groupedSpecies.map((group) => (
-            <Paper
-              key={group.species_id}
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                padding: 2,
-                marginBottom: 2,
-                borderRadius: 2,
-                boxShadow: 2,
-              }}
-            >
-              {/* Bird Photo */}
-              <Box sx={{ width: 100, height: 100, marginRight: 2 }}>
-                <img
-                  src={group.image_url}
-                  alt={group.species_name}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    borderRadius: 8,
-                  }}
-                />
-              </Box>
-
-              {/* Details Section */}
-              <Box>
-                <Typography variant="h6" sx={{ fontWeight: 'medium' }}>
-                  {group.species_name} ({group.detections.length} detections)
-                </Typography>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  Confidence Range: {group.confidenceRange}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Seen from {formatDate(group.start_time)} to{' '}
-                  {formatDate(group.end_time)}
-                </Typography>
-              </Box>
-            </Paper>
-          ))}
+          <Grid container spacing={2}>
+            {groupedSpecies.map((group) => (
+              <Grid size={{ xs: 12, md: 4 }} key={group.species_id}>
+                <Card>
+                  <CardMedia
+                    component="img"
+                    alt="green iguana"
+                    height="175"
+                    image={group.image_url}
+                  />
+                  <CardContent>
+                    <Typography gutterBottom variant="h5" component="div">
+                      {group.species_name} ({group.detections.length})
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{ color: 'text.secondary' }}
+                    >
+                      Confidence Range: {group.confidenceRange}
+                    </Typography>
+                  </CardContent>
+                  <CardActions>
+                    <Button size="small">Learn More</Button>
+                  </CardActions>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
         </Grid>
 
         {/* General Info Section */}
