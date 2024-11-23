@@ -59,14 +59,10 @@ export interface TimelineGroup {
   sightings: BirdSighting[];
 }
 
-export interface FoodItem {
+export interface BirdFood {
   id: string;
   name: string;
-  type: 'seed' | 'suet' | 'nectar' | 'fruit' | 'insect';
-  quantity: number;
-  unit: 'g' | 'ml' | 'pieces';
-  lastRefillDate: string;
-  preferredBy: string[];
+  active: boolean;
 }
 
 export interface BirdTaxonomy {

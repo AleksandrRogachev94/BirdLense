@@ -1,4 +1,4 @@
-import { BirdSighting, Video } from '../types';
+import { BirdFood, BirdSighting, Video } from '../types';
 
 export const mockBirdSighting: BirdSighting[] = [
   {
@@ -151,3 +151,10 @@ export const mockVideo: Video = {
     },
   ],
 };
+
+export const mockBirdFood: BirdFood[] = [
+  { id: '1', name: 'Sunflower Seeds', active: true },
+  { id: '2', name: 'Peanuts', active: true },
+  { id: '3', name: 'Suet Cakes', active: false },
+  { id: '4', name: 'Nyjer Seeds', active: false },
+];
