@@ -1,4 +1,4 @@
-import { BirdFood, BirdSighting, Settings, Video } from '../types';
+import { BirdFood, BirdSighting, Settings, Video, Weather } from '../types';
 
 export const mockBirdSighting: BirdSighting[] = [
   {
@@ -91,6 +91,16 @@ export const mockBirdSighting: BirdSighting[] = [
   },
 ];
 
+export const mockWeather: Weather = {
+  main: 'Clear',
+  description: 'Clear sky',
+  temp: 22.5,
+  humidity: 60,
+  pressure: 1013,
+  clouds: 0,
+  wind_speed: 2.5,
+};
+
 export const mockVideo: Video = {
   id: 'abc123',
   processor_version: 'v1.2.3',
@@ -99,15 +109,7 @@ export const mockVideo: Video = {
   video_path: 'https://www.youtube.com/watch?v=H6_YpVBzqNw',
   audio_path: '/audio/abc123.mp3',
   favorite: false,
-  weather: {
-    main: 'Clear',
-    description: 'Clear sky',
-    temp: 22.5,
-    humidity: 60,
-    pressure: 1013,
-    clouds: 0,
-    wind_speed: 2.5,
-  },
+  weather: mockWeather,
   species: [
     {
       species_id: 'sparrow_001',

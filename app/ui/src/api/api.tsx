@@ -4,6 +4,7 @@ import {
   mockBirdSighting,
   mockSetttings,
   mockVideo,
+  mockWeather,
 } from './mocks';
 import { BirdFood, Settings } from '../types';
 import axios from 'axios';
@@ -13,6 +14,13 @@ export const fetchSightings = async (date: Dayjs | null) => {
   await new Promise((resolve) => setTimeout(resolve, 1000));
   console.log('Fetching sightings for', date?.format('YYYY-MM-DD'));
   return mockBirdSighting;
+};
+
+export const fetchWeather = async () => {
+  // Mock API call
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  console.log('Fetching weather');
+  return mockWeather;
 };
 
 export const fetchVideo = async (id: string) => {

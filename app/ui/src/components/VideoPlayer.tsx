@@ -26,11 +26,11 @@ const SmallSpeciesCard = ({ species }: { species: VideoSpecies }) => {
         </Typography>
         <Box display="flex" gap={1} mt={1}>
           <Chip
-            label={`${(species.confidence * 100).toFixed(1)}%`}
+            label={`${Math.round(species.confidence * 100)}%`}
             size="small"
             color="success"
           />
-          <Chip label={species.source} size="small" color="success" />
+          <Chip label={species.source} size="small" />
         </Box>
       </CardContent>
     </Card>

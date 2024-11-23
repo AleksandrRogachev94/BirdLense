@@ -30,6 +30,16 @@ export interface VideoSpecies {
   image_url?: string;
 }
 
+export interface Weather {
+  main: string;
+  description: string;
+  temp: number;
+  humidity: number;
+  pressure: number;
+  clouds: number;
+  wind_speed: number;
+}
+
 export interface Video {
   id: string;
   processor_version: string;
@@ -38,15 +48,7 @@ export interface Video {
   video_path: string;
   audio_path: string;
   favorite: boolean;
-  weather: {
-    main: string;
-    description: string;
-    temp: number;
-    humidity: number;
-    pressure: number;
-    clouds: number;
-    wind_speed: number;
-  };
+  weather: Weather;
   species: VideoSpecies[];
   food: {
     id: string;
