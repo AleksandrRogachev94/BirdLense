@@ -76,3 +76,24 @@ export interface BirdTaxonomy {
   description: string;
   isCommonVisitor: boolean;
 }
+
+export interface Settings {
+  web: {
+    host: string; // Host address, e.g., "0.0.0.0"
+    port: number; // Port number, e.g., 8080
+  };
+  processor: {
+    video_width: number; // Video width in pixels, e.g., 1280
+    video_height: number; // Video height in pixels, e.g., 720
+    tracker: string; // Path to tracker config, e.g., "bytetrack.yaml"
+    max_record_seconds: number; // Max recording duration in seconds
+    max_inactive_seconds: number; // Max inactivity before stopping recording
+    save_images: boolean; // Whether to save images or not
+  };
+  secrets: {
+    openweather_api_key: string; // API key for OpenWeather
+    latitude: string; // Latitude as a string, e.g., "YOUR_LATITUDE_HERE"
+    longitude: string; // Longitude as a string, e.g., "YOUR_LONGITUDE_HERE"
+    zip?: string;
+  };
+}
