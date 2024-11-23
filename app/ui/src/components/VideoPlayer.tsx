@@ -17,7 +17,7 @@ const SmallSpeciesCard = ({ species }: { species: VideoSpecies }) => {
     <Card sx={{ height: 200 }}>
       <CardMedia
         sx={{ height: 100 }}
-        image="https://images.unsplash.com/photo-1549608276-5786777e6587?auto=format&fit=crop&q=80"
+        image={species.image_url}
         title={species.species_name}
       />
       <CardContent>

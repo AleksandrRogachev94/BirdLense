@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Timeline } from '../components/Timeline';
 import { Stats } from '../components/Stats';
 import { BirdSighting } from '../types';
-import { Box, CircularProgress } from '@mui/material';
+import { Box, CircularProgress, Divider } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -45,6 +45,7 @@ export function HomePage() {
       </Box>
 
       <Stats sightings={sightings as BirdSighting[]} />
+      <Divider sx={{ marginBottom: 4 }} />
       <Timeline sightings={sightings as BirdSighting[]} />
     </>
   );

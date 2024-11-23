@@ -14,7 +14,9 @@ export const mockBirdSighting: BirdSighting[] = [
     },
     species: {
       id: '1',
-      name: 'Cardinal',
+      name: 'Northern Cardinal',
+      image_url:
+        'https://images.unsplash.com/photo-1623715618305-ceb095873eb1?q=80&w=3474&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     },
     food: {
       id: '1',
@@ -34,7 +36,9 @@ export const mockBirdSighting: BirdSighting[] = [
     },
     species: {
       id: '3',
-      name: 'Sparrow',
+      name: 'House Sparrow',
+      image_url:
+        'https://images.unsplash.com/photo-1654567835135-2a39ea442e45?q=80&w=3432&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     },
     food: {
       id: '3',
@@ -55,6 +59,8 @@ export const mockBirdSighting: BirdSighting[] = [
     species: {
       id: '2',
       name: 'Blue Jay',
+      image_url:
+        'https://images.unsplash.com/photo-1649115727823-5215e906dd57?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     },
     food: {
       id: '2',
@@ -74,7 +80,9 @@ export const mockBirdSighting: BirdSighting[] = [
     },
     species: {
       id: '4',
-      name: 'Robin',
+      name: 'European Robin',
+      image_url:
+        'https://images.unsplash.com/photo-1627141124845-eaad4d550a53?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     },
     food: {
       id: '4',
@@ -108,6 +116,18 @@ export const mockVideo: Video = {
       end_time: '2024-11-22T10:00:20Z',
       confidence: 0.98,
       source: 'video',
+      image_url:
+        'https://images.unsplash.com/photo-1654567835135-2a39ea442e45?q=80&w=3432&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    },
+    {
+      species_id: 'sparrow_001',
+      species_name: 'House Sparrow',
+      start_time: '2024-11-22T10:00:25Z',
+      end_time: '2024-11-22T10:00:35Z',
+      confidence: 0.85,
+      source: 'audio',
+      image_url:
+        'https://images.unsplash.com/photo-1654567835135-2a39ea442e45?q=80&w=3432&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     },
     {
       species_id: 'robin_002',
@@ -116,6 +136,8 @@ export const mockVideo: Video = {
       end_time: '2024-11-22T10:00:40Z',
       confidence: 0.92,
       source: 'audio',
+      image_url:
+        'https://images.unsplash.com/photo-1627141124845-eaad4d550a53?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     },
   ],
   food: [
