@@ -41,7 +41,10 @@ export function Timeline({ sightings }: { sightings: BirdSighting[] }) {
               >
                 <CardContent>
                   <Box display="flex" alignItems="center" gap={2}>
-                    <Avatar src={''} sx={{ width: 56, height: 56 }} />
+                    <Avatar
+                      src={sighting.species.image_url}
+                      sx={{ width: 56, height: 56 }}
+                    />
                     <Box>
                       <Typography variant="h6">
                         {sighting.species.name}

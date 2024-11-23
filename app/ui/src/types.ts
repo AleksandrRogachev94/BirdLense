@@ -12,6 +12,7 @@ export interface BirdSighting {
   species: {
     id: string;
     name: string;
+    image_url?: string;
   };
   food: {
     id: string;
@@ -26,6 +27,7 @@ export interface VideoSpecies {
   end_time: string;
   confidence: number;
   source: string;
+  image_url?: string;
 }
 
 export interface Video {
