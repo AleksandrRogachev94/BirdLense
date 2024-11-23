@@ -8,6 +8,7 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { Settings } from '../types';
 import { fetchCoordinatesByZip } from '../api/api';
+import { FormControlLabel } from '@mui/material';
 
 export const SettingsForm = ({
   currentSettings,
@@ -89,7 +90,8 @@ export const SettingsForm = ({
           <Button
             fullWidth
             sx={{ height: '100%' }}
-            variant="contained"
+            variant="outlined"
+            color="secondary"
             onClick={handleZipLookup}
           >
             Convert ZIP to Lat/Lon
@@ -270,12 +272,16 @@ export const SettingsForm = ({
           <form.Field name="processor.save_images">
             {(field) => (
               <>
-                <Typography component="div">Save Images (test mode)</Typography>
-                <Switch
-                  id={field.name}
-                  name={field.name}
-                  checked={field.state.value}
-                  onChange={(e) => field.handleChange(e.target.checked)}
+                <FormControlLabel
+                  control={
+                    <Switch
+                      id={field.name}
+                      name={field.name}
+                      checked={field.state.value}
+                      onChange={(e) => field.handleChange(e.target.checked)}
+                    />
+                  }
+                  label="Save Images (test mode)"
                 />
               </>
             )}
