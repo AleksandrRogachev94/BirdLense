@@ -5,11 +5,6 @@ import Paper from '@mui/material/Paper';
 import Divider from '@mui/material/Divider';
 import Chip from '@mui/material/Chip';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import WeatherIcon from '@mui/icons-material/WbSunny';
-import TempIcon from '@mui/icons-material/Thermostat';
-import HumidityIcon from '@mui/icons-material/Opacity';
-import CloudIcon from '@mui/icons-material/Cloud';
-import WindIcon from '@mui/icons-material/Air';
 import FoodIcon from '@mui/icons-material/Fastfood';
 import { Video, VideoSpecies } from '../types';
 import {
@@ -19,6 +14,7 @@ import {
   CardContent,
   CardMedia,
 } from '@mui/material';
+import { WeatherCard } from './WeatherCard';
 
 interface GroupedSpecies {
   species_id: string;
@@ -154,27 +150,7 @@ export const VideoInfo = ({ video }: { video: Video }) => {
 
         {/* Weather Section */}
         <Grid size={{ xs: 12, md: 6 }}>
-          <Paper sx={{ padding: 2 }}>
-            <Typography variant="h6" gutterBottom>
-              Weather
-            </Typography>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-              <Chip
-                icon={<WeatherIcon />}
-                label={`Condition: ${weather.main}`}
-              />
-              <Chip icon={<CloudIcon />} label={`Clouds: ${weather.clouds}%`} />
-              <Chip icon={<TempIcon />} label={`Temp: ${weather.temp}°C`} />
-              <Chip
-                icon={<HumidityIcon />}
-                label={`Humidity: ${weather.humidity}%`}
-              />
-              <Chip
-                icon={<WindIcon />}
-                label={`Wind Speed: ${weather.wind_speed} m/s`}
-              />
-            </Box>
-          </Paper>
+          <WeatherCard weather={weather} />
         </Grid>
 
         {/* Food Section */}
