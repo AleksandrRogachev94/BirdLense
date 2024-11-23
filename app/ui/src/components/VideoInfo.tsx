@@ -72,8 +72,6 @@ export const VideoInfo = ({ video }: { video: Video }) => {
     group.confidenceRange = `${Math.min(...confidences).toFixed(1)}% - ${Math.max(...confidences).toFixed(1)}%`;
   });
 
-  console.log(groupedSpecies);
-
   return (
     <Box sx={{ padding: 4 }}>
       {/* Header */}
