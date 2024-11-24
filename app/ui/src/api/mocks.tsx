@@ -1,4 +1,11 @@
-import { BirdFood, BirdSighting, Settings, Video, Weather } from '../types';
+import {
+  BirdFood,
+  BirdSighting,
+  Settings,
+  Species,
+  Video,
+  Weather,
+} from '../types';
 
 export const mockBirdSighting: BirdSighting[] = [
   {
@@ -180,3 +187,51 @@ export const mockSetttings: Settings = {
     longitude: 'YOUR_LONGITUDE_HERE',
   },
 };
+
+export const mockBirdDirectory: Species[] = [
+  {
+    id: 1,
+    name: 'Cardinalidae',
+    parent_id: null,
+    created_at: '2024-11-23T00:00:00Z',
+    photo: 'cardinalidae_photo_url',
+    description: 'The family of birds that includes cardinals.',
+    active: true,
+  },
+  {
+    id: 2,
+    name: 'Northern Cardinal',
+    parent_id: 1,
+    created_at: '2024-11-23T00:00:00Z',
+    photo: 'northern_cardinal_photo_url',
+    description: 'A species of cardinal found in North and Central America.',
+    active: true,
+  },
+  {
+    id: 3,
+    name: 'Northern Cardinal (Female)',
+    parent_id: 2,
+    created_at: '2024-11-23T00:00:00Z',
+    photo: 'northern_cardinal_female_photo_url',
+    description: 'The female of the Northern Cardinal species.',
+    active: true,
+  },
+  {
+    id: 4,
+    name: 'Northern Cardinal (Male)',
+    parent_id: 2,
+    created_at: '2024-11-23T00:00:00Z',
+    photo: 'northern_cardinal_male_photo_url',
+    description: 'The male of the Northern Cardinal species.',
+    active: true,
+  },
+  {
+    id: 5,
+    name: 'Blue Jay',
+    parent_id: null,
+    created_at: '2024-11-23T00:00:00Z',
+    photo: 'blue_jay_photo_url',
+    description: 'A species of passerine bird in the family Corvidae.',
+    active: true,
+  },
+];

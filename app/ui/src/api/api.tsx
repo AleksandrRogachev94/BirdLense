@@ -1,5 +1,6 @@
 import { Dayjs } from 'dayjs';
 import {
+  mockBirdDirectory,
   mockBirdFood,
   mockBirdSighting,
   mockSetttings,
@@ -83,4 +84,11 @@ export const fetchCoordinatesByZip = async (
   } else {
     throw new Error('Invalid ZIP code or no data found.');
   }
+};
+
+export const fetchBirdDirectory = async (active: boolean) => {
+  // Mock API call
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  console.log(`Fetching bird ${active ? 'active' : 'all'} directory`);
+  return mockBirdDirectory;
 };

@@ -99,3 +99,13 @@ export interface Settings {
     zip?: string;
   };
 }
+
+export interface Species {
+  id: number;
+  name: string;
+  parent_id: number | null;
+  created_at: string;
+  photo: string | null;
+  description: string | null;
+  active: boolean;
+}
