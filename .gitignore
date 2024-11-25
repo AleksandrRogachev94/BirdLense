@@ -3,3 +3,4 @@ __pycache__
 *.db
 app/data/recordings
 app.log
+user_config.yaml
