@@ -7,13 +7,14 @@ import {
   createTheme,
 } from '@mui/material';
 import { Navigation } from './components/Navigation';
-import { HomePage } from './pages/HomePage';
+import { TimelinePage } from './pages/TimelinePage';
 import { FoodManagement } from './pages/FoodManagement';
 import { BirdDirectory } from './pages/BirdDirectory';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { VideoDetails } from './pages/VideoDetails';
 import { Settings } from './pages/Settings';
+import { Overview } from './pages/Overview';
 
 const theme = createTheme({
   palette: {
@@ -38,7 +39,8 @@ function App() {
           <main>
             <Container>
               <Routes>
-                <Route path="/" element={<HomePage />} />
+                <Route path="/" element={<Overview />} />
+                <Route path="/timeline" element={<TimelinePage />} />
                 <Route path="/videos/:id" element={<VideoDetails />} />
                 <Route path="/food" element={<FoodManagement />} />
                 <Route path="/birds" element={<BirdDirectory />} />

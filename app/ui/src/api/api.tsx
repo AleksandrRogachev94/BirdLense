@@ -3,6 +3,7 @@ import {
   mockBirdDirectory,
   mockBirdFood,
   mockBirdSighting,
+  mockOverviewData,
   mockSetttings,
   mockVideo,
   mockWeather,
@@ -91,4 +92,11 @@ export const fetchBirdDirectory = async (active: boolean) => {
   await new Promise((resolve) => setTimeout(resolve, 1000));
   console.log(`Fetching bird ${active ? 'active' : 'all'} directory`);
   return mockBirdDirectory;
+};
+
+export const fetchOverviewData = async () => {
+  // Mock API call
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  console.log('Fetching overview stats');
+  return mockOverviewData;
 };

@@ -109,3 +109,23 @@ export interface Species {
   description: string | null;
   active: boolean;
 }
+
+export interface OverviewTopSpecies {
+  id: number;
+  name: string;
+  detections: number[]; // hourly count of detections, 24 values
+}
+
+export interface OverviewStats {
+  uniqueSpecies: number;
+  totalDetections: number;
+  lastHourDetections: number;
+  videoDetections: number;
+  audioDetections: number;
+  busiestHour: number;
+}
+
+export interface OverviewData {
+  topSpecies: OverviewTopSpecies[];
+  stats: OverviewStats;
+}

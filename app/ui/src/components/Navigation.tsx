@@ -18,7 +18,8 @@ import {
 } from '@mui/icons-material';
 
 const pages = [
-  { label: 'Timeline', url: '/' },
+  { label: 'Overview', url: '/' },
+  { label: 'Timeline', url: '/timeline' },
   { label: 'Food Management', url: '/food' },
   { label: 'Bird Directory', url: '/birds' },
   { label: 'Settings', url: '/settings' },
