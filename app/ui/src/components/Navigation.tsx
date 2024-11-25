@@ -27,7 +27,10 @@ const pages = [
 
 export function Navigation() {
   const location = useLocation();
-  const currentTab = pages.findIndex((page) => page.url === location.pathname);
+  const currentTab = pages.findIndex((page) => {
+    const locationWithoutQuery = location.pathname.split('?')[0];
+    return page.url === locationWithoutQuery;
+  });
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null,
   );

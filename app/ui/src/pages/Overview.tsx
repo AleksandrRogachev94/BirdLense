@@ -9,6 +9,7 @@ import { OverviewStats, OverviewTopSpecies, Weather } from '../types';
 import { useQuery } from '@tanstack/react-query';
 import { fetchOverviewData, fetchWeather } from '../api/api';
 import { WeatherCard } from '../components/WeatherCard';
+import { useNavigate } from 'react-router-dom';
 
 const Heatmap = ({
   data,
@@ -84,7 +85,9 @@ const Heatmap = ({
 };
 
 const TopSpecies = ({ data }: { data: OverviewTopSpecies[] }) => {
+  const navigate = useNavigate();
   const summedData = data.map((entry) => ({
+    id: entry.id,
     name: entry.name,
     detections: entry.detections.reduce((a, b) => a + b, 0),
   }));
@@ -98,12 +101,11 @@ const TopSpecies = ({ data }: { data: OverviewTopSpecies[] }) => {
           <BarChart
             dataset={summedData}
             layout="horizontal"
-            xAxis={[{ scaleType: 'linear', dataKey: 'detections' }]} // Continuous x-axis
+            xAxis={[{ scaleType: 'linear' }]} // Continuous x-axis
             yAxis={[
               {
                 scaleType: 'band',
                 dataKey: 'name',
-                valueFormatter: (value) => value.replace(' ', '\n'),
               },
             ]} // Categorical y-axis
             series={[
@@ -113,7 +115,10 @@ const TopSpecies = ({ data }: { data: OverviewTopSpecies[] }) => {
             ]}
             width={600}
             height={400}
-            margin={{ left: 100 }}
+            margin={{ left: 130 }}
+            onItemClick={(_, item) =>
+              navigate(`/timeline?speciesId=${summedData[item.dataIndex].id}`)
+            }
           />
         </Grid>
         <Grid mt={6.5} size={{ lg: 6 }}>
