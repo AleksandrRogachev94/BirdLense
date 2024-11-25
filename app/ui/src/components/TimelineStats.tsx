@@ -1,7 +1,6 @@
 import Grid from '@mui/material/Grid2';
-import { BirdSighting, Weather } from '../types';
+import { BirdSighting } from '../types';
 import { AccessTime, Pets } from '@mui/icons-material';
-import { WeatherCard } from './WeatherCard';
 import { StatCard } from './StatCard';
 
 const calculateSpeciesSpotted = (data: BirdSighting[]) => {
@@ -22,13 +21,7 @@ const calculateTotalDurationMin = (data: BirdSighting[]) => {
   return Math.round(totalDuration / 60);
 };
 
-export const Stats = ({
-  sightings,
-  weather,
-}: {
-  sightings: BirdSighting[];
-  weather: Weather;
-}) => {
+export const TimelineStats = ({ sightings }: { sightings: BirdSighting[] }) => {
   const speciesSpotted = calculateSpeciesSpotted(sightings);
   const totalDurationMin = calculateTotalDurationMin(sightings);
 
@@ -51,11 +44,6 @@ export const Stats = ({
           value={`${totalDurationMin}m`}
         />
       </Grid>
-      {weather && (
-        <Grid size={{ xs: 6, sm: 6 }}>
-          <WeatherCard weather={weather} />
-        </Grid>
-      )}
     </Grid>
   );
 };
