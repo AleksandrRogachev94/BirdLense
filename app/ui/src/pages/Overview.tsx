@@ -3,7 +3,7 @@ import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid2';
 import { StatCard } from '../components/StatCard';
 import { Audiotrack, Pets, Videocam, TrendingUp } from '@mui/icons-material';
-import { Box, CircularProgress, useTheme } from '@mui/material';
+import { Box, CircularProgress, Tooltip, useTheme } from '@mui/material';
 import { BarChart } from '@mui/x-charts/BarChart';
 import { OverviewStats, OverviewTopSpecies, Weather } from '../types';
 import { useQuery } from '@tanstack/react-query';
@@ -22,7 +22,6 @@ const Heatmap = ({
 }) => {
   const theme = useTheme();
   const hours = Array.from({ length: 24 }, (_, i) => i);
-  // Max detections to set color intensity
   const maxDetections = Math.max(...data.flatMap((d) => d.detections));
 
   return (
@@ -31,30 +30,33 @@ const Heatmap = ({
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        // padding: 4,
       }}
     >
       <div
         style={{
           display: 'grid',
           gridTemplateColumns: `repeat(${hours.length}, 1fr)`,
-          // gap: '1px',
           rowGap: '5px',
         }}
       >
         {data.map((item) => (
           <React.Fragment key={item.name}>
-            {/* Heatmap Cells */}
             {item.detections.map((d, hour) => (
-              <div
+              <Tooltip
                 key={`${item.name}-${hour}`}
-                style={{
-                  width: `${cellWidth}px`,
-                  height: `${cellHeight}px`,
-                  opacity: d / maxDetections,
-                  backgroundColor: theme.palette.secondary.main,
-                }}
-              />
+                title={`${d} detections`}
+                arrow
+                followCursor
+              >
+                <div
+                  style={{
+                    width: `${cellWidth}px`,
+                    height: `${cellHeight}px`,
+                    opacity: d / maxDetections,
+                    backgroundColor: theme.palette.secondary.main,
+                  }}
+                />
+              </Tooltip>
             ))}
           </React.Fragment>
         ))}
@@ -65,7 +67,6 @@ const Heatmap = ({
           gridTemplateColumns: `repeat(${hours.length}, 1fr)`,
         }}
       >
-        {/* X-Axis Labels (Hours) */}
         {hours.map((hour) => (
           <div
             key={hour}
