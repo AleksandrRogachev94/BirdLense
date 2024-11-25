@@ -14,7 +14,12 @@ import { labelToUniqueHexColor } from '../util';
 
 const SmallSpeciesCard = ({ species }: { species: VideoSpecies }) => {
   return (
-    <Card sx={{ height: 200 }}>
+    <Card
+      sx={{
+        height: 200,
+        border: `2px solid ${labelToUniqueHexColor(species.species_name)}`,
+      }}
+    >
       <CardMedia
         sx={{ height: 100 }}
         image={species.image_url}

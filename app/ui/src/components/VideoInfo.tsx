@@ -15,6 +15,7 @@ import {
   CardMedia,
 } from '@mui/material';
 import { WeatherCard } from './WeatherCard';
+import { labelToUniqueHexColor } from '../util';
 
 interface GroupedSpecies {
   species_id: string;
@@ -97,7 +98,11 @@ export const VideoInfo = ({ video }: { video: Video }) => {
           <Grid container spacing={2}>
             {groupedSpecies.map((group) => (
               <Grid size={{ xs: 12, md: 4 }} key={group.species_id}>
-                <Card>
+                <Card
+                  sx={{
+                    border: `2px solid ${labelToUniqueHexColor(group.species_name)}`,
+                  }}
+                >
                   <CardMedia
                     component="img"
                     alt="green iguana"
