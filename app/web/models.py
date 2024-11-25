@@ -32,12 +32,23 @@ class VideoSpecies(db.Model):
     video: Mapped["Video"] = relationship(back_populates="video_species")
     species: Mapped["Species"] = relationship(back_populates="video_species")
 
+    __table_args__ = (
+        # improves both queries: created_at/species_id and just species_id
+        Index('ix_videospecies_created_at_species',
+              'created_at DESC', 'species_id'),
+        Index('ix_videospecies_species_created_at',
+              'species_id', 'created_at DESC'),
+        # for video details queries
+        Index('ix_videospecies_video_id', 'video_id'),
+    )
+
 
 # Many-To-Many
 video_bird_food_association = Table(
     'video_bird_food_association', Base.metadata,
-    Column('video_id', String, ForeignKey('video.id')),
-    Column('birdfood_id', String, ForeignKey('bird_food.id'))
+    Column('video_id', String, ForeignKey('video.id'), primary_key=True),
+    Column('birdfood_id', String, ForeignKey(
+        'bird_food.id'), primary_key=True),
 )
 
 
@@ -50,12 +61,16 @@ class Species(db.Model):
     photo: Mapped[str] = mapped_column(String(), nullable=True)
     description: Mapped[str] = mapped_column(String(), nullable=True)
     active: Mapped[bool] = mapped_column(
-        nullable=False, default=False)
+        nullable=False, default=False, server_default="false")
     video_species: Mapped[List["VideoSpecies"]
                           ] = relationship(back_populates="species")
     children = relationship("Species", back_populates="parent")
     parent = relationship(
         "Species", back_populates="children", remote_side=[id])
+
+    __table_args__ = (
+        Index('ix_species_parent_id', 'parent_id'),
+    )
 
 
 class BirdFood(db.Model):
@@ -79,7 +94,7 @@ class Video(db.Model):
     video_path: Mapped[str] = mapped_column(nullable=False)
     audio_path: Mapped[str] = mapped_column(nullable=False)
     favorite: Mapped[bool] = mapped_column(
-        nullable=False, default=False)
+        nullable=False, default=False, server_default="false")
     # Weather data
     weather_main: Mapped[str] = mapped_column(
         String(), nullable=True)  # short category, e.g., Rain
@@ -113,6 +128,5 @@ class ActivityLog(db.Model):
     data: Mapped[str] = mapped_column(String(), nullable=True)
 
     __table_args__ = (
-        # Create an index named 'ix_activitylog_type' on the 'type' column
-        Index('ix_activitylog_type', 'type'),
+        Index('ix_activitylog_type_created_at', 'type', 'created_at'),
     )
