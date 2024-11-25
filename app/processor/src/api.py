@@ -27,3 +27,18 @@ class API():
         self.logger.info(f'Setting active species')
         requests.put(
             f"{os.environ['API_URL_BASE']}/species/active", json=active_names)
+
+    def activity_log(self, type, data, id=None):
+        response = requests.post(
+            f"{os.environ['API_URL_BASE']}/activity_log",
+            json={'type': type, 'data': data, 'id': id}
+        )
+
+        # Check if the request was successful (status code 200 or 201)
+        if response.status_code in [200, 201]:
+            response_data = response.json()
+            # Capture the returned 'id' from the response
+            return response_data.get('id')
+        else:
+            logging.error(f"Failed to log activity: {response.status_code}")
+            return None

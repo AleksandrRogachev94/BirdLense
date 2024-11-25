@@ -1,6 +1,6 @@
 import datetime
 from typing import List
-from sqlalchemy import String, Integer, Float, DateTime, Table, ForeignKey, Column
+from sqlalchemy import String, Integer, Float, DateTime, Table, ForeignKey, Column, Index
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 from flask_sqlalchemy import SQLAlchemy
@@ -101,3 +101,18 @@ class Video(db.Model):
                           ] = relationship(back_populates="video")
     food: Mapped[List[BirdFood]] = relationship(
         secondary=video_bird_food_association)
+
+
+class ActivityLog(db.Model):
+    id: Mapped[int] = mapped_column(primary_key=True)
+    type: Mapped[str] = mapped_column(nullable=False)
+    created_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False)
+    data: Mapped[str] = mapped_column(String(), nullable=True)
+
+    __table_args__ = (
+        # Create an index named 'ix_activitylog_type' on the 'type' column
+        Index('ix_activitylog_type', 'type'),
+    )
