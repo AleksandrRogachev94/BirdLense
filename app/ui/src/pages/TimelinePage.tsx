@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { Timeline } from '../components/Timeline';
-import { Stats } from '../components/Stats';
-import { BirdSighting, Weather } from '../types';
+import { TimelineStats } from '../components/TimelineStats';
+import { BirdSighting } from '../types';
 import { Box, CircularProgress, Divider } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs, { Dayjs } from 'dayjs';
 import { useQuery } from '@tanstack/react-query';
-import { fetchSightings, fetchWeather } from '../api/api';
+import { fetchSightings } from '../api/api';
 
 export function TimelinePage() {
   const [date, setDate] = useState<Dayjs | null>(dayjs());
@@ -24,24 +24,13 @@ export function TimelinePage() {
     enabled: !!date, // Only fetch sightings if a date is selected
   });
 
-  // Fetch weather data
-  const {
-    data: weather,
-    isLoading: isLoadingWeather,
-    error: errorWeather,
-  } = useQuery({
-    queryKey: ['weather', date],
-    queryFn: () => fetchWeather(),
-    enabled: !!date, // Only fetch weather if a date is selected
-  });
-
-  if (isLoadingSightings || isLoadingWeather)
+  if (isLoadingSightings)
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center' }}>
         <CircularProgress />
       </Box>
     );
-  if (errorSightings || errorWeather) return <div>Error loading data.</div>;
+  if (errorSightings) return <div>Error loading data.</div>;
 
   return (
     <>
@@ -60,10 +49,7 @@ export function TimelinePage() {
         </LocalizationProvider>
       </Box>
 
-      <Stats
-        sightings={sightings as BirdSighting[]}
-        weather={weather as Weather}
-      />
+      <TimelineStats sightings={sightings as BirdSighting[]} />
       <Divider sx={{ marginBottom: 4 }} />
       <Timeline sightings={sightings as BirdSighting[]} />
     </>
