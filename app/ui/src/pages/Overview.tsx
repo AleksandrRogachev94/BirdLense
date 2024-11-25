@@ -89,12 +89,12 @@ const TopSpecies = ({ data }: { data: OverviewTopSpecies[] }) => {
     detections: entry.detections.reduce((a, b) => a + b, 0),
   }));
   return (
-    <Box>
+    <Box mb={2}>
       <Typography variant="h6" gutterBottom>
         Top 10 Species
       </Typography>
       <Grid container>
-        <Grid>
+        <Grid size={{ lg: 6 }}>
           <BarChart
             dataset={summedData}
             layout="horizontal"
@@ -116,8 +116,24 @@ const TopSpecies = ({ data }: { data: OverviewTopSpecies[] }) => {
             margin={{ left: 100 }}
           />
         </Grid>
-        <Grid mt={6.5}>
+        <Grid mt={6.5} size={{ lg: 6 }}>
           <Heatmap data={data} />
+        </Grid>
+        <Grid
+          size={{ lg: 6 }}
+          container
+          justifyContent="center"
+          alignItems="center"
+        >
+          <Typography variant="h6">Detection Count</Typography>
+        </Grid>
+        <Grid
+          size={{ lg: 6 }}
+          container
+          justifyContent="center"
+          alignItems="center"
+        >
+          <Typography variant="h6">Hours of Day</Typography>
         </Grid>
       </Grid>
     </Box>
