@@ -1,3 +1,4 @@
+import threading
 import time
 from datetime import datetime, timezone
 import argparse
@@ -37,7 +38,19 @@ def get_output_path():
     return output_dir
 
 
+def heartbeat():
+    api = API()
+    id = None
+    while True:
+        # keep updating activity_log record until restart
+        id = api.activity_log(type='heartbeat', data={"status": "up"}, id=id)
+        time.sleep(60)
+
+
 def main():
+    heartbeat_thread = threading.Thread(target=heartbeat, daemon=True)
+    heartbeat_thread.start()
+
     parser = argparse.ArgumentParser(description="Smart bird feeder program")
     parser.add_argument('input', type=str, nargs='?',
                         help='Input source, camera/video file')

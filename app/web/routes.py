@@ -1,6 +1,7 @@
+import json
 from flask import request
-from datetime import datetime
-from models import db, BirdFood, Video, Species, VideoSpecies
+from datetime import datetime, timezone
+from models import ActivityLog, db, BirdFood, Video, Species, VideoSpecies
 from util import fetch_weather_data
 
 
@@ -203,3 +204,32 @@ def register_routes(app):
     def notify():
         detection = request.json.get('detection')
         return {'message': f'Successfully received notification of {detection}'}, 200
+
+    @app.route('/api/activity_log', methods=['POST'])
+    def add_or_update_activity_log():
+        # Get the incoming JSON data
+        data = request.json
+        activity_type = data.get('type')
+        activity_data = json.dumps(data.get('data'))
+        activity_id = data.get('id')
+
+        # Validate required fields
+        if not activity_type or activity_data is None:
+            return {'error': 'Both "type" and "data" are required'}, 400
+
+        # If no id is provided, create a new ActivityLog
+        if activity_id is None:
+            new_log = ActivityLog(type=activity_type, data=activity_data)
+            db.session.add(new_log)
+            db.session.commit()
+            return {'message': 'Activity log created successfully', 'id': new_log.id}, 201
+        # If id is provided, update the existing ActivityLog
+        else:
+            log = ActivityLog.query.get(activity_id)
+            if not log:
+                return {'error': 'Activity log with this ID not found'}, 404
+            log.type = activity_type
+            log.data = activity_data
+            log.updated_at = datetime.now(timezone.utc)
+            db.session.commit()
+            return {'message': 'Activity log updated successfully', 'id': log.id}, 200
