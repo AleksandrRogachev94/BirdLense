@@ -1,8 +1,17 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Timeline } from '../components/Timeline';
 import { TimelineStats } from '../components/TimelineStats';
 import { BirdSighting } from '../types';
-import { Box, CircularProgress, Divider } from '@mui/material';
+import {
+  Box,
+  CircularProgress,
+  Divider,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+} from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -12,6 +21,25 @@ import { fetchSightings } from '../api/api';
 
 export function TimelinePage() {
   const [date, setDate] = useState<Dayjs | null>(dayjs());
+  const [speciesId, setSpeciesId] = useState<string>('all');
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Update speciesId from query params
+  useEffect(() => {
+    const paramSpeciesId = searchParams.get('speciesId');
+    if (paramSpeciesId) setSpeciesId(paramSpeciesId);
+  }, [searchParams]);
+
+  // Update query param when speciesId changes
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams);
+    if (speciesId === 'all') {
+      params.delete('speciesId');
+    } else {
+      params.set('speciesId', speciesId);
+    }
+    setSearchParams(params);
+  }, [speciesId, setSearchParams]);
 
   // Fetch bird sightings
   const {
@@ -23,6 +51,18 @@ export function TimelinePage() {
     queryFn: () => fetchSightings(date),
     enabled: !!date, // Only fetch sightings if a date is selected
   });
+
+  // Get species list from sightings
+  const speciesList = sightings
+    ? Array.from(
+        new Set(sightings.map((sighting: BirdSighting) => sighting.species)),
+      )
+    : [];
+
+  // Filter sightings by speciesId
+  const filteredSightings = sightings?.filter((sighting: BirdSighting) =>
+    speciesId === 'all' ? true : sighting.species.id === speciesId,
+  );
 
   if (isLoadingSightings)
     return (
@@ -38,7 +78,7 @@ export function TimelinePage() {
         display="flex"
         justifyContent="center"
         alignItems="center"
-        sx={{ mb: 3 }}
+        sx={{ '& > :not(style)': { m: 1, mb: 4, width: '25ch' } }}
       >
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DatePicker
@@ -47,11 +87,27 @@ export function TimelinePage() {
             onChange={(newValue) => setDate(newValue)}
           />
         </LocalizationProvider>
+        <FormControl>
+          <InputLabel id="species-select-label">Species</InputLabel>
+          <Select
+            labelId="species-select-label"
+            value={speciesId}
+            onChange={(e) => setSpeciesId(e.target.value)}
+            label="Species"
+          >
+            <MenuItem value="all">All</MenuItem>
+            {speciesList.map((species) => (
+              <MenuItem key={species.id} value={species.id}>
+                {species.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
       </Box>
 
-      <TimelineStats sightings={sightings as BirdSighting[]} />
+      <TimelineStats sightings={filteredSightings as BirdSighting[]} />
       <Divider sx={{ marginBottom: 4 }} />
-      <Timeline sightings={sightings as BirdSighting[]} />
+      <Timeline sightings={filteredSightings as BirdSighting[]} />
     </>
   );
 }
