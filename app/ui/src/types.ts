@@ -62,7 +62,7 @@ export interface TimelineGroup {
 }
 
 export interface BirdFood {
-  id: string;
+  id: number;
   name: string;
   active: boolean;
 }

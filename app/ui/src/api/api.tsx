@@ -38,12 +38,21 @@ export const fetchBirdFood = async (): Promise<BirdFood[]> => {
   });
 };
 
-export const toggleBirdFood = async (id: string) => {
+export const toggleBirdFood = async (id: number) => {
   return new Promise((resolve) => {
     setTimeout(() => {
       const food = mockBirdFood.find((item) => item.id === id);
       if (food) food.active = !food.active;
       resolve(food);
+    }, 300); // Simulates API latency
+  });
+};
+
+export const addBirdFood = async (newFood: Partial<BirdFood>) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      mockBirdFood.unshift({ id: 10, active: true, ...newFood } as BirdFood);
+      resolve(newFood);
     }, 300); // Simulates API latency
   });
 };
