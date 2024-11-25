@@ -1,5 +1,6 @@
 import json
 from flask import request
+from sqlalchemy import func, case, distinct
 from datetime import datetime, timezone
 from models import ActivityLog, db, BirdFood, Video, Species, VideoSpecies
 from util import fetch_weather_data
@@ -233,3 +234,83 @@ def register_routes(app):
             log.updated_at = datetime.now(timezone.utc)
             db.session.commit()
             return {'message': 'Activity log updated successfully', 'id': log.id}, 200
+
+    @app.route('/api/overview', methods=['GET'])
+    def get_overview():
+        # Get the current date and time
+        now = datetime.now()
+        start_of_day = now.replace(hour=0, minute=0, second=0, microsecond=0)
+
+        # Query to get top species with hourly detections
+        top_species_query = db.session.query(
+            Species.id,
+            Species.name,
+            # Generate hourly counts using SQLite's strftime function to extract the hour
+            *[
+                func.count(
+                    case(
+                        (func.strftime('%H', VideoSpecies.created_at)
+                         == str(hour).zfill(2), 1),  # condition
+                        else_=None  # default for non-matching cases
+                    )
+                ).label(f'detection_hour_{hour}')
+                for hour in range(24)
+            ]
+        ).join(VideoSpecies, VideoSpecies.species_id == Species.id) \
+            .group_by(Species.id) \
+            .order_by(func.count(VideoSpecies.id).desc()) \
+            .limit(5)  # Limit to top 5 species
+
+        # Format the top species data
+        top_species = []
+        for species in top_species_query:
+            species_data = {
+                'id': species.id,
+                'name': species.name,
+                'detections': [getattr(species, f'detection_hour_{hour}', 0) for hour in range(24)]
+            }
+            top_species.append(species_data)
+
+        # Query to get overall statistics
+        stats_query = db.session.query(
+            func.count(distinct(Species.id)).label('uniqueSpecies'),
+            func.count(VideoSpecies.id).label('totalDetections'),
+            func.sum(
+                case(
+                    (VideoSpecies.created_at >= start_of_day, 1),
+                    else_=0
+                )
+            ).label('lastHourDetections'),
+            func.sum(
+                case(
+                    (VideoSpecies.source == 'video', 1),
+                    else_=0
+                )
+            ).label('videoDetections'),
+            func.sum(
+                case(
+                    (VideoSpecies.source == 'audio', 1),
+                    else_=0
+                )
+            ).label('audioDetections'),
+            func.strftime('%H', func.max(VideoSpecies.created_at)
+                          ).label('busiestHour')
+        ).join(VideoSpecies, VideoSpecies.species_id == Species.id).first()
+
+        # Format stats data
+        stats = {
+            'uniqueSpecies': stats_query.uniqueSpecies,
+            'totalDetections': stats_query.totalDetections,
+            'lastHourDetections': stats_query.lastHourDetections,
+            'videoDetections': stats_query.videoDetections,
+            'audioDetections': stats_query.audioDetections,
+            'busiestHour': int(stats_query.busiestHour) if stats_query.busiestHour else 0
+        }
+
+        # Construct the final overview data
+        overview_data = {
+            'topSpecies': top_species,
+            'stats': stats
+        }
+
+        return overview_data, 200

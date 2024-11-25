@@ -125,11 +125,10 @@ def main():
         try:
             video_detections = decision_maker.get_results(
                 frame_processor.tracks)
-            detections = video_detections + audio_detections
             logging.info(
-                f'Processing stopped. Result: {detections}')
-            if len(detections) > 0:
-                api.create_video(detections, start_time,
+                f'Processing stopped. Video Result: {video_detections}; Audio Result: {audio_detections}')
+            if len(video_detections) + len(audio_detections) > 0:
+                api.create_video(video_detections, audio_detections, start_time,
                                  end_time, video_output, audio_output)
             else:
                 # no detections, delete folder and do nothing

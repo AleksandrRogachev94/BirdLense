@@ -1,6 +1,6 @@
 import datetime
 from typing import List
-from sqlalchemy import String, Integer, Float, DateTime, Table, ForeignKey, Column, Index
+from sqlalchemy import String, Integer, Float, DateTime, Table, ForeignKey, Column, Index, desc
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 from flask_sqlalchemy import SQLAlchemy
@@ -35,9 +35,9 @@ class VideoSpecies(db.Model):
     __table_args__ = (
         # improves both queries: created_at/species_id and just species_id
         Index('ix_videospecies_created_at_species',
-              'created_at DESC', 'species_id'),
+              desc('created_at'), 'species_id'),
         Index('ix_videospecies_species_created_at',
-              'species_id', 'created_at DESC'),
+              'species_id', desc('created_at')),
         # for video details queries
         Index('ix_videospecies_video_id', 'video_id'),
     )
@@ -128,5 +128,5 @@ class ActivityLog(db.Model):
     data: Mapped[str] = mapped_column(String(), nullable=True)
 
     __table_args__ = (
-        Index('ix_activitylog_type_created_at', 'type', 'created_at'),
+        Index('ix_activitylog_type_created_at', 'type', desc('created_at')),
     )
