@@ -1,8 +1,8 @@
 import Grid from '@mui/material/Grid2';
 import { BirdSighting, Weather } from '../types';
-import { Box, Card, CardContent, Typography } from '@mui/material';
 import { AccessTime, Pets } from '@mui/icons-material';
 import { WeatherCard } from './WeatherCard';
+import { StatCard } from './StatCard';
 
 const calculateSpeciesSpotted = (data: BirdSighting[]) => {
   const speciesSet = new Set<string>();
@@ -35,49 +35,21 @@ export const Stats = ({
   return (
     <Grid container spacing={3} mb={5}>
       <Grid size={{ xs: 12, sm: 4 }}>
-        <Card>
-          <CardContent>
-            <Typography variant="h6" gutterBottom>
-              <Box display="flex" alignItems="center">
-                <Pets fontSize="large" sx={{ mr: 1 }} color="primary" />
-                <span>Total Sightings</span>
-              </Box>
-            </Typography>
-            <Typography variant="h5">
-              <strong>{sightings.length}</strong>
-            </Typography>
-          </CardContent>
-        </Card>
+        <StatCard
+          icon={Pets}
+          title="Total Sightings"
+          value={sightings.length}
+        />
       </Grid>
       <Grid size={{ xs: 12, sm: 4 }}>
-        <Card>
-          <CardContent>
-            <Typography variant="h6" gutterBottom>
-              <Box display="flex" alignItems="center">
-                <Pets fontSize="large" sx={{ mr: 1 }} color="primary" />
-                <span>Species Spotted</span>
-              </Box>
-            </Typography>
-            <Typography variant="h5">
-              <strong>{speciesSpotted}</strong>
-            </Typography>
-          </CardContent>
-        </Card>
+        <StatCard icon={Pets} title="Species Spotted" value={speciesSpotted} />
       </Grid>
       <Grid size={{ xs: 12, sm: 4 }}>
-        <Card>
-          <CardContent>
-            <Typography variant="h6" gutterBottom>
-              <Box display="flex" alignItems="center">
-                <AccessTime fontSize="large" sx={{ mr: 1 }} color="primary" />
-                <span>Total Duration</span>
-              </Box>
-            </Typography>
-            <Typography variant="h5">
-              <strong>{totalDurationMin}m</strong>
-            </Typography>
-          </CardContent>
-        </Card>
+        <StatCard
+          icon={AccessTime}
+          title="Total Duration"
+          value={`${totalDurationMin}m`}
+        />
       </Grid>
       {weather && (
         <Grid size={{ xs: 6, sm: 6 }}>

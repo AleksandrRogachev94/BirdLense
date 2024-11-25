@@ -1,6 +1,7 @@
 import {
   BirdFood,
   BirdSighting,
+  OverviewData,
   Settings,
   Species,
   Video,
@@ -235,3 +236,96 @@ export const mockBirdDirectory: Species[] = [
     active: true,
   },
 ];
+
+export const mockOverviewData: OverviewData = {
+  stats: {
+    uniqueSpecies: 20,
+    totalDetections: 180,
+    lastHourDetections: 12,
+    videoDetections: 744,
+    audioDetections: 1152,
+    busiestHour: 5,
+  },
+  topSpecies: [
+    {
+      id: 1,
+      name: 'Great Kiskadee',
+      detections: [
+        54, 90, 8, 77, 98, 114, 74, 80, 27, 114, 116, 61, 56, 94, 43, 55, 118,
+        9, 37, 81, 75, 54, 37, 89,
+      ],
+    },
+    {
+      id: 2,
+      name: 'Monk Parakeet',
+      detections: [
+        31, 0, 62, 20, 9, 50, 90, 61, 96, 95, 3, 44, 77, 17, 85, 41, 67, 61, 43,
+        67, 15, 60, 1, 15,
+      ],
+    },
+    {
+      id: 3,
+      name: 'Ferruginous Owl',
+      detections: [
+        3, 1, 1, 17, 25, 23, 0, 22, 18, 19, 11, 5, 1, 17, 16, 10, 15, 24, 9, 8,
+        9, 7, 16, 13,
+      ],
+    },
+    {
+      id: 4,
+      name: 'Killdeer',
+      detections: [
+        12, 34, 56, 23, 45, 12, 34, 56, 23, 45, 12, 34, 56, 23, 45, 12, 34, 56,
+        23, 45, 12, 34, 56, 23,
+      ],
+    },
+    {
+      id: 5,
+      name: 'Social Flycatcher',
+      detections: [
+        10, 20, 30, 40, 50, 10, 20, 30, 40, 50, 10, 20, 30, 40, 50, 10, 20, 30,
+        40, 50, 10, 20, 30, 40,
+      ],
+    },
+    {
+      id: 6,
+      name: 'American Robin',
+      detections: [
+        5, 10, 15, 20, 25, 30, 35, 40, 5, 10, 15, 20, 25, 30, 35, 40, 5, 10, 15,
+        20, 25, 30, 35, 40,
+      ],
+    },
+    {
+      id: 7,
+      name: 'Northern Cardinal',
+      detections: [
+        3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 3, 6, 9, 12, 15, 18, 21, 24, 27,
+        30, 3, 6, 9, 12,
+      ],
+    },
+    {
+      id: 8,
+      name: 'House Sparrow',
+      detections: [
+        6, 12, 15, 14, 13, 2, 25, 8, 23, 16, 15, 7, 7, 3, 24, 25, 2, 0, 13, 11,
+        3, 9, 25, 18,
+      ],
+    },
+    {
+      id: 9,
+      name: 'Blue Jay',
+      detections: [
+        19, 3, 7, 12, 15, 8, 6, 14, 11, 9, 5, 13, 2, 10, 4, 16, 1, 17, 18, 20,
+        7, 6, 12, 11,
+      ],
+    },
+    {
+      id: 10,
+      name: 'Bald Eagle',
+      detections: [
+        1, 3, 5, 7, 9, 2, 4, 6, 8, 10, 1, 3, 5, 7, 9, 2, 4, 6, 8, 10, 1, 3, 5,
+        7,
+      ],
+    },
+  ],
+};
