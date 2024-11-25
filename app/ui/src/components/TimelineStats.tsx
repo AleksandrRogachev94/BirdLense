@@ -28,14 +28,14 @@ export const TimelineStats = ({ sightings }: { sightings: BirdSighting[] }) => {
   return (
     <Grid container spacing={3} mb={5}>
       <Grid size={{ xs: 12, sm: 4 }}>
-        <StatCard
-          icon={Pets}
-          title="Total Sightings"
-          value={sightings.length}
-        />
+        <StatCard icon={Pets} title="Unique Species" value={speciesSpotted} />
       </Grid>
       <Grid size={{ xs: 12, sm: 4 }}>
-        <StatCard icon={Pets} title="Species Spotted" value={speciesSpotted} />
+        <StatCard
+          icon={Pets}
+          title="Total Detections"
+          value={sightings.length}
+        />
       </Grid>
       <Grid size={{ xs: 12, sm: 4 }}>
         <StatCard
