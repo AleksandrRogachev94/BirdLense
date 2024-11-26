@@ -23,8 +23,8 @@ export interface BirdSighting {
 export interface VideoSpecies {
   species_id: string;
   species_name: string;
-  start_time: string;
-  end_time: string;
+  start_time: number; // seconds from video start time
+  end_time: number; // seconds from video start time
   confidence: number;
   source: string;
   image_url?: string;

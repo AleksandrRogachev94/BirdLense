@@ -122,8 +122,8 @@ export const mockVideo: Video = {
     {
       species_id: 'sparrow_001',
       species_name: 'House Sparrow',
-      start_time: '2024-11-22T10:00:10Z',
-      end_time: '2024-11-22T10:00:20Z',
+      start_time: 10,
+      end_time: 20,
       confidence: 0.98,
       source: 'video',
       image_url:
@@ -132,8 +132,8 @@ export const mockVideo: Video = {
     {
       species_id: 'sparrow_001',
       species_name: 'House Sparrow',
-      start_time: '2024-11-22T10:00:25Z',
-      end_time: '2024-11-22T10:00:35Z',
+      start_time: 25,
+      end_time: 35,
       confidence: 0.85,
       source: 'audio',
       image_url:
@@ -142,8 +142,8 @@ export const mockVideo: Video = {
     {
       species_id: 'robin_002',
       species_name: 'European Robin',
-      start_time: '2024-11-22T10:00:30Z',
-      end_time: '2024-11-22T10:00:40Z',
+      start_time: 30,
+      end_time: 40,
       confidence: 0.92,
       source: 'audio',
       image_url:
