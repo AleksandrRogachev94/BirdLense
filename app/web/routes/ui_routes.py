@@ -175,11 +175,11 @@ def register_routes(app):
 
         # Format stats data
         stats = {
-            'uniqueSpecies': stats_query.uniqueSpecies,
-            'totalDetections': stats_query.totalDetections,
-            'lastHourDetections': stats_query.lastHourDetections,
-            'videoDetections': stats_query.videoDetections,
-            'audioDetections': stats_query.audioDetections,
+            'uniqueSpecies': stats_query.uniqueSpecies if stats_query.uniqueSpecies else 0,
+            'totalDetections': stats_query.totalDetections if stats_query.totalDetections else 0,
+            'lastHourDetections': stats_query.lastHourDetections if stats_query.lastHourDetections else 0,
+            'videoDetections': stats_query.videoDetections if stats_query.videoDetections else 0,
+            'audioDetections': stats_query.audioDetections if stats_query.audioDetections else 0,
             'busiestHour': int(stats_query.busiestHour) if stats_query.busiestHour else 0
         }
 
