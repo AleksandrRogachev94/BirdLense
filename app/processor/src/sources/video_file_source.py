@@ -10,7 +10,7 @@ def recording_worker(control_queue, frame_queue, video_path, main_size, lores_si
     """
     logger = logging.getLogger(__name__)
     cap = cv2.VideoCapture(video_path)
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    fourcc = cv2.VideoWriter_fourcc(*'avc1')
 
     out = None
     recording = False
