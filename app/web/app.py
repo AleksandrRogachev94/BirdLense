@@ -1,7 +1,8 @@
 from flask import Flask
 import logging
 from logging.handlers import RotatingFileHandler
-from routes import register_routes
+import routes.ui_routes
+import routes.processor_routes
 from models import db
 from seed.seed import seed
 
@@ -29,6 +30,7 @@ def create_app():
         db.create_all()
         seed()
 
-    register_routes(app)
+    routes.ui_routes.register_routes(app)
+    routes.processor_routes.register_routes(app)
 
     return app
