@@ -1,4 +1,3 @@
-import json
 import os
 from flask import request, send_from_directory, abort
 from sqlalchemy import func, case, distinct
@@ -61,7 +60,8 @@ def register_routes(app):
                     'start_time': vs.start_time,
                     'end_time': vs.end_time,
                     'confidence': vs.confidence,
-                    'source': vs.source
+                    'source': vs.source,
+                    'image_url': vs.species.image_url
                 } for vs in video.video_species
             ],
             'food': [
