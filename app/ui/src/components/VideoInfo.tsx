@@ -105,12 +105,12 @@ export const VideoInfo = ({ video }: { video: Video }) => {
                 >
                   <CardMedia
                     component="img"
-                    alt="green iguana"
+                    alt={group.species_name}
                     height="175"
                     image={group.image_url}
                   />
                   <CardContent>
-                    <Typography gutterBottom variant="h5" component="div">
+                    <Typography gutterBottom variant="h6" component="div">
                       {group.species_name} ({group.detections.length})
                     </Typography>
                     <Typography
@@ -159,24 +159,26 @@ export const VideoInfo = ({ video }: { video: Video }) => {
         </Grid>
 
         {/* Food Section */}
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Paper sx={{ padding: 2 }}>
-            <Typography variant="h6" gutterBottom>
-              Bird Food
-            </Typography>
-            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-              {food.map((f) => (
-                <Chip
-                  key={f.id}
-                  icon={<FoodIcon />}
-                  label={f.name}
-                  variant="outlined"
-                  color="success"
-                />
-              ))}
-            </Box>
-          </Paper>
-        </Grid>
+        {food.length > 0 && (
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Paper sx={{ padding: 2 }}>
+              <Typography variant="h6" gutterBottom>
+                Bird Food
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                {food.map((f) => (
+                  <Chip
+                    key={f.id}
+                    icon={<FoodIcon />}
+                    label={f.name}
+                    variant="outlined"
+                    color="success"
+                  />
+                ))}
+              </Box>
+            </Paper>
+          </Grid>
+        )}
       </Grid>
     </Box>
   );

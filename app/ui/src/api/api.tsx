@@ -12,7 +12,8 @@ import { BirdFood, BirdSighting, Settings } from '../types';
 import axios from 'axios';
 
 const useMockData = false; // Set to false to use real API calls
-const BASE_URL = 'http://smartbirdfeeder:8000/api/ui';
+export const BASE_URL = 'http://smartbirdfeeder:8000';
+export const BASE_API_URL = `${BASE_URL}/api/ui`;
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -24,7 +25,7 @@ export const fetchTimeline = async (
     await sleep(1000);
     return mockBirdSighting;
   } else {
-    const response = await axios.get(`${BASE_URL}/timeline`, {
+    const response = await axios.get(`${BASE_API_URL}/timeline`, {
       params: {
         start_time: startTime.unix(),
         end_time: endTime.unix(),
@@ -39,7 +40,7 @@ export const fetchWeather = async () => {
     await sleep(1000);
     return mockWeather;
   } else {
-    const response = await axios.get(`${BASE_URL}/weather`);
+    const response = await axios.get(`${BASE_API_URL}/weather`);
     return response.data;
   }
 };
@@ -49,7 +50,7 @@ export const fetchVideo = async (id: string) => {
     await sleep(1000);
     return mockVideo;
   } else {
-    const response = await axios.get(`${BASE_URL}/videos/${id}`);
+    const response = await axios.get(`${BASE_API_URL}/videos/${id}`);
     return response.data;
   }
 };
@@ -71,7 +72,7 @@ export const toggleBirdFood = async (id: number) => {
     if (food) food.active = !food.active;
     return food;
   } else {
-    const response = await axios.post(`${BASE_URL}/bird-food/${id}/toggle`);
+    const response = await axios.post(`${BASE_API_URL}/bird-food/${id}/toggle`);
     return response.data;
   }
 };
@@ -82,7 +83,7 @@ export const addBirdFood = async (newFood: Partial<BirdFood>) => {
     mockBirdFood.unshift({ id: 10, active: true, ...newFood } as BirdFood);
     return newFood;
   } else {
-    const response = await axios.post(`${BASE_URL}/bird-food`, newFood);
+    const response = await axios.post(`${BASE_API_URL}/bird-food`, newFood);
     return response.data;
   }
 };
@@ -92,7 +93,7 @@ export const fetchSettings = async () => {
     await sleep(1000);
     return mockSetttings;
   } else {
-    const response = await axios.get(`${BASE_URL}/settings`);
+    const response = await axios.get(`${BASE_API_URL}/settings`);
     return response.data;
   }
 };
@@ -102,7 +103,7 @@ export const updateSettings = async (settings: Settings) => {
     await sleep(1000);
     return settings;
   } else {
-    const response = await axios.put(`BASE_URL/settings`, settings);
+    const response = await axios.put(`${BASE_API_URL}/settings`, settings);
     return response.data;
   }
 };
@@ -142,7 +143,7 @@ export const fetchBirdDirectory = async (active: boolean) => {
     await sleep(1000);
     return mockBirdDirectory;
   } else {
-    const response = await axios.get(`${BASE_URL}/species`, {
+    const response = await axios.get(`${BASE_API_URL}/species`, {
       params: { active },
     });
     return response.data;
@@ -154,7 +155,7 @@ export const fetchOverviewData = async () => {
     await sleep(1000);
     return mockOverviewData;
   } else {
-    const response = await axios.get(`${BASE_URL}/overview`);
+    const response = await axios.get(`${BASE_API_URL}/overview`);
     return response.data;
   }
 };
