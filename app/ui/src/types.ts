@@ -100,7 +100,7 @@ export interface Species {
   name: string;
   parent_id: number | null;
   created_at: string;
-  photo: string | null;
+  image_url: string | null;
   description: string | null;
   active: boolean;
 }
