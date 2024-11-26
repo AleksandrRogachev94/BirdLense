@@ -240,7 +240,9 @@ export const Overview = () => {
         stats={overviewData?.stats as OverviewStats}
         weather={weather as Weather}
       />
-      <TopSpecies data={overviewData?.topSpecies as OverviewTopSpecies[]} />
+      {overviewData?.topSpecies?.length > 0 && (
+        <TopSpecies data={overviewData?.topSpecies as OverviewTopSpecies[]} />
+      )}
     </>
   );
 };
