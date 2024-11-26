@@ -52,26 +52,13 @@ export const VideoPlayer = ({ video }: { video: Video }) => {
     new Date(video.end_time).getTime() / 1000 -
     new Date(video.start_time).getTime() / 1000;
 
-  const speciesDetections = useMemo(
-    () =>
-      video.species.map((species) => ({
-        ...species,
-        start:
-          new Date(species.start_time).getTime() / 1000 -
-          new Date(video.start_time).getTime() / 1000,
-        end:
-          new Date(species.end_time).getTime() / 1000 -
-          new Date(video.start_time).getTime() / 1000,
-      })),
-    [video.species, video.start_time],
-  );
-
   const activeSpecies = useMemo(
     () =>
-      speciesDetections.filter(
-        (detection) => progress >= detection.start && progress <= detection.end,
+      video.species.filter(
+        (species) =>
+          progress >= species.start_time && progress <= species.end_time,
       ),
-    [progress, speciesDetections],
+    [progress, video.species],
   );
 
   const handleProgress = (state: { playedSeconds: number }) => {
@@ -127,20 +114,20 @@ export const VideoPlayer = ({ video }: { video: Video }) => {
           />
 
           {/* Detection Markers */}
-          {speciesDetections.map((detection, index) => (
+          {video.species.map((species, index) => (
             <Box
               key={index}
               sx={{
                 position: 'absolute',
-                left: `${(detection.start / duration) * 100}%`,
+                left: `${(species.start_time / duration) * 100}%`,
                 top: '0',
                 bottom: '0',
-                width: `${((detection.end - detection.start) / duration) * 100}%`,
-                backgroundColor: labelToUniqueHexColor(detection.species_name),
+                width: `${((species.end_time - species.start_time) / duration) * 100}%`,
+                backgroundColor: labelToUniqueHexColor(species.species_name),
                 cursor: 'pointer',
               }}
-              onClick={() => handleSeek(detection.start)}
-              title={detection.species_name}
+              onClick={() => handleSeek(species.start_time)}
+              title={species.species_name}
             />
           ))}
         </Box>

@@ -55,9 +55,7 @@ export const VideoInfo = ({ video }: { video: Video }) => {
     // Add detection to the group
     group.detections.push(sp);
     // Calculate the duration for this detection (in seconds)
-    const detectionDuration =
-      (new Date(sp.end_time).getTime() - new Date(sp.start_time).getTime()) /
-      1000;
+    const detectionDuration = sp.end_time - sp.start_time;
     // Add the detection duration to the total duration
     group.totalDuration += detectionDuration;
     return groups;
