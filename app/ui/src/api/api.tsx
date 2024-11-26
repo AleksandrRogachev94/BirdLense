@@ -103,7 +103,7 @@ export const updateSettings = async (settings: Settings) => {
     await sleep(1000);
     return settings;
   } else {
-    const response = await axios.put(`${BASE_API_URL}/settings`, settings);
+    const response = await axios.patch(`${BASE_API_URL}/settings`, settings);
     return response.data;
   }
 };
