@@ -26,7 +26,7 @@ export function Timeline({ sightings }: { sightings: BirdSighting[] }) {
   return (
     <MuiTimeline position="alternate">
       {sightings.map((sighting) => (
-        <TimelineItem key={sighting.video_id}>
+        <TimelineItem key={sighting.id}>
           <TimelineOppositeContent color="text.secondary">
             {new Date(sighting.start_time).toLocaleTimeString()}
           </TimelineOppositeContent>
@@ -60,7 +60,7 @@ export function Timeline({ sightings }: { sightings: BirdSighting[] }) {
                           label={`${(new Date(sighting.end_time).getTime() - new Date(sighting.start_time).getTime()) / 1000}s`}
                           size="small"
                         />
-                        {sighting.weather && (
+                        {sighting.weather?.temp && (
                           <Chip
                             icon={<Thermostat />}
                             label={`${sighting.weather.temp}°C`}

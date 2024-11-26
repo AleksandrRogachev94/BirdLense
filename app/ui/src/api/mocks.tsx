@@ -10,7 +10,7 @@ import {
 
 export const mockBirdSighting: BirdSighting[] = [
   {
-    id: '1',
+    id: 1,
     video_id: 'vid_001',
     start_time: '2024-11-22T11:05:00Z',
     end_time: '2024-11-22T11:07:10Z', // Random duration: 130 seconds
@@ -21,7 +21,7 @@ export const mockBirdSighting: BirdSighting[] = [
       clouds: 10,
     },
     species: {
-      id: '1',
+      id: 1,
       name: 'Northern Cardinal',
       image_url:
         'https://images.unsplash.com/photo-1623715618305-ceb095873eb1?q=80&w=3474&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
@@ -32,7 +32,7 @@ export const mockBirdSighting: BirdSighting[] = [
     },
   },
   {
-    id: '3',
+    id: 3,
     video_id: 'vid_003',
     start_time: '2024-11-22T10:10:00Z',
     end_time: '2024-11-22T10:13:40Z', // Random duration: 220 seconds
@@ -43,7 +43,7 @@ export const mockBirdSighting: BirdSighting[] = [
       clouds: 50,
     },
     species: {
-      id: '3',
+      id: 3,
       name: 'House Sparrow',
       image_url:
         'https://images.unsplash.com/photo-1654567835135-2a39ea442e45?q=80&w=3432&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
@@ -54,7 +54,7 @@ export const mockBirdSighting: BirdSighting[] = [
     },
   },
   {
-    id: '2',
+    id: 2,
     video_id: 'vid_002',
     start_time: '2024-11-22T09:00:00Z',
     end_time: '2024-11-22T09:04:15Z', // Random duration: 255 seconds
@@ -65,7 +65,7 @@ export const mockBirdSighting: BirdSighting[] = [
       clouds: 25,
     },
     species: {
-      id: '2',
+      id: 2,
       name: 'Blue Jay',
       image_url:
         'https://images.unsplash.com/photo-1649115727823-5215e906dd57?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
@@ -76,7 +76,7 @@ export const mockBirdSighting: BirdSighting[] = [
     },
   },
   {
-    id: '4',
+    id: 4,
     video_id: 'vid_004',
     start_time: '2024-11-22T08:15:00Z',
     end_time: '2024-11-22T08:16:40Z', // Random duration: 100 seconds
@@ -87,7 +87,7 @@ export const mockBirdSighting: BirdSighting[] = [
       clouds: 80,
     },
     species: {
-      id: '4',
+      id: 4,
       name: 'European Robin',
       image_url:
         'https://images.unsplash.com/photo-1627141124845-eaad4d550a53?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
