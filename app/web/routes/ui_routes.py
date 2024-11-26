@@ -239,3 +239,36 @@ def register_routes(app):
             })
 
         return response
+
+    @app.route('/api/ui/species', methods=['GET'])
+    def get_all_species():
+        # Parse the 'active' query parameter
+        active = request.args.get('active')
+
+        # Build query
+        query = db.session.query(Species)
+        if active is not None:
+            try:
+                active_flag = active.lower() in ['true', '1']
+                query = query.filter(Species.active == active_flag)
+            except ValueError:
+                return {'error': 'Invalid value for active. Use true or false.'}, 400
+
+        # Execute query and fetch results
+        species_list = query.order_by(Species.created_at.desc()).all()
+
+        # Construct the response
+        response = [
+            {
+                'id': species.id,
+                'name': species.name,
+                'parent_id': species.parent_id,
+                'created_at': species.created_at.isoformat(),
+                'photo': species.photo,
+                'description': species.description,
+                'active': species.active
+            }
+            for species in species_list
+        ]
+
+        return response
