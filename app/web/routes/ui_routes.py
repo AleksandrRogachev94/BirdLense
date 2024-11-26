@@ -123,7 +123,7 @@ def register_routes(app):
         ).join(VideoSpecies, VideoSpecies.species_id == Species.id) \
             .group_by(Species.id) \
             .order_by(func.count(VideoSpecies.id).desc()) \
-            .limit(5)  # Limit to top 5 species
+            .limit(10)  # Limit to top 10 species
 
         # Format the top species data
         top_species = []
@@ -190,8 +190,8 @@ def register_routes(app):
             return {'error': 'Both start_time and end_time are required'}, 400
 
         try:
-            start_time = datetime.fromisoformat(start_time)
-            end_time = datetime.fromisoformat(end_time)
+            start_time = datetime.fromtimestamp(int(start_time))
+            end_time = datetime.fromtimestamp(int(end_time))
         except ValueError:
             return {'error': 'Invalid datetime format. Use ISO 8601 format (e.g., YYYY-MM-DDTHH:MM:SS)'}, 400
 
