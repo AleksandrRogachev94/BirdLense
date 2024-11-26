@@ -5,6 +5,7 @@ from sqlalchemy import func, case, distinct
 from datetime import datetime, timezone, timedelta
 from models import ActivityLog, db, BirdFood, Video, Species, VideoSpecies
 from util import fetch_weather_data
+from app_config.app_config import app_config
 
 
 def register_routes(app):
@@ -284,3 +285,28 @@ def register_routes(app):
         ]
 
         return response
+
+    @app.route('/api/ui/settings', methods=['GET'])
+    def get_settings():
+        return app_config.config, 200
+
+    @app.route('/api/ui/settings', methods=['PATCH'])
+    def update_settings():
+        try:
+            # Parse JSON body from the request
+            updates = request.json
+            if not updates:
+                return {"error": "No data provided for update"}, 400
+
+            # Recursively merge the updates into the current configuration
+            app_config.config = app_config.merge_dicts(
+                app_config.config, updates)
+
+            # Save the updated configuration back to the user config file
+            app_config.save()
+
+            # Return the updated configuration
+            return app_config.config
+
+        except Exception as e:
+            return {"error": str(e)}, 500
