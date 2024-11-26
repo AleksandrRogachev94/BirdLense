@@ -177,20 +177,19 @@ export const VideoPlayer = ({ video }: { video: Video }) => {
                 },
               }}
             />
+            {/* Labels */}
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                mt: 1,
+                fontSize: '0.8rem',
+              }}
+            >
+              <Typography>{formatTime(progress)}</Typography>
+              <Typography>{formatTime(duration)}</Typography>
+            </Box>
           </Box>
-        </Box>
-
-        {/* Labels */}
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            mt: 1,
-            fontSize: '0.8rem',
-          }}
-        >
-          <Typography>{formatTime(progress)}</Typography>
-          <Typography>{formatTime(duration)}</Typography>
         </Box>
       </Box>
 
