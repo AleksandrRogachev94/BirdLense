@@ -1,5 +1,6 @@
 import json
-from flask import request
+import os
+from flask import request, send_from_directory, abort
 from sqlalchemy import func, case, distinct
 from datetime import datetime, timezone, timedelta
 from models import ActivityLog, db, BirdFood, Video, Species, VideoSpecies
@@ -7,6 +8,17 @@ from util import fetch_weather_data
 
 
 def register_routes(app):
+    @app.route('/files/data/<path:filename>')
+    def serve_file(filename):
+        DATA_DIRECTORY = 'data'
+        # Secure the filename to avoid directory traversal attacks
+        safe_filename = os.path.normpath(filename)
+        # Serve the file
+        try:
+            return send_from_directory(DATA_DIRECTORY, safe_filename)
+        except FileNotFoundError:
+            abort(404)  # File not found
+
     @app.route('/api/ui/health', methods=['GET'])
     def health():
         return {'status': 'ok'}
