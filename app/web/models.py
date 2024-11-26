@@ -58,7 +58,7 @@ class Species(db.Model):
     parent_id = mapped_column(Integer, ForeignKey("species.id"))
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False)
-    photo: Mapped[str] = mapped_column(String(), nullable=True)
+    image_url: Mapped[str] = mapped_column(String(), nullable=True)
     description: Mapped[str] = mapped_column(String(), nullable=True)
     active: Mapped[bool] = mapped_column(
         nullable=False, default=False, server_default="false")

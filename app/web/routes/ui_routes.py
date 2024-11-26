@@ -241,7 +241,7 @@ def register_routes(app):
                 'species': {
                     'id': record.species.id,
                     'name': record.species.name,
-                    'image_url': record.species.photo,
+                    'image_url': record.species.image_url,
                 },
                 'food': [
                     {
@@ -277,7 +277,7 @@ def register_routes(app):
                 'name': species.name,
                 'parent_id': species.parent_id,
                 'created_at': species.created_at.isoformat(),
-                'photo': species.photo,
+                'image_url': species.image_url,
                 'description': species.description,
                 'active': species.active
             }
