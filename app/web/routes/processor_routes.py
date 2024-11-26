@@ -1,7 +1,7 @@
 import json
 import re
 from flask import request
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from models import ActivityLog, db, BirdFood, Video, Species, VideoSpecies
 from util import fetch_weather_data, get_wikipedia_image_and_description
 
@@ -71,7 +71,9 @@ def register_routes(app):
                 end_time=end_time,
                 confidence=confidence,
                 source=source,
-                spectrogram_path=spectrogram_path
+                spectrogram_path=spectrogram_path,
+                # to use it for optimized searching/sorting
+                created_at=new_video.start_time + timedelta(seconds=start_time)
             )
             new_video.video_species.append(video_species)
 
