@@ -45,7 +45,8 @@ const SmallSpeciesCard = ({ species }: { species: VideoSpecies }) => {
 
 export const VideoPlayer = ({ video }: { video: Video }) => {
   const theme = useTheme();
-  const playerRef = useRef<ReactPlayer | null>(null);
+  const videoRef = useRef<ReactPlayer | null>(null);
+  const audioRef = useRef<ReactPlayer | null>(null);
   const [progress, setProgress] = useState(0);
 
   const duration =
@@ -63,12 +64,18 @@ export const VideoPlayer = ({ video }: { video: Video }) => {
 
   const handleProgress = (state: { playedSeconds: number }) => {
     setProgress(state.playedSeconds);
+    if (audioRef.current) {
+      audioRef.current.seekTo(state.playedSeconds, 'seconds');
+    }
   };
 
   const handleSeek = (time: number) => {
-    if (playerRef.current) {
-      playerRef.current.seekTo(time, 'seconds');
+    if (videoRef.current) {
+      videoRef.current.seekTo(time, 'seconds');
       setProgress(time);
+    }
+    if (audioRef.current) {
+      audioRef.current.seekTo(time, 'seconds');
     }
   };
 
@@ -83,13 +90,21 @@ export const VideoPlayer = ({ video }: { video: Video }) => {
       {/* Video Player */}
       <Box height={500}>
         <ReactPlayer
-          ref={playerRef}
+          ref={videoRef}
           url={`${BASE_URL}/files/${video.video_path}`}
           playing={true}
           controls={false}
           onProgress={handleProgress}
           height="100%"
           width="100%"
+        />
+        <ReactPlayer
+          ref={audioRef}
+          url={`${BASE_URL}/files/${video.audio_path}`}
+          playing={true}
+          controls={false}
+          height="0"
+          width="0"
         />
       </Box>
 
