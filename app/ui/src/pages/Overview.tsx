@@ -32,11 +32,11 @@ const Heatmap = ({
         alignItems: 'center',
       }}
     >
-      <div
-        style={{
+      <Box
+        sx={{
           display: 'grid',
           gridTemplateColumns: `repeat(${hours.length}, 1fr)`,
-          rowGap: '5px',
+          rowGap: `${(5 * 10) / data.length}px`,
         }}
       >
         {data.map((item) => (
@@ -51,7 +51,7 @@ const Heatmap = ({
                 <div
                   style={{
                     width: `${cellWidth}px`,
-                    height: `${cellHeight}px`,
+                    height: `${(cellHeight * 10) / data.length}px`,
                     opacity: d / maxDetections,
                     backgroundColor: theme.palette.secondary.main,
                   }}
@@ -60,17 +60,18 @@ const Heatmap = ({
             ))}
           </React.Fragment>
         ))}
-      </div>
-      <div
-        style={{
+      </Box>
+      <Box
+        sx={{
           display: 'grid',
           gridTemplateColumns: `repeat(${hours.length}, 1fr)`,
+          mt: 1,
         }}
       >
         {hours.map((hour) => (
-          <div
+          <Box
             key={hour}
-            style={{
+            sx={{
               textAlign: 'center',
               fontSize: '0.75em',
               width: `${cellWidth}px`,
@@ -78,9 +79,9 @@ const Heatmap = ({
             }}
           >
             {hour}
-          </div>
+          </Box>
         ))}
-      </div>
+      </Box>
     </Box>
   );
 };
