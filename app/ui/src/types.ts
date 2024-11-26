@@ -1,5 +1,5 @@
 export interface BirdSighting {
-  id: string;
+  id: number;
   video_id: string;
   start_time: string;
   end_time: string;
@@ -10,7 +10,7 @@ export interface BirdSighting {
     clouds: number;
   };
   species: {
-    id: string;
+    id: number;
     name: string;
     image_url?: string;
   };
@@ -54,11 +54,6 @@ export interface Video {
     id: string;
     name: string;
   }[];
-}
-
-export interface TimelineGroup {
-  date: string;
-  sightings: BirdSighting[];
 }
 
 export interface BirdFood {

@@ -8,104 +8,153 @@ import {
   mockVideo,
   mockWeather,
 } from './mocks';
-import { BirdFood, Settings } from '../types';
+import { BirdFood, BirdSighting, Settings } from '../types';
 import axios from 'axios';
 
-export const fetchSightings = async (date: Dayjs | null) => {
-  // Mock API call
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  console.log('Fetching sightings for', date?.format('YYYY-MM-DD'));
-  return mockBirdSighting;
+const useMockData = false; // Set to false to use real API calls
+const BASE_URL = 'http://smartbirdfeeder:8000/api/ui';
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+export const fetchTimeline = async (
+  startTime: Dayjs,
+  endTime: Dayjs,
+): Promise<BirdSighting[]> => {
+  if (useMockData) {
+    await sleep(1000);
+    return mockBirdSighting;
+  } else {
+    const response = await axios.get(`${BASE_URL}/timeline`, {
+      params: {
+        start_time: startTime.unix(),
+        end_time: endTime.unix(),
+      },
+    });
+    return response.data;
+  }
 };
 
 export const fetchWeather = async () => {
-  // Mock API call
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  console.log('Fetching weather');
-  return mockWeather;
+  if (useMockData) {
+    await sleep(1000);
+    return mockWeather;
+  } else {
+    const response = await axios.get(`${BASE_URL}/weather`);
+    return response.data;
+  }
 };
 
 export const fetchVideo = async (id: string) => {
-  // Mock API call
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  console.log('Fetching video id', id);
-  return mockVideo;
+  if (useMockData) {
+    await sleep(1000);
+    return mockVideo;
+  } else {
+    const response = await axios.get(`${BASE_URL}/videos/${id}`);
+    return response.data;
+  }
 };
 
 export const fetchBirdFood = async (): Promise<BirdFood[]> => {
-  return new Promise((resolve) => {
-    setTimeout(() => resolve([...mockBirdFood]), 500); // Simulates API latency
-  });
+  if (useMockData) {
+    await sleep(1000);
+    return mockBirdFood;
+  } else {
+    const response = await axios.get(`${BASE_URL}/bird-food`);
+    return response.data;
+  }
 };
 
 export const toggleBirdFood = async (id: number) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const food = mockBirdFood.find((item) => item.id === id);
-      if (food) food.active = !food.active;
-      resolve(food);
-    }, 300); // Simulates API latency
-  });
+  if (useMockData) {
+    await sleep(1000);
+    const food = mockBirdFood.find((item) => item.id === id);
+    if (food) food.active = !food.active;
+    return food;
+  } else {
+    const response = await axios.post(`${BASE_URL}/bird-food/${id}/toggle`);
+    return response.data;
+  }
 };
 
 export const addBirdFood = async (newFood: Partial<BirdFood>) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      mockBirdFood.unshift({ id: 10, active: true, ...newFood } as BirdFood);
-      resolve(newFood);
-    }, 300); // Simulates API latency
-  });
+  if (useMockData) {
+    await sleep(1000);
+    mockBirdFood.unshift({ id: 10, active: true, ...newFood } as BirdFood);
+    return newFood;
+  } else {
+    const response = await axios.post(`${BASE_URL}/bird-food`, newFood);
+    return response.data;
+  }
 };
 
 export const fetchSettings = async () => {
-  // Mock API call
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  console.log('Fetching settings');
-  return mockSetttings;
+  if (useMockData) {
+    await sleep(1000);
+    return mockSetttings;
+  } else {
+    const response = await axios.get(`${BASE_URL}/settings`);
+    return response.data;
+  }
 };
 
-// Update settings API
 export const updateSettings = async (settings: Settings) => {
-  console.log('Updated settings:', settings);
-  return settings;
+  if (useMockData) {
+    await sleep(1000);
+    return settings;
+  } else {
+    const response = await axios.put(`BASE_URL/settings`, settings);
+    return response.data;
+  }
 };
 
-// Fetch coordinates from OpenStreetMap
 export const fetchCoordinatesByZip = async (
   zip: string,
 ): Promise<{ lat: string; lon: string }> => {
-  const response = await axios.get(
-    'https://nominatim.openstreetmap.org/search',
-    {
-      params: {
-        format: 'json',
-        postalcode: zip,
-        countrycodes: 'us',
-      },
-    },
-  );
-  const data = response.data;
-
-  if (data && data.length > 0) {
-    return {
-      lat: data[0].lat,
-      lon: data[0].lon,
-    };
+  if (useMockData) {
+    await sleep(1000);
+    return { lat: '40.7128', lon: '-74.0060' }; // Mock coordinates
   } else {
-    throw new Error('Invalid ZIP code or no data found.');
+    const response = await axios.get(
+      'https://nominatim.openstreetmap.org/search',
+      {
+        params: {
+          format: 'json',
+          postalcode: zip,
+          countrycodes: 'us',
+        },
+      },
+    );
+    const data = response.data;
+
+    if (data && data.length > 0) {
+      return {
+        lat: data[0].lat,
+        lon: data[0].lon,
+      };
+    } else {
+      throw new Error('Invalid ZIP code or no data found.');
+    }
   }
 };
 
 export const fetchBirdDirectory = async (active: boolean) => {
-  // Mock API call
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  console.log(`Fetching bird ${active ? 'active' : 'all'} directory`);
-  return mockBirdDirectory;
+  if (useMockData) {
+    await sleep(1000);
+    return mockBirdDirectory;
+  } else {
+    const response = await axios.get(`${BASE_URL}/species`, {
+      params: { active },
+    });
+    return response.data;
+  }
 };
 
 export const fetchOverviewData = async () => {
-  // Mock API call
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  console.log('Fetching overview stats');
-  return mockOverviewData;
+  if (useMockData) {
+    await sleep(1000);
+    return mockOverviewData;
+  } else {
+    const response = await axios.get(`${BASE_URL}/overview`);
+    return response.data;
+  }
 };

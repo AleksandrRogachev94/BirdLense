@@ -214,17 +214,14 @@ export const Overview = () => {
     queryFn: () => fetchOverviewData(),
   });
 
+  // TODO move it to weather card
   // Fetch weather data
-  const {
-    data: weather,
-    isLoading: isLoadingWeather,
-    error: errorWeather,
-  } = useQuery({
+  const { data: weather, error: errorWeather } = useQuery({
     queryKey: ['weather'],
     queryFn: () => fetchWeather(),
   });
 
-  if (isLoadingSightings || isLoadingWeather)
+  if (isLoadingSightings)
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center' }}>
         <CircularProgress />

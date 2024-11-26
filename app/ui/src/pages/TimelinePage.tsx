@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Timeline } from '../components/Timeline';
 import { TimelineStats } from '../components/TimelineStats';
-import { BirdSighting } from '../types';
+import { BirdSighting, Species } from '../types';
 import {
   Box,
   CircularProgress,
@@ -17,18 +17,47 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs, { Dayjs } from 'dayjs';
 import { useQuery } from '@tanstack/react-query';
-import { fetchSightings } from '../api/api';
+import { fetchTimeline } from '../api/api';
 
-export function TimelinePage() {
-  const [date, setDate] = useState<Dayjs | null>(dayjs());
+function useSpeciesList(sightings: BirdSighting[] | undefined) {
+  return sightings
+    ? sightings.reduce((acc: Partial<Species>[], sighting) => {
+        if (
+          !acc.some(
+            (existingSpecies) => existingSpecies.name === sighting.species.name,
+          )
+        ) {
+          acc.push(sighting.species);
+        }
+        return acc;
+      }, [])
+    : [];
+}
+
+function useSpeciesIdFromSearchParams(searchParams: URLSearchParams) {
   const [speciesId, setSpeciesId] = useState<string>('all');
-  const [searchParams, setSearchParams] = useSearchParams();
 
-  // Update speciesId from query params
   useEffect(() => {
     const paramSpeciesId = searchParams.get('speciesId');
     if (paramSpeciesId) setSpeciesId(paramSpeciesId);
   }, [searchParams]);
+
+  return [speciesId, setSpeciesId] as const;
+}
+
+function useFilteredSightings(
+  sightings: BirdSighting[] | undefined,
+  speciesId: string,
+) {
+  return sightings?.filter(
+    (sighting) => speciesId === 'all' || sighting.species.id === +speciesId,
+  );
+}
+
+export function TimelinePage() {
+  const [date, setDate] = useState<Dayjs | null>(dayjs());
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [speciesId, setSpeciesId] = useSpeciesIdFromSearchParams(searchParams);
 
   // Update query param when speciesId changes
   useEffect(() => {
@@ -41,36 +70,33 @@ export function TimelinePage() {
     setSearchParams(params);
   }, [speciesId, setSearchParams]);
 
-  // Fetch bird sightings
+  const startTime = date?.startOf('day').toISOString() || '';
+  const endTime = date?.endOf('day').toISOString() || '';
+
   const {
     data: sightings,
-    isLoading: isLoadingSightings,
-    error: errorSightings,
+    isLoading,
+    error,
   } = useQuery({
-    queryKey: ['birdSightings', date],
-    queryFn: () => fetchSightings(date),
-    enabled: !!date, // Only fetch sightings if a date is selected
+    queryKey: ['birdSightings', startTime, endTime],
+    queryFn: () =>
+      fetchTimeline(
+        date?.startOf('day') || dayjs(),
+        date?.endOf('day') || dayjs(),
+      ),
+    enabled: !!date,
   });
 
-  // Get species list from sightings
-  const speciesList = sightings
-    ? Array.from(
-        new Set(sightings.map((sighting: BirdSighting) => sighting.species)),
-      )
-    : [];
+  const speciesList = useSpeciesList(sightings);
+  const filteredSightings = useFilteredSightings(sightings, speciesId);
 
-  // Filter sightings by speciesId
-  const filteredSightings = sightings?.filter((sighting: BirdSighting) =>
-    speciesId === 'all' ? true : sighting.species.id === speciesId,
-  );
-
-  if (isLoadingSightings)
+  if (isLoading)
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center' }}>
         <CircularProgress />
       </Box>
     );
-  if (errorSightings) return <div>Error loading data.</div>;
+  if (error) return <div>Error loading data.</div>;
 
   return (
     <>
