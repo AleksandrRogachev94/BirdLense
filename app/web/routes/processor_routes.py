@@ -54,7 +54,8 @@ def register_routes(app):
 
             species = Species.query.filter_by(name=species_name).first()
             if not species:
-                return {'error': f'Unknown species "{species_name}"'}, 400
+                app.logger.warn(f'Video has unknown species "{species_name}"')
+                continue
 
             video_species = VideoSpecies(
                 species_id=species.id,
@@ -92,16 +93,27 @@ def register_routes(app):
                 for child in children:
                     activate_species_and_descendants(child.id)
 
+        def activate_species_and_ascendants(species_id):
+            species = db.session.query(
+                Species).filter_by(id=species_id).first()
+            if species:
+                species.active = True
+                # Recursively update all ascendants to active
+                if species.parent_id:
+                    activate_species_and_ascendants(species.parent_id)
+
         for name in active_names:
             # Step 2: Find or create the species
             species = db.session.query(Species).filter_by(name=name).first()
-            if not species:
-                # Create the species if it does not exist.
-                species = Species(name=name, active=True)
-                db.session.add(species)
-            else:
-                # Ensure this species and its descendants are marked as active
+            if species:
+                # Ensure this species, its descendants, and its ascendants are marked as active
                 activate_species_and_descendants(species.id)
+                activate_species_and_ascendants(species.id)
+            else:
+                app.logger.warn(f'Unknown active species "{name}"')
+                # Create the species if it does not exist
+                # species = Species(name=name, active=True)
+                # db.session.add(species)
 
         # Commit all changes at the end
         db.session.commit()
