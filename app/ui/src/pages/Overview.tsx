@@ -164,9 +164,9 @@ const StatsGrid = ({
     </Grid>
     <Grid size={{ xs: 12, sm: 4 }}>
       <StatCard
-        icon={Pets}
-        title="Total Detections"
-        value={stats.totalDetections}
+        icon={TrendingUp}
+        title="Busiest Hour"
+        value={stats.busiestHour}
       />
     </Grid>
     <Grid size={{ xs: 12, sm: 4 }}>
@@ -178,23 +178,23 @@ const StatsGrid = ({
     </Grid>
     <Grid size={{ xs: 12, sm: 4 }}>
       <StatCard
+        icon={Pets}
+        title="Total Detections"
+        value={stats.totalDetections}
+      />
+    </Grid>
+    <Grid size={{ xs: 12, sm: 4 }}>
+      <StatCard
         icon={Videocam}
-        title="Video-Based Detections"
+        title="Video Detections"
         value={stats.videoDetections}
       />
     </Grid>
     <Grid size={{ xs: 12, sm: 4 }}>
       <StatCard
         icon={Audiotrack}
-        title="Audio-Based Detections"
+        title="Audio Detections"
         value={stats.audioDetections}
-      />
-    </Grid>
-    <Grid size={{ xs: 12, sm: 4 }}>
-      <StatCard
-        icon={TrendingUp}
-        title="Busiest Hour"
-        value={stats.busiestHour}
       />
     </Grid>
     {weather && (
