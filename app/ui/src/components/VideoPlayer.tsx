@@ -11,6 +11,7 @@ import Grid from '@mui/material/Grid2';
 import ReactPlayer from 'react-player';
 import { Video, VideoSpecies } from '../types';
 import { labelToUniqueHexColor } from '../util';
+import { BASE_URL } from '../api/api';
 
 const SmallSpeciesCard = ({ species }: { species: VideoSpecies }) => {
   return (
@@ -96,7 +97,7 @@ export const VideoPlayer = ({ video }: { video: Video }) => {
       <Box height={500}>
         <ReactPlayer
           ref={playerRef}
-          url={video.video_path}
+          url={`${BASE_URL}/files/${video.video_path}`}
           playing={true}
           controls={false}
           onProgress={handleProgress}
