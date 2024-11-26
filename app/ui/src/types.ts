@@ -28,6 +28,7 @@ export interface VideoSpecies {
   confidence: number;
   source: string;
   image_url?: string;
+  spectrogram_path?: string;
 }
 
 export interface Weather {
