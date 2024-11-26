@@ -60,7 +60,7 @@ export const fetchBirdFood = async (): Promise<BirdFood[]> => {
     await sleep(1000);
     return mockBirdFood;
   } else {
-    const response = await axios.get(`${BASE_URL}/bird-food`);
+    const response = await axios.get(`${BASE_API_URL}/birdfood`);
     return response.data;
   }
 };
@@ -72,7 +72,7 @@ export const toggleBirdFood = async (id: number) => {
     if (food) food.active = !food.active;
     return food;
   } else {
-    const response = await axios.post(`${BASE_API_URL}/bird-food/${id}/toggle`);
+    const response = await axios.patch(`${BASE_API_URL}/birdfood/${id}/toggle`);
     return response.data;
   }
 };
@@ -83,7 +83,7 @@ export const addBirdFood = async (newFood: Partial<BirdFood>) => {
     mockBirdFood.unshift({ id: 10, active: true, ...newFood } as BirdFood);
     return newFood;
   } else {
-    const response = await axios.post(`${BASE_API_URL}/bird-food`, newFood);
+    const response = await axios.post(`${BASE_API_URL}/birdfood`, newFood);
     return response.data;
   }
 };
