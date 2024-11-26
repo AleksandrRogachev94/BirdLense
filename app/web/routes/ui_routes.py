@@ -1,7 +1,7 @@
 import json
 from flask import request
 from sqlalchemy import func, case, distinct
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from models import ActivityLog, db, BirdFood, Video, Species, VideoSpecies
 from util import fetch_weather_data
 
@@ -178,3 +178,64 @@ def register_routes(app):
         }
 
         return overview_data, 200
+
+    @app.route('/api/ui/timeline', methods=['GET'])
+    def get_video_species():
+        # Parse query parameters
+        start_time = request.args.get('start_time')
+        end_time = request.args.get('end_time')
+
+        # Validate query parameters
+        if not start_time or not end_time:
+            return {'error': 'Both start_time and end_time are required'}, 400
+
+        try:
+            start_time = datetime.fromisoformat(start_time)
+            end_time = datetime.fromisoformat(end_time)
+        except ValueError:
+            return {'error': 'Invalid datetime format. Use ISO 8601 format (e.g., YYYY-MM-DDTHH:MM:SS)'}, 400
+
+        # Ensure the interval is no more than 1 day
+        if end_time - start_time > timedelta(days=1):
+            return {'error': 'The interval between start_time and end_time must not exceed 1 day'}, 400
+
+        # Query VideoSpecies records within the interval and order by created_at desc
+        video_species_records = (
+            db.session.query(VideoSpecies)
+            .join(Video)
+            .join(Species)
+            .outerjoin(BirdFood, Video.food)
+            .filter(VideoSpecies.created_at >= start_time, VideoSpecies.created_at <= end_time)
+            .order_by(VideoSpecies.created_at.desc())
+            .all()
+        )
+
+        # Construct the desired response
+        response = []
+        for record in video_species_records:
+            video_start_time = record.video.start_time
+            response.append({
+                'id': record.id,
+                'video_id': record.video_id,
+                'start_time': (video_start_time + timedelta(seconds=record.start_time)).isoformat(),
+                'end_time': (video_start_time + timedelta(seconds=record.end_time)).isoformat(),
+                'confidence': record.confidence,
+                'source': record.source,
+                'weather': {
+                    'temp': record.video.weather_temp,
+                    'clouds': record.video.weather_clouds,
+                },
+                'species': {
+                    'id': record.species.id,
+                    'name': record.species.name,
+                    'image_url': record.species.photo,
+                },
+                'food': [
+                    {
+                        'id': food.id,
+                        'name': food.name,
+                    } for food in record.video.food
+                ]
+            })
+
+        return response
