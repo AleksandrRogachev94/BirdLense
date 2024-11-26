@@ -1,4 +1,5 @@
 import requests
+import re
 import time
 from app_config.app_config import app_config
 
@@ -73,3 +74,36 @@ def build_hierarchy_tree():
 
     # Build the tree for each root node
     return {root: build_tree_from_parent(root) for root in root_nodes}
+
+
+def get_wikipedia_image_and_description(title):
+    # URL encode the title
+    url = f"https://en.wikipedia.org/w/api.php?action=query&prop=pageimages|pageprops|extracts&format=json&piprop=thumbnail&titles={title}&pithumbsize=300&redirects&exintro"
+
+    # Send request to the API
+    response = requests.get(url)
+
+    # Parse the JSON response
+    data = response.json()
+
+    # Check if the response contains the expected data
+    if "query" in data and "pages" in data["query"]:
+        page_info = data["query"]["pages"]
+
+        # Get the page ID (assuming the first page in the response)
+        page_id = next(iter(page_info))
+
+        page = page_info[page_id]
+
+        # Extract image URL and description
+        image_url = page.get("thumbnail", {}).get(
+            "source", "No image available")
+        description_html = page.get("extract", "No description available")
+
+        # Clean up description by removing HTML tags and trimming spaces and newlines
+        description = re.sub(r'<[^>]*>', '', description_html).strip()
+
+        # Return image URL and cleaned description
+        return image_url, description
+    else:
+        return None, "No data found"

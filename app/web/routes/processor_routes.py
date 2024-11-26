@@ -1,8 +1,9 @@
 import json
+import re
 from flask import request
 from datetime import datetime, timezone
 from models import ActivityLog, db, BirdFood, Video, Species, VideoSpecies
-from util import fetch_weather_data
+from util import fetch_weather_data, get_wikipedia_image_and_description
 
 
 def register_routes(app):
@@ -56,6 +57,13 @@ def register_routes(app):
             if not species:
                 app.logger.warn(f'Video has unknown species "{species_name}"')
                 continue
+
+            # If species image_url or description is missing, fetch from Wikipedia
+            if not species.image_url or not species.description:
+                # Remove text in parentheses such as gender
+                clean_name = re.sub(r'\(.*\)', '', species_name).strip()
+                species.image_url, species.description = get_wikipedia_image_and_description(
+                    clean_name)
 
             video_species = VideoSpecies(
                 species_id=species.id,
