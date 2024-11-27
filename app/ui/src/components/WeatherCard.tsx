@@ -15,7 +15,10 @@ export const WeatherCard = ({ weather }: { weather: Weather }) => {
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
         <Chip icon={<WeatherIcon />} label={`Condition: ${weather.main}`} />
         <Chip icon={<CloudIcon />} label={`Clouds: ${weather.clouds}%`} />
-        <Chip icon={<TempIcon />} label={`Temp: ${weather.temp}°C`} />
+        <Chip
+          icon={<TempIcon />}
+          label={`Temp: ${Math.round(weather.temp)}°C`}
+        />
         <Chip
           icon={<HumidityIcon />}
           label={`Humidity: ${weather.humidity}%`}

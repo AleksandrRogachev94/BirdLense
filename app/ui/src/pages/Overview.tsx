@@ -1,15 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import dayjs, { Dayjs } from 'dayjs';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid2';
 import { StatCard } from '../components/StatCard';
 import { Audiotrack, Pets, Videocam, TrendingUp } from '@mui/icons-material';
 import { Box, CircularProgress, Tooltip, useTheme } from '@mui/material';
 import { BarChart } from '@mui/x-charts/BarChart';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { OverviewStats, OverviewTopSpecies, Weather } from '../types';
 import { useQuery } from '@tanstack/react-query';
 import { fetchOverviewData, fetchWeather } from '../api/api';
 import { WeatherCard } from '../components/WeatherCard';
-import { useNavigate } from 'react-router-dom';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 const Heatmap = ({
   data,
@@ -21,8 +25,15 @@ const Heatmap = ({
   cellHeight?: number;
 }) => {
   const theme = useTheme();
-  const hours = Array.from({ length: 24 }, (_, i) => i);
+  const hours = Array.from({ length: 24 }, (_, i) => i); // UTC hours
   const maxDetections = Math.max(...data.flatMap((d) => d.detections));
+
+  const offsetInHours = new Date().getTimezoneOffset() / 60;
+
+  const getOffsetValue = (detections: number[], hour: number) => {
+    const localHour = hour + offsetInHours;
+    return localHour >= 0 && localHour < 24 ? detections[localHour] : 0;
+  };
 
   return (
     <Box
@@ -41,10 +52,10 @@ const Heatmap = ({
       >
         {data.map((item) => (
           <React.Fragment key={item.name}>
-            {item.detections.map((d, hour) => (
+            {item.detections.map((_, hour) => (
               <Tooltip
                 key={`${item.name}-${hour}`}
-                title={`${d} detections`}
+                title={`${getOffsetValue(item.detections, hour)} detections`}
                 arrow
                 followCursor
               >
@@ -52,7 +63,8 @@ const Heatmap = ({
                   style={{
                     width: `${cellWidth}px`,
                     height: `${(cellHeight * 10) / data.length}px`,
-                    opacity: d / maxDetections,
+                    opacity:
+                      getOffsetValue(item.detections, hour) / maxDetections,
                     backgroundColor: theme.palette.secondary.main,
                   }}
                 />
@@ -86,7 +98,13 @@ const Heatmap = ({
   );
 };
 
-const TopSpecies = ({ data }: { data: OverviewTopSpecies[] }) => {
+const TopSpecies = ({
+  data,
+  date,
+}: {
+  data: OverviewTopSpecies[];
+  date: Dayjs;
+}) => {
   const navigate = useNavigate();
   const summedData = data.map((entry) => ({
     id: entry.id,
@@ -120,7 +138,7 @@ const TopSpecies = ({ data }: { data: OverviewTopSpecies[] }) => {
             margin={{ left: 130 }}
             onItemClick={(_, item) =>
               navigate(
-                `/timeline?speciesId=${summedData[item.dataIndex].id}&time=`,
+                `/timeline?speciesId=${summedData[item.dataIndex].id}&date=${date.toISOString()}&time=`,
               )
             }
           />
@@ -208,13 +226,16 @@ const StatsGrid = ({
 );
 
 export const Overview = () => {
+  const [selectedDay, setSelectedDay] = useState<Dayjs>(dayjs()); // Default to today
+
   const {
     data: overviewData,
     isLoading: isLoadingSightings,
     error: errorSightings,
   } = useQuery({
-    queryKey: ['overview'],
-    queryFn: () => fetchOverviewData(),
+    queryKey: ['overview', selectedDay?.format('YYYY-MM-DD')],
+    queryFn: () => fetchOverviewData(selectedDay?.format('YYYY-MM-DD') || ''),
+    enabled: !!selectedDay, // Ensure query is only executed when a valid day is selected
   });
 
   // TODO move it to weather card
@@ -234,16 +255,38 @@ export const Overview = () => {
 
   return (
     <>
-      <Typography variant="h4" mb={3}>
-        Today Overview
-      </Typography>
+      <Box display="flex" justifyContent="center" alignItems="center">
+        <Typography variant="h4" mb={3}>
+          Overview
+        </Typography>
+      </Box>
+
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        sx={{ '& > :not(style)': { m: 1, mb: 4, width: '25ch' } }}
+      >
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DatePicker
+            label="Date"
+            value={selectedDay}
+            onChange={(newValue) => setSelectedDay(newValue as Dayjs)}
+            disableFuture
+            format="YYYY-MM-DD"
+          />
+        </LocalizationProvider>
+      </Box>
 
       <StatsGrid
         stats={overviewData?.stats as OverviewStats}
         weather={weather as Weather}
       />
       {overviewData?.topSpecies?.length > 0 && (
-        <TopSpecies data={overviewData?.topSpecies as OverviewTopSpecies[]} />
+        <TopSpecies
+          data={overviewData?.topSpecies as OverviewTopSpecies[]}
+          date={selectedDay}
+        />
       )}
     </>
   );

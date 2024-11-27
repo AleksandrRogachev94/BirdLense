@@ -150,12 +150,12 @@ export const fetchBirdDirectory = async (active: boolean) => {
   }
 };
 
-export const fetchOverviewData = async () => {
+export const fetchOverviewData = async (date: string) => {
   if (useMockData) {
     await sleep(1000);
     return mockOverviewData;
   } else {
-    const response = await axios.get(`${BASE_API_URL}/overview`);
+    const response = await axios.get(`${BASE_API_URL}/overview?date=${date}`);
     return response.data;
   }
 };
