@@ -18,15 +18,19 @@ from audio_processor import AudioProcessor
 from app_config.app_config import app_config
 
 # Configure the root logger
+log_directory = 'data/logs/processor'
+os.makedirs(log_directory, exist_ok=True)
+# Set up logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
         logging.StreamHandler(),  # Logs to the console
         RotatingFileHandler(
-            'app.log',            # Log file name
-            maxBytes=5*1024*1024,  # Maximum file size in bytes (e.g., 5 MB)
-            backupCount=1         # Number of backup files to keep
+            f'{log_directory}/app.log',  # Log file path
+            # Maximum file size in bytes (e.g., 5 MB)
+            maxBytes=5*1024*1024,
+            backupCount=1                # Number of backup files to keep
         )
     ]
 )

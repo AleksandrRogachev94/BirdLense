@@ -12,11 +12,12 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
   && rm -rf /var/cache/apt/archives/* \
   && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-
 # Set the working directory inside the container
 WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . .
 
 # Specify the command to run when the container starts
 CMD ["bash"]

@@ -23,7 +23,6 @@ class AppConfig:
         if os.path.exists(self.user_config_file):
             with open(self.user_config_file, 'r') as file:
                 user_config = yaml.safe_load(file) or {}
-                print(user_config)
 
         # Merge configs (user_config overrides default_config)
         return self.merge_dicts(default_config, user_config)

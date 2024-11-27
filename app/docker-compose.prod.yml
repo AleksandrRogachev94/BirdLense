@@ -17,7 +17,6 @@ services:
     volumes:
       - /dev/shm:/dev/shm # used by audio recording
       - /run/udev:/run/udev:ro
-      - ./processor:/app
       - ./app_config:/app/src/app_config
       - ./data:/app/data
     devices:
@@ -37,7 +36,6 @@ services:
     build:
       context: ./web
     volumes:
-      - ./web:/app
       - ./app_config:/app/app_config
       - ./data:/app/data
     command: gunicorn -w 1 -b 0.0.0.0:8000 --access-logfile - --error-logfile - app:app
@@ -45,8 +43,3 @@ services:
   ui:
     build:
       context: ./ui
-    volumes:
-      - /app/node_modules
-      - ./ui:/app
-      - ./app_config:/app/app_config
-      - ./data:/app/data
