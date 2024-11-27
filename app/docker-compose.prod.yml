@@ -6,14 +6,12 @@ services:
       - ui
     build:
       context: ./nginx
-      dockerfile: Dockerfile.dev
     ports:
       - '8080:8080'
 
   processor:
     build:
       context: ./processor
-      dockerfile: Dockerfile.dev
     volumes:
       - /dev/shm:/dev/shm # used by audio recording
       - /run/udev:/run/udev:ro
@@ -37,7 +35,6 @@ services:
   web:
     build:
       context: ./web
-      dockerfile: Dockerfile.dev
     # flask requires SIGINT to stop gracefully
     # (default stop signal from Compose is SIGTERM)
     stop_signal: SIGINT
@@ -50,7 +47,6 @@ services:
   ui:
     build:
       context: ./ui
-      dockerfile: Dockerfile.dev
     volumes:
       - /app/node_modules
       - ./ui:/app
