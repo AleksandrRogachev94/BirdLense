@@ -20,7 +20,7 @@ import PauseIcon from '@mui/icons-material/Pause';
 import GraphicEqIcon from '@mui/icons-material/GraphicEq';
 import ReactPlayer from 'react-player';
 import { Video, VideoSpecies } from '../types';
-import { labelToUniqueHexColor } from '../util';
+import { formatConfidence, labelToUniqueHexColor } from '../util';
 import { BASE_URL } from '../api/api';
 
 const SmallSpeciesCard = ({ species }: { species: VideoSpecies }) => {
@@ -62,7 +62,7 @@ const SmallSpeciesCard = ({ species }: { species: VideoSpecies }) => {
           <Grid container spacing={1} alignItems="center">
             <Grid>
               <Chip
-                label={`${Math.round(species.confidence * 100)}%`}
+                label={`${formatConfidence(species.confidence)}`}
                 size="small"
                 color="success"
               />

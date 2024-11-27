@@ -20,6 +20,7 @@ import AccessTime from '@mui/icons-material/AccessTime';
 import Thermostat from '@mui/icons-material/Thermostat';
 import { BirdSighting } from '../types';
 import { useNavigate } from 'react-router-dom';
+import { formatConfidence } from '../util';
 
 export function Timeline({ sightings }: { sightings: BirdSighting[] }) {
   const navigate = useNavigate();
@@ -51,7 +52,7 @@ export function Timeline({ sightings }: { sightings: BirdSighting[] }) {
                       </Typography>
                       <Box display="flex" gap={1} mt={1}>
                         <Chip
-                          label={`${(sighting.confidence * 100).toFixed(1)}%`}
+                          label={formatConfidence(sighting.confidence)}
                           size="small"
                           color="success"
                         />
