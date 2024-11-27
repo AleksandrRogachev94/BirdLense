@@ -8,17 +8,6 @@ from app_config.app_config import app_config
 
 
 def register_routes(app):
-    @app.route('/files/data/<path:filename>')
-    def serve_file(filename):
-        DATA_DIRECTORY = 'data'
-        # Secure the filename to avoid directory traversal attacks
-        safe_filename = os.path.normpath(filename)
-        # Serve the file
-        try:
-            return send_from_directory(DATA_DIRECTORY, safe_filename)
-        except FileNotFoundError:
-            abort(404)  # File not found
-
     @app.route('/api/ui/health', methods=['GET'])
     def health():
         return {'status': 'ok'}

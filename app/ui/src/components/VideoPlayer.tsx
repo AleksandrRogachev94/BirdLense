@@ -89,7 +89,7 @@ const SmallSpeciesCard = ({ species }: { species: VideoSpecies }) => {
         <DialogContent>
           {species.spectrogram_path ? (
             <img
-              src={`${BASE_URL}/files/${species.spectrogram_path}`}
+              src={`${BASE_URL}/${species.spectrogram_path}`}
               alt="Spectrogram"
               style={{ width: '100%' }}
             />
@@ -156,7 +156,7 @@ export const VideoPlayer = ({ video }: { video: Video }) => {
       <Box height={500}>
         <ReactPlayer
           ref={videoRef}
-          url={`${BASE_URL}/files/${video.video_path}`}
+          url={`${BASE_URL}/${video.video_path}`}
           playing={playing}
           controls={false}
           onProgress={handleProgress}
@@ -165,7 +165,7 @@ export const VideoPlayer = ({ video }: { video: Video }) => {
         />
         <ReactPlayer
           ref={audioRef}
-          url={`${BASE_URL}/files/${video.audio_path}`}
+          url={`${BASE_URL}/${video.audio_path}`}
           playing={playing}
           controls={false}
           height="0"
