@@ -82,10 +82,10 @@ weather_fetcher = WeatherFetcher(
 def build_hierarchy_tree():
     species_dict = {}
 
-    with open('seed/hierarchy_names.txt', 'r') as file:
+    with open("seed/hierarchy_names.txt", "r") as file:
         lines = file.readlines()
     for line in lines:
-        species_name, parent_name = line.strip().split('|')
+        species_name, parent_name = line.strip().split("|")
         species_dict[species_name] = parent_name
 
     # Step 1: Create a map to store child-parent relationships
@@ -101,7 +101,7 @@ def build_hierarchy_tree():
             return {}
         return {child: build_tree_from_parent(child) for child in children_map[parent]}
 
-     # Find the root nodes (those which are parents but not children)
+    # Find the root nodes (those which are parents but not children)
     root_nodes = set(species_dict.values()) - set(species_dict.keys())
 
     # Build the tree for each root node
