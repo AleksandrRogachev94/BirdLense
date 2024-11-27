@@ -11,10 +11,14 @@ import {
   Select,
   FormControl,
   InputLabel,
+  IconButton,
 } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+import { renderTimeViewClock } from '@mui/x-date-pickers/timeViewRenderers';
 import dayjs, { Dayjs } from 'dayjs';
 import { useQuery } from '@tanstack/react-query';
 import { fetchTimeline } from '../api/api';
@@ -56,6 +60,7 @@ function useFilteredSightings(
 
 export function TimelinePage() {
   const [date, setDate] = useState<Dayjs | null>(dayjs());
+  const [time, setTime] = useState<Dayjs | null>(dayjs()); // Optional time selection
   const [searchParams, setSearchParams] = useSearchParams();
   const [speciesId, setSpeciesId] = useSpeciesIdFromSearchParams(searchParams);
 
@@ -70,20 +75,22 @@ export function TimelinePage() {
     setSearchParams(params);
   }, [speciesId, setSearchParams]);
 
-  const startTime = date?.startOf('day').toISOString() || '';
-  const endTime = date?.endOf('day').toISOString() || '';
-
   const {
     data: sightings,
     isLoading,
     error,
   } = useQuery({
-    queryKey: ['birdSightings', startTime, endTime],
-    queryFn: () =>
-      fetchTimeline(
-        date?.startOf('day') || dayjs(),
-        date?.endOf('day') || dayjs(),
-      ),
+    queryKey: ['birdSightings', date, time],
+    queryFn: () => {
+      // When no time is selected, default to the start of the day (00:00)
+      const finalDateTime = time
+        ? date?.set('hour', time.hour()).set('minute', time.minute())
+        : date?.startOf('day');
+      return fetchTimeline(
+        finalDateTime?.startOf(time ? 'hour' : 'date') || dayjs(),
+        finalDateTime?.endOf(time ? 'hour' : 'date') || dayjs(),
+      );
+    },
     enabled: !!date,
   });
 
@@ -110,8 +117,21 @@ export function TimelinePage() {
           <DatePicker
             label="Date"
             value={date}
-            onChange={(newValue) => setDate(newValue)}
+            onAccept={(newValue) => setDate(newValue)}
+            maxDate={dayjs()}
           />
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <TimePicker
+              label="Hour"
+              value={time}
+              onAccept={(newValue) => setTime(newValue)}
+              views={['hours']}
+              viewRenderers={{ hours: renderTimeViewClock }}
+            />
+            <IconButton onClick={() => setTime(null)} size="small">
+              <CloseIcon />
+            </IconButton>
+          </Box>
         </LocalizationProvider>
         <FormControl>
           <InputLabel id="species-select-label">Species</InputLabel>
