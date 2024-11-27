@@ -22,7 +22,7 @@ start:
 	@echo "Docker Compose services started."
 
 start-web:
-	@sudo docker compose -f $(DOCKER_COMPOSE_FILE) up web
+	@sudo docker compose -f $(DOCKER_COMPOSE_FILE) up nginx web ui
 
 # Stop the Docker Compose services
 stop:
