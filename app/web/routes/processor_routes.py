@@ -3,7 +3,7 @@ import re
 from flask import request
 from datetime import datetime, timezone, timedelta
 from models import ActivityLog, db, BirdFood, Video, Species, VideoSpecies
-from util import fetch_weather_data, get_wikipedia_image_and_description
+from util import weather_fetcher, get_wikipedia_image_and_description
 
 
 def register_routes(app):
@@ -28,7 +28,7 @@ def register_routes(app):
             'end_time': end_time,
             'video_path': data['video_path'],
             'audio_path': data['audio_path'],
-            **fetch_weather_data()
+            **weather_fetcher.fetch()
         }
 
         # List of species detected in the video
