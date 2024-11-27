@@ -33,6 +33,8 @@ class WeatherFetcher:
         Fetches weather data from the API with retry logic.
         """
         params = params or self.default_params
+        if not params['appid']:
+            return {}
         delay = 1
         for attempt in range(retries):
             try:

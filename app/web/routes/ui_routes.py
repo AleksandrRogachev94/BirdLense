@@ -124,11 +124,23 @@ def register_routes(app):
 
     @app.route('/api/ui/overview', methods=['GET'])
     def get_overview():
-        # Get the current date and time
-        now = datetime.now()
-        start_of_day = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        # Parse the date from query parameters
+        date_param = request.args.get('date', None)
+        try:
+            # If a date is provided, parse it; otherwise, use the current date
+            if date_param:
+                date = datetime.strptime(date_param, '%Y-%m-%d')
+            else:
+                date = datetime.now()
+        except ValueError:
+            return {"error": "Invalid date format. Use YYYY-MM-DD."}, 400
 
-        # Query to get top species with hourly detections
+        # Set the start and end of the day for the given date
+        start_of_day = date.replace(hour=0, minute=0, second=0, microsecond=0)
+        end_of_day = date.replace(
+            hour=23, minute=59, second=59, microsecond=999999)
+
+        # Query to get top species with hourly detections for the given day
         top_species_query = db.session.query(
             Species.id,
             Species.name,
@@ -144,6 +156,7 @@ def register_routes(app):
                 for hour in range(24)
             ]
         ).join(VideoSpecies, VideoSpecies.species_id == Species.id) \
+            .filter(VideoSpecies.created_at >= start_of_day, VideoSpecies.created_at <= end_of_day) \
             .group_by(Species.id) \
             .order_by(func.count(VideoSpecies.id).desc()) \
             .limit(10)  # Limit to top 10 species
@@ -158,7 +171,7 @@ def register_routes(app):
             }
             top_species.append(species_data)
 
-        # Query to get overall statistics
+        # Query to get overall statistics for the given day
         stats_query = db.session.query(
             func.count(distinct(Species.id)).label('uniqueSpecies'),
             func.count(VideoSpecies.id).label('totalDetections'),
@@ -182,7 +195,9 @@ def register_routes(app):
             ).label('audioDetections'),
             func.strftime('%H', func.max(VideoSpecies.created_at)
                           ).label('busiestHour')
-        ).join(VideoSpecies, VideoSpecies.species_id == Species.id).first()
+        ).join(VideoSpecies, VideoSpecies.species_id == Species.id) \
+            .filter(VideoSpecies.created_at >= start_of_day, VideoSpecies.created_at <= end_of_day) \
+            .first()
 
         # Format stats data
         stats = {
