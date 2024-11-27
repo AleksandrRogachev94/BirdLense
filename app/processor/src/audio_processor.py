@@ -29,7 +29,7 @@ class AudioProcessor:
             lat=self.lat,
             lon=self.lon,
             date=datetime.now(),
-            min_conf=0.25,
+            min_conf=0.5,
         )
         recording.analyze()
         recording.extract_detections_as_spectrogram(

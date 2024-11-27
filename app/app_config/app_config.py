@@ -3,19 +3,40 @@ import os
 
 
 class AppConfig:
-    def __init__(self, config_file=f'app_config.yaml'):
-        self.config_file = f"{os.path.dirname(__file__)}/{config_file}"
-        self.config = self.load_config()
+    def __init__(self, user_config='user_config.yaml', default_config='default_config.yaml'):
+        self.user_config_file = f"{os.path.dirname(__file__)}/{user_config}"
+        self.default_config_file = f"{os.path.dirname(__file__)}/{default_config}"
+        self.config = self.load_and_merge_configs()
 
-    def load_config(self):
-        if not os.path.exists(self.config_file):
+    def load_and_merge_configs(self):
+        # Load default config
+        if not os.path.exists(self.default_config_file):
             raise FileNotFoundError(
-                f"Configuration file {self.config_file} not found.")
+                f"Default configuration file {self.default_config_file} not found."
+            )
 
-        with open(self.config_file, 'r') as file:
-            config = yaml.safe_load(file)
+        with open(self.default_config_file, 'r') as file:
+            default_config = yaml.safe_load(file) or {}
 
-        return config
+        # Load user config if it exists
+        user_config = {}
+        if os.path.exists(self.user_config_file):
+            with open(self.user_config_file, 'r') as file:
+                user_config = yaml.safe_load(file) or {}
+                print(user_config)
+
+        # Merge configs (user_config overrides default_config)
+        return self.merge_dicts(default_config, user_config)
+
+    @staticmethod
+    def merge_dicts(base, overrides):
+        """Recursively merges two dictionaries."""
+        for key, value in overrides.items():
+            if isinstance(value, dict) and key in base and isinstance(base[key], dict):
+                base[key] = AppConfig.merge_dicts(base[key], value)
+            else:
+                base[key] = value
+        return base
 
     def get(self, key, default=None):
         keys = key.split('.')
@@ -33,8 +54,9 @@ class AppConfig:
             config_section = config_section.setdefault(k, {})
         config_section[keys[-1]] = value
 
-    def save(self):
-        with open(self.config_file, 'w') as file:
+    def save(self, filename=None):
+        save_file = filename or self.user_config_file
+        with open(save_file, 'w') as file:
             yaml.safe_dump(self.config, file)
 
 

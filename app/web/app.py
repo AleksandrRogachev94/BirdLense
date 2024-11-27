@@ -1,10 +1,11 @@
 from flask import Flask
+from flask_cors import CORS
 import logging
 from logging.handlers import RotatingFileHandler
-from routes import register_routes
+import routes.ui_routes
+import routes.processor_routes
 from models import db
 from seed.seed import seed
-from app_config.app_config import app_config
 
 # Configure the root logger
 logging.basicConfig(
@@ -23,6 +24,7 @@ logging.basicConfig(
 
 def create_app():
     app = Flask(__name__)
+    CORS(app)
     app.config.from_object('config.Config')
 
     db.init_app(app)
@@ -30,12 +32,7 @@ def create_app():
         db.create_all()
         seed()
 
-    register_routes(app)
+    routes.ui_routes.register_routes(app)
+    routes.processor_routes.register_routes(app)
 
     return app
-
-
-if __name__ == "__main__":
-    app = create_app()
-    app.run(host=app_config.get('web.host'),
-            port=app_config.get('web.port'), debug=True)

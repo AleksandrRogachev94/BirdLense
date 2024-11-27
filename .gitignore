@@ -4,3 +4,4 @@ __pycache__
 app/data/recordings
 app.log
 .DS_Store
+user_config.yaml
