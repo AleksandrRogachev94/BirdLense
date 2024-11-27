@@ -119,7 +119,9 @@ const TopSpecies = ({ data }: { data: OverviewTopSpecies[] }) => {
             height={400}
             margin={{ left: 130 }}
             onItemClick={(_, item) =>
-              navigate(`/timeline?speciesId=${summedData[item.dataIndex].id}`)
+              navigate(
+                `/timeline?speciesId=${summedData[item.dataIndex].id}&time=`,
+              )
             }
           />
         </Grid>

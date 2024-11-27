@@ -38,17 +38,6 @@ function useSpeciesList(sightings: BirdSighting[] | undefined) {
     : [];
 }
 
-function useSpeciesIdFromSearchParams(searchParams: URLSearchParams) {
-  const [speciesId, setSpeciesId] = useState<string>('all');
-
-  useEffect(() => {
-    const paramSpeciesId = searchParams.get('speciesId');
-    if (paramSpeciesId) setSpeciesId(paramSpeciesId);
-  }, [searchParams]);
-
-  return [speciesId, setSpeciesId] as const;
-}
-
 function useFilteredSightings(
   sightings: BirdSighting[] | undefined,
   speciesId: string,
@@ -58,22 +47,29 @@ function useFilteredSightings(
   );
 }
 
-export function TimelinePage() {
+function useTimelinePage() {
+  const [searchParams] = useSearchParams();
+  const [speciesId, setSpeciesId] = useState<string>('all');
   const [date, setDate] = useState<Dayjs | null>(dayjs());
-  const [time, setTime] = useState<Dayjs | null>(dayjs()); // Optional time selection
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [speciesId, setSpeciesId] = useSpeciesIdFromSearchParams(searchParams);
+  const [time, setTime] = useState<Dayjs | null>(dayjs());
 
-  // Update query param when speciesId changes
+  // Get initial values from query params
   useEffect(() => {
-    const params = new URLSearchParams(searchParams);
-    if (speciesId === 'all') {
-      params.delete('speciesId');
-    } else {
-      params.set('speciesId', speciesId);
-    }
-    setSearchParams(params);
-  }, [speciesId, setSearchParams]);
+    const paramDate = searchParams.get('date');
+    if (paramDate) setDate(dayjs(paramDate));
+    const paramTime = searchParams.get('time');
+    if (paramTime) setTime(dayjs(paramTime));
+    if (paramTime === '') setTime(null);
+    const paramSpeciesId = searchParams.get('speciesId');
+    if (paramSpeciesId) setSpeciesId(paramSpeciesId);
+  }, [searchParams]);
+
+  return [speciesId, date, time, setSpeciesId, setDate, setTime] as const;
+}
+
+export function TimelinePage() {
+  const [speciesId, date, time, setSpeciesId, setDate, setTime] =
+    useTimelinePage();
 
   const {
     data: sightings,
