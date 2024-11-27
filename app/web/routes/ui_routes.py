@@ -3,7 +3,7 @@ from flask import request, send_from_directory, abort
 from sqlalchemy import func, case, distinct
 from datetime import datetime, timezone, timedelta
 from models import ActivityLog, db, BirdFood, Video, Species, VideoSpecies
-from util import fetch_weather_data
+from util import weather_fetcher
 from app_config.app_config import app_config
 
 
@@ -25,7 +25,16 @@ def register_routes(app):
 
     @app.route('/api/ui/weather', methods=['GET'])
     def weather():
-        return fetch_weather_data()
+        weather = weather_fetcher.fetch()
+        return {
+            'main': weather['weather_main'],
+            'description': weather['weather_description'],
+            'temp': weather['weather_temp'],
+            'humidity': weather['weather_humidity'],
+            'pressure': weather['weather_pressure'],
+            'clouds': weather['weather_clouds'],
+            'wind_speed': weather['weather_wind_speed'],
+        }
 
     @app.route('/api/ui/videos/<int:video_id>', methods=['GET'])
     def get_video_details(video_id):
