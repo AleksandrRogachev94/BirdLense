@@ -61,7 +61,8 @@ def register_routes(app):
                     'end_time': vs.end_time,
                     'confidence': vs.confidence,
                     'source': vs.source,
-                    'image_url': vs.species.image_url
+                    'image_url': vs.species.image_url,
+                    'spectrogram_path': vs.spectrogram_path,
                 } for vs in video.video_species
             ],
             'food': [
