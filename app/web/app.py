@@ -36,3 +36,6 @@ def create_app():
     routes.processor_routes.register_routes(app)
 
     return app
+
+
+app = create_app()
