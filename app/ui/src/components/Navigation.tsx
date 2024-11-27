@@ -12,13 +12,14 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import MenuIcon from '@mui/icons-material/Menu';
 import EmojiNatureIcon from '@mui/icons-material/EmojiNature';
+import MUILink from '@mui/material/Link';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 const pages = [
   { label: 'Overview', url: '/' },
   { label: 'Timeline', url: '/timeline' },
   { label: 'Food Management', url: '/food' },
   { label: 'Bird Directory', url: '/birds' },
-  { label: 'Settings', url: '/settings' },
 ];
 
 export function Navigation() {
@@ -27,13 +28,20 @@ export function Navigation() {
     const locationWithoutQuery = location.pathname.split('?')[0];
     return page.url === locationWithoutQuery;
   });
+
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null,
   );
+  const [anchorElSettings, setAnchorElSettings] =
+    React.useState<null | HTMLElement>(null);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) =>
     setAnchorElNav(event.currentTarget);
   const handleCloseNavMenu = () => setAnchorElNav(null);
+
+  const handleOpenSettingsMenu = (event: React.MouseEvent<HTMLElement>) =>
+    setAnchorElSettings(event.currentTarget);
+  const handleCloseSettingsMenu = () => setAnchorElSettings(null);
 
   const renderTabs = () => (
     <Tabs
@@ -75,6 +83,37 @@ export function Navigation() {
     </Menu>
   );
 
+  const renderSettingsMenu = () => (
+    <Menu
+      id="settings-menu"
+      anchorEl={anchorElSettings}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      keepMounted
+      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+      open={Boolean(anchorElSettings)}
+      onClose={handleCloseSettingsMenu}
+    >
+      <MenuItem
+        onClick={handleCloseSettingsMenu}
+        component={Link}
+        to="/settings"
+      >
+        <Typography textAlign="center">Settings</Typography>
+      </MenuItem>
+      <MenuItem onClick={handleCloseSettingsMenu}>
+        <MUILink
+          sx={{ textDecoration: 'none', '&:hover': { textDecoration: 'none' } }}
+          href="/data/" // replace with actual URL
+          target="_blank"
+          rel="noopener noreferrer"
+          color="inherit"
+        >
+          Data Viewer
+        </MUILink>
+      </MenuItem>
+    </Menu>
+  );
+
   return (
     <AppBar position="static" color="primary" sx={{ mb: 4 }}>
       <Container maxWidth="xl">
@@ -109,6 +148,18 @@ export function Navigation() {
 
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {renderTabs()}
+          </Box>
+
+          {/* Settings Icon and Menu */}
+          <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+            <IconButton
+              size="large"
+              onClick={handleOpenSettingsMenu}
+              color="inherit"
+            >
+              <SettingsIcon />
+            </IconButton>
+            {renderSettingsMenu()}
           </Box>
         </Toolbar>
       </Container>
