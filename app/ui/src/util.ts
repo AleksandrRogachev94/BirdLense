@@ -14,3 +14,7 @@ export const labelToUniqueHexColor = (label: string): string => {
   // Convert to hex and return the color
   return `#${((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1).toUpperCase()}`;
 };
+
+export const formatConfidence = (confidedence: number): string => {
+  return `${Math.round(confidedence * 100)}%`;
+};
