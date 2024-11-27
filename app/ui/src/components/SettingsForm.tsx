@@ -135,49 +135,6 @@ export const SettingsForm = ({
 
       <Divider sx={{ my: 4 }} />
 
-      {/* Web Server Section */}
-      <Typography variant="h5" gutterBottom>
-        Web Server Settings
-      </Typography>
-      <Grid container spacing={2}>
-        <Grid size={{ xs: 6 }}>
-          <form.Field name="web.host">
-            {(field) => (
-              <>
-                <TextField
-                  fullWidth
-                  id={field.name}
-                  name={field.name}
-                  value={field.state.value}
-                  type="string"
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  label="Web Server Host"
-                />
-              </>
-            )}
-          </form.Field>
-        </Grid>
-        <Grid size={{ xs: 6 }}>
-          <form.Field name="web.port">
-            {(field) => (
-              <>
-                <TextField
-                  fullWidth
-                  id={field.name}
-                  name={field.name}
-                  value={field.state.value}
-                  type="string"
-                  onChange={(e) => field.handleChange(Number(e.target.value))}
-                  label="Web Server Port"
-                />
-              </>
-            )}
-          </form.Field>
-        </Grid>
-      </Grid>
-
-      <Divider sx={{ my: 4 }} />
-
       {/* Processor Settings */}
       <Typography variant="h5" gutterBottom>
         Processor Settings
