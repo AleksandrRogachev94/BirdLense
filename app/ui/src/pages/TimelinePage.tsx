@@ -12,6 +12,7 @@ import {
   FormControl,
   InputLabel,
   IconButton,
+  Typography,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -103,6 +104,11 @@ export function TimelinePage() {
 
   return (
     <>
+      <Box display="flex" justifyContent="center" alignItems="center">
+        <Typography variant="h4" mb={3}>
+          Timeline
+        </Typography>
+      </Box>
       <Box
         display="flex"
         justifyContent="center"
