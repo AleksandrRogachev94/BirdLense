@@ -138,13 +138,13 @@ export const fetchCoordinatesByZip = async (
   }
 };
 
-export const fetchBirdDirectory = async (active: boolean) => {
+export const fetchBirdDirectory = async (filter: 'all' | 'regional') => {
   if (useMockData) {
     await sleep(1000);
     return mockBirdDirectory;
   } else {
     const response = await axios.get(`${BASE_API_URL}/species`, {
-      params: { active },
+      params: { filter },
     });
     return response.data;
   }
