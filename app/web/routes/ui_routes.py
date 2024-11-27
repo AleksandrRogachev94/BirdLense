@@ -280,23 +280,15 @@ def register_routes(app):
 
     @app.route('/api/ui/species', methods=['GET'])
     def get_all_species():
-        # Parse the 'active' query parameter
-        active = request.args.get('active')
-
+        filter_value = request.args.get('filter', 'all').lower()
         # Build query
         query = db.session.query(Species)
-        if active is not None:
-            try:
-                active_flag = active.lower() in ['true', '1']
-                query = query.filter(Species.active == active_flag)
-            except ValueError:
-                return {'error': 'Invalid value for active. Use true or false.'}, 400
-
+        if filter_value == 'regional':
+            query = query.filter(Species.active == True)
         # Execute query and fetch results
-        species_list = query.order_by(Species.created_at.desc()).all()
-
+        species_list = query.order_by(Species.name.asc()).all()
         # Construct the response
-        response = [
+        return [
             {
                 'id': species.id,
                 'name': species.name,
@@ -308,8 +300,6 @@ def register_routes(app):
             }
             for species in species_list
         ]
-
-        return response
 
     @app.route('/api/ui/settings', methods=['GET'])
     def get_settings():
