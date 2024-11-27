@@ -1,16 +1,14 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { fetchBirdDirectory } from '../api/api';
-import {
-  Box,
-  CircularProgress,
-  MenuItem,
-  Select,
-  InputLabel,
-  FormControl,
-  Typography,
-  SelectChangeEvent,
-} from '@mui/material';
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import Typography from '@mui/material/Typography';
+import { SelectChangeEvent } from '@mui/material/Select';
 import { BirdDirectoryTreeView } from '../components/BirdDirectoryTreeView';
 import { Species } from '../types';
 

@@ -1,6 +1,9 @@
 import React from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Box, CircularProgress, Container, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
+import Container from '@mui/material/Container';
+import Typography from '@mui/material/Typography';
 import { SettingsForm } from '../components/SettingsForm';
 import { fetchSettings, updateSettings } from '../api/api';
 import { Settings as SettingsType } from '../types';

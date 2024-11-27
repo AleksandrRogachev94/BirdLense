@@ -8,7 +8,7 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { Settings } from '../types';
 import { fetchCoordinatesByZip } from '../api/api';
-import { FormControlLabel } from '@mui/material';
+import FormControlLabel from '@mui/material/FormControlLabel';
 
 export const SettingsForm = ({
   currentSettings,

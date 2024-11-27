@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import { fetchVideo } from '../api/api';
-import { Box, CircularProgress } from '@mui/material';
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
 import { Video } from '../types';
 import { VideoInfo } from '../components/VideoInfo';
 import { VideoPlayer } from '../components/VideoPlayer';

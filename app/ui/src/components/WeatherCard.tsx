@@ -1,4 +1,7 @@
-import { Box, Chip, Paper, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
 import { Weather } from '../types';
 import WeatherIcon from '@mui/icons-material/WbSunny';
 import TempIcon from '@mui/icons-material/Thermostat';

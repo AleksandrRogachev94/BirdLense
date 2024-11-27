@@ -1,21 +1,17 @@
-import {
-  Timeline as MuiTimeline,
-  TimelineItem,
-  TimelineSeparator,
-  TimelineConnector,
-  TimelineContent,
-  TimelineDot,
-  TimelineOppositeContent,
-} from '@mui/lab';
-import {
-  Card,
-  CardContent,
-  Typography,
-  Avatar,
-  Chip,
-  Box,
-  CardActionArea,
-} from '@mui/material';
+import MuiTimeline from '@mui/lab/Timeline';
+import TimelineItem from '@mui/lab/TimelineItem';
+import TimelineSeparator from '@mui/lab/TimelineSeparator';
+import TimelineConnector from '@mui/lab/TimelineConnector';
+import TimelineContent from '@mui/lab/TimelineContent';
+import TimelineDot from '@mui/lab/TimelineDot';
+import TimelineOppositeContent from '@mui/lab/TimelineOppositeContent';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
+import Avatar from '@mui/material/Avatar';
+import Chip from '@mui/material/Chip';
+import Box from '@mui/material/Box';
+import CardActionArea from '@mui/material/CardActionArea';
 import AccessTime from '@mui/icons-material/AccessTime';
 import Thermostat from '@mui/icons-material/Thermostat';
 import { BirdSighting } from '../types';

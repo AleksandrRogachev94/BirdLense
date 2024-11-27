@@ -1,11 +1,8 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import {
-  Container,
-  CssBaseline,
-  ThemeProvider,
-  createTheme,
-} from '@mui/material';
+import Container from '@mui/material/Container';
+import CssBaseline from '@mui/material/CssBaseline';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { Navigation } from './components/Navigation';
 import { TimelinePage } from './pages/TimelinePage';
 import { FoodManagement } from './pages/FoodManagement';

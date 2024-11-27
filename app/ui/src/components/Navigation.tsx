@@ -1,21 +1,17 @@
 import * as React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import {
-  AppBar,
-  Box,
-  Container,
-  IconButton,
-  Menu,
-  MenuItem,
-  Toolbar,
-  Typography,
-  Tabs,
-  Tab,
-} from '@mui/material';
-import {
-  Menu as MenuIcon,
-  EmojiNature as EmojiNatureIcon,
-} from '@mui/icons-material';
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
+import IconButton from '@mui/material/IconButton';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import MenuIcon from '@mui/icons-material/Menu';
+import EmojiNatureIcon from '@mui/icons-material/EmojiNature';
 
 const pages = [
   { label: 'Overview', url: '/' },
