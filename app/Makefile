@@ -16,7 +16,7 @@ start-dev:
 	@echo "Docker Compose services started."
 
 start-dev-web:
-	@sudo docker compose -f $(DOCKER_COMPOSE_DEV) up nginx web ui --build
+	@sudo docker compose -f $(DOCKER_COMPOSE_DEV) up nginx web ui ntfy --build
 
 stop-dev:
 	@echo "Stopping Docker Compose services..."
@@ -32,7 +32,7 @@ start:
 	@echo "Docker Compose services started."
 
 start-web:
-	@sudo docker compose -f $(DOCKER_COMPOSE_PROD) up nginx web ui --build
+	@sudo docker compose -f $(DOCKER_COMPOSE_PROD) up nginx web ui ntfy --build
 
 stop:
 	@echo "Stopping Docker Compose services..."

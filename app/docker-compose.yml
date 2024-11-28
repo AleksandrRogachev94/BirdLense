@@ -8,7 +8,8 @@ services:
       context: ./nginx
       dockerfile: Dockerfile.dev
     ports:
-      - '80:8080'
+      - "80:8080"
+      - "8081:8081"
     volumes:
       - ./data:/srv/data
 
@@ -58,3 +59,15 @@ services:
       - ./ui:/app
       - ./app_config:/app/app_config
       - ./data:/app/data
+
+  ntfy:
+    image: binwiederhier/ntfy
+    container_name: ntfy
+    command:
+      - serve
+    environment:
+      TZ: "America/New_York" # optional: set desired timezone
+      NTFY_BEHIND_PROXY: "true"
+      NTFY_UPSTREAM_BASE_URL: "https://ntfy.sh"
+      NTFY_BASE_URL: "http://smartbirdfeeder:8081"
+    restart: unless-stopped
