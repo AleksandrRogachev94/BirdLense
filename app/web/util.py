@@ -142,11 +142,12 @@ def get_wikipedia_image_and_description(title):
 
 
 def notify(message, link="", tags=None):
-    requests.post("http://ntfy/birdlense",
-                  data=message.encode(
-                      'utf-8'),
-                  headers={
-                      "Title": "BirdLense",
-                      "Click": f"http://smartbirdfeeder.local/{link}",
-                      "Tags": tags
-                  })
+    if app_config.get('general.enable_notifications'):
+        requests.post("http://ntfy/birdlense",
+                      data=message.encode(
+                          'utf-8'),
+                      headers={
+                          "Title": "BirdLense",
+                          "Click": f"http://smartbirdfeeder.local/{link}",
+                          "Tags": tags
+                      })

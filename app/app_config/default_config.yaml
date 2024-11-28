@@ -1,3 +1,6 @@
+general:
+  enable_notifications: false
+
 # Video/Audio processor settings
 processor:
   video_width: 1280
@@ -7,12 +10,10 @@ processor:
   max_record_seconds: 60 # maximum length of video/audio recording
   max_inactive_seconds: 10 # maximum number of seconds with no activity before stopping recording
   save_images: true
-  
-
 
 # Add your secrets and other configurations here
 secrets:
   openweather_api_key:
   # Default location. This is near the geographic center of the contiguous United States.
-  latitude: "39.8283" 
+  latitude: "39.8283"
   longitude: "-98.5795"

@@ -76,9 +76,8 @@ export interface BirdTaxonomy {
 }
 
 export interface Settings {
-  web: {
-    host: string; // Host address, e.g., "0.0.0.0"
-    port: number; // Port number, e.g., 8080
+  general: {
+    enable_notifications: boolean; // Whether to enable notifications or not
   };
   processor: {
     video_width: number; // Video width in pixels, e.g., 1280

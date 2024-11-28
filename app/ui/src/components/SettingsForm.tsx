@@ -49,6 +49,32 @@ export const SettingsForm = ({
     >
       {/* Secrets Section */}
       <Typography variant="h5" gutterBottom>
+        General
+      </Typography>
+      <Grid container spacing={2}>
+        <Grid size={{ xs: 12 }}>
+          <form.Field name="general.enable_notifications">
+            {(field) => (
+              <>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      id={field.name}
+                      name={field.name}
+                      checked={field.state.value}
+                      onChange={(e) => field.handleChange(e.target.checked)}
+                    />
+                  }
+                  label="Enable Notifications"
+                />
+              </>
+            )}
+          </form.Field>
+        </Grid>
+      </Grid>
+      <Divider sx={{ my: 4 }} />
+      {/* Secrets Section */}
+      <Typography variant="h5" gutterBottom>
         Secrets
       </Typography>
       <Grid container spacing={2}>
