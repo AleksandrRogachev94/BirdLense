@@ -3,7 +3,7 @@ import re
 from flask import request
 from datetime import datetime, timezone, timedelta
 from models import ActivityLog, db, BirdFood, Video, Species, VideoSpecies
-from util import weather_fetcher, get_wikipedia_image_and_description
+from util import weather_fetcher, get_wikipedia_image_and_description, notify
 
 
 def register_routes(app):
@@ -131,8 +131,9 @@ def register_routes(app):
         return {"message": "success"}, 200
 
     @app.route('/api/processor/notify', methods=['POST'])
-    def notify():
+    def notify_route():
         detection = request.json.get('detection')
+        notify(f"{detection} detected", tags="bird")
         return {'message': f'Successfully received notification of {detection}'}, 200
 
     @app.route('/api/processor/activity_log', methods=['POST'])

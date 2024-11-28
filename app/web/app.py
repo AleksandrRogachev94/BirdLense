@@ -1,4 +1,5 @@
 import os
+from util import notify
 from flask import Flask
 from flask_cors import CORS
 import logging
@@ -36,10 +37,9 @@ def create_app():
     with app.app_context():
         db.create_all()
         seed()
-
     routes.ui_routes.register_routes(app)
     routes.processor_routes.register_routes(app)
-
+    notify(f"App is UP!", tags="rocket")
     return app
 
 

@@ -139,3 +139,14 @@ def get_wikipedia_image_and_description(title):
         return image_url, description
     else:
         return None, "No data found"
+
+
+def notify(message, link="", tags=None):
+    requests.post("http://ntfy/birdlense",
+                  data=message.encode(
+                      'utf-8'),
+                  headers={
+                      "Title": "BirdLense",
+                      "Click": f"http://smartbirdfeeder.local/{link}",
+                      "Tags": tags
+                  })
