@@ -13,7 +13,7 @@ processor:
 
 # Add your secrets and other configurations here
 secrets:
-  openweather_api_key:
+  openweather_api_key: ""
   # Default location. This is near the geographic center of the contiguous United States.
   latitude: "39.8283"
   longitude: "-98.5795"

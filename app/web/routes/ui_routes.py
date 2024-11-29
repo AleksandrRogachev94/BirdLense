@@ -16,13 +16,13 @@ def register_routes(app):
     def weather():
         weather = weather_fetcher.fetch()
         return {
-            'main': weather['weather_main'],
-            'description': weather['weather_description'],
-            'temp': weather['weather_temp'],
-            'humidity': weather['weather_humidity'],
-            'pressure': weather['weather_pressure'],
-            'clouds': weather['weather_clouds'],
-            'wind_speed': weather['weather_wind_speed'],
+            'main': weather.get('weather_main'),
+            'description': weather.get('weather_description'),
+            'temp': weather.get('weather_temp'),
+            'humidity': weather.get('weather_humidity'),
+            'pressure': weather.get('weather_pressure'),
+            'clouds': weather.get('weather_clouds'),
+            'wind_speed': weather.get('weather_wind_speed'),
         }
 
     @app.route('/api/ui/videos/<int:video_id>', methods=['GET'])
