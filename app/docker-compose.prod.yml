@@ -35,6 +35,8 @@ services:
   web:
     build:
       context: ./web
+    depends_on:
+      - ntfy
     volumes:
       - ./app_config:/app/app_config
       - ./data:/app/data
