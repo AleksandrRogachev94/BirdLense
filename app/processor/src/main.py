@@ -126,7 +126,8 @@ def main():
                 frame_processor.tracks)
             logging.info(
                 f'Processing stopped. Video Result: {video_detections}; Audio Result: {audio_detections}')
-            if len(video_detections) + len(audio_detections) > 0:
+            # if len(video_detections) + len(audio_detections) > 0:
+            if len(video_detections) > 0:
                 api.create_video(video_detections, audio_detections, start_time,
                                  end_time, video_output, audio_output)
             else:
