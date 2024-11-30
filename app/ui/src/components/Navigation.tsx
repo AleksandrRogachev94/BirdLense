@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
+import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -12,8 +13,9 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import MenuIcon from '@mui/icons-material/Menu';
 import EmojiNatureIcon from '@mui/icons-material/EmojiNature';
-import MUILink from '@mui/material/Link';
 import SettingsIcon from '@mui/icons-material/Settings';
+import LiveTvIcon from '@mui/icons-material/LiveTv';
+import MUILink from '@mui/material/Link';
 
 const pages = [
   { label: 'Overview', url: '/' },
@@ -148,6 +150,21 @@ export function Navigation() {
 
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {renderTabs()}
+          </Box>
+
+          <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+            <Button>Secondary</Button>
+            <Button
+              component={Link}
+              to="/live"
+              sx={{
+                color: 'white', // Text color
+              }}
+              startIcon={<LiveTvIcon />}
+              variant="text"
+            >
+              Live
+            </Button>
           </Box>
 
           {/* Settings Icon and Menu */}
