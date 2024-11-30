@@ -1,5 +1,12 @@
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "5m"
+    max-file: "3"
+
 services:
   nginx:
+    container_name: birdlense_nginx
     restart: always
     depends_on:
       - web
@@ -10,8 +17,11 @@ services:
       - "80:8080"
     volumes:
       - ./data:/srv/data
+      - /var/lib/docker/containers:/docker_logs:ro # Expose logs in nginx
+    logging: *default-logging
 
   processor:
+    container_name: birdlense_processor
     build:
       context: ./processor
     volumes:
@@ -31,8 +41,10 @@ services:
     privileged: true
     depends_on:
       - web
+    logging: *default-logging
 
   web:
+    container_name: birdlense_web
     build:
       context: ./web
     depends_on:
@@ -41,12 +53,16 @@ services:
       - ./app_config:/app/app_config
       - ./data:/app/data
     command: gunicorn -w 1 -b 0.0.0.0:8000 --access-logfile - --error-logfile - app:app
+    logging: *default-logging
 
   ui:
+    container_name: birdlense_ui
     build:
       context: ./ui
+    logging: *default-logging
 
   ntfy:
+    container_name: birdlense_ntfy
     image: binwiederhier/ntfy
     container_name: ntfy
     command:
@@ -57,3 +73,4 @@ services:
       NTFY_UPSTREAM_BASE_URL: "https://ntfy.sh"
       NTFY_BASE_URL: "http://smartbirdfeeder:8081"
     restart: unless-stopped
+    logging: *default-logging
