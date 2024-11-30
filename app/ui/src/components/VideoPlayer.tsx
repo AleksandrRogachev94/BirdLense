@@ -206,22 +206,39 @@ export const VideoPlayer = ({ video }: { video: Video }) => {
             />
 
             {/* Detection Markers */}
-            {video.species.map((species, index) => (
-              <Box
-                key={index}
-                sx={{
-                  position: 'absolute',
-                  left: `${(species.start_time / duration) * 100}%`,
-                  top: '0',
-                  bottom: '0',
-                  width: `${((species.end_time - species.start_time) / duration) * 100}%`,
-                  backgroundColor: labelToUniqueHexColor(species.species_name),
-                  cursor: 'pointer',
-                }}
-                onClick={() => handleSeek(species.start_time)}
-                title={species.species_name}
-              />
-            ))}
+            {video.species.map((species, index) => {
+              const startPercentage = Math.min(
+                (species.start_time / duration) * 100,
+                100,
+              );
+              const endPercentage = Math.min(
+                (species.end_time / duration) * 100,
+                100,
+              );
+              const width = Math.min(
+                endPercentage - startPercentage,
+                100 - startPercentage,
+              );
+
+              return (
+                <Box
+                  key={index}
+                  sx={{
+                    position: 'absolute',
+                    left: `${startPercentage}%`,
+                    top: '0',
+                    bottom: '0',
+                    width: `${width}%`,
+                    backgroundColor: labelToUniqueHexColor(
+                      species.species_name,
+                    ),
+                    cursor: 'pointer',
+                  }}
+                  onClick={() => handleSeek(species.start_time)}
+                  title={species.species_name}
+                />
+              );
+            })}
 
             {/* Slider */}
             <Slider
