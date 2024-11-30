@@ -244,8 +244,8 @@ def register_routes(app):
             response.append({
                 'id': record.id,
                 'video_id': record.video_id,
-                'start_time': (video_start_time + timedelta(seconds=record.start_time)).isoformat(),
-                'end_time': (video_start_time + timedelta(seconds=record.end_time)).isoformat(),
+                'start_time': (video_start_time + timedelta(seconds=record.start_time)).astimezone(timezone.utc).isoformat(),
+                'end_time': (video_start_time + timedelta(seconds=record.end_time)).astimezone(timezone.utc).isoformat(),
                 'confidence': record.confidence,
                 'source': record.source,
                 'weather': {
