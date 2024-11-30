@@ -12,7 +12,7 @@ start-dev:
 	@sudo cat /proc/device-tree/model > $(TEMP_MODEL_FILE)
 	@echo "Jetson model information captured in $(TEMP_MODEL_FILE)."
 	@echo "Starting Docker Compose services..."
-	@sudo docker compose -f $(DOCKER_COMPOSE_DEV) up --build
+	@sudo docker compose -f $(DOCKER_COMPOSE_DEV) up
 	@echo "Docker Compose services started."
 
 start-dev-web:
@@ -28,7 +28,7 @@ start:
 	@sudo cat /proc/device-tree/model > $(TEMP_MODEL_FILE)
 	@echo "Jetson model information captured in $(TEMP_MODEL_FILE)."
 	@echo "Starting Docker Compose services..."
-	@sudo docker compose -f $(DOCKER_COMPOSE_PROD) up --build
+	@sudo docker compose -f $(DOCKER_COMPOSE_PROD) up -d
 	@echo "Docker Compose services started."
 
 start-web:
