@@ -75,6 +75,7 @@ def main():
     while True:
         if not motion_detector.detect():
             continue
+        api.notify_motion()
 
         # Configure video sources
         output_path = get_output_path()

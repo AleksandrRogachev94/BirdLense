@@ -28,9 +28,13 @@ class API():
             self.logger.error(f"API request failed for {url}: {e}")
             raise  # Re-raise the exception after logging it
 
+    def notify_motion(self):
+        # No need for try/except here since _send_request handles errors
+        self._send_request('POST', 'notify/motion', {})
+
     def notify_species(self, species):
         # No need for try/except here since _send_request handles errors
-        self._send_request('POST', 'notify', {'detection': species})
+        self._send_request('POST', 'notify/detections', {'detection': species})
 
     def create_video(self, species_video, species_audio, start_time, end_time, video_path, audio_path):
         video_data = {

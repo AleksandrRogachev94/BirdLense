@@ -130,11 +130,16 @@ def register_routes(app):
 
         return {"message": "success"}, 200
 
-    @app.route('/api/processor/notify', methods=['POST'])
-    def notify_route():
+    @app.route('/api/processor/notify/detections', methods=['POST'])
+    def notify_detections_route():
         detection = request.json.get('detection')
-        notify(f"{detection} detected", tags="bird")
+        notify(f"{detection} Detected", tags="bird")
         return {'message': f'Successfully received notification of {detection}'}, 200
+
+    @app.route('/api/processor/notify/motion', methods=['POST'])
+    def notify_motion_route():
+        notify(f"Motion detected", tags="eyes")
+        return {'message': f'Successfully received notification of motion'}, 200
 
     @app.route('/api/processor/activity_log', methods=['POST'])
     def add_or_update_activity_log():
