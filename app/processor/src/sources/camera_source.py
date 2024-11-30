@@ -107,7 +107,7 @@ def recording_worker(control_queue: multiprocessing.Queue, frame_queue: multipro
         elif command == "client_connect":
             active_clients += 1
             if active_clients == 1:
-                picam2.start_encoder(stream_encoder, quality=Quality.MEDIUM)
+                picam2.start_encoder(stream_encoder, quality=Quality.LOW)
             if not recording:
                 picam2.start()
                 recording = True

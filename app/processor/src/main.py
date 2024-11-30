@@ -26,12 +26,6 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
         logging.StreamHandler(),  # Logs to the console
-        RotatingFileHandler(
-            f'{log_directory}/app.log',  # Log file path
-            # Maximum file size in bytes (e.g., 5 MB)
-            maxBytes=5*1024*1024,
-            backupCount=1                # Number of backup files to keep
-        )
     ]
 )
 

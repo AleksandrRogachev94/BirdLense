@@ -1,5 +1,12 @@
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "5m"
+    max-file: "3"
+
 services:
   nginx:
+    container_name: birdlense_nginx
     restart: always
     depends_on:
       - web
@@ -12,8 +19,11 @@ services:
       - "8081:8081"
     volumes:
       - ./data:/srv/data
+      - /var/lib/docker/containers:/docker_logs:ro # Expose logs in nginx
+    logging: *default-logging
 
   processor:
+    container_name: birdlense_processor
     build:
       context: ./processor
       dockerfile: Dockerfile.dev
@@ -31,28 +41,29 @@ services:
     environment:
       - API_URL_BASE=http://web:8000/api/processor
       - LD_LIBRARY_PATH=/opt/vc/lib
-    command: python3 src/main.py data/samples/videos/cardinal.mp4
-    # command: python3 src/main.py
+    command: python3 src/main.py
     privileged: true
     depends_on:
       - web
+    logging: *default-logging
 
   web:
+    container_name: birdlense_web
     build:
       context: ./web
       dockerfile: Dockerfile.dev
     depends_on:
       - ntfy
-    # flask requires SIGINT to stop gracefully
-    # (default stop signal from Compose is SIGTERM)
     stop_signal: SIGINT
     volumes:
       - ./web:/app
       - ./app_config:/app/app_config
       - ./data:/app/data
     command: flask run --host=0.0.0.0 --port=8000 --debug
+    logging: *default-logging
 
   ui:
+    container_name: birdlense_ui
     build:
       context: ./ui
       dockerfile: Dockerfile.dev
@@ -61,10 +72,11 @@ services:
       - ./ui:/app
       - ./app_config:/app/app_config
       - ./data:/app/data
+    logging: *default-logging
 
   ntfy:
+    container_name: birdlense_ntfy
     image: binwiederhier/ntfy
-    container_name: ntfy
     command:
       - serve
     environment:
@@ -73,3 +85,4 @@ services:
       NTFY_UPSTREAM_BASE_URL: "https://ntfy.sh"
       NTFY_BASE_URL: "http://smartbirdfeeder:8081"
     restart: unless-stopped
+    logging: *default-logging
