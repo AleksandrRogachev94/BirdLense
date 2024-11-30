@@ -7,7 +7,7 @@ from logging.handlers import RotatingFileHandler
 import os
 import shutil
 from frame_processor import FrameProcessor
-from motion_detector import MotionDetector
+from motion_detectors.pir import PIRMotionDetector
 from decision_maker import DecisionMaker
 from fps_tracker import FPSTracker
 from api import API
@@ -55,7 +55,7 @@ def main():
     args = parser.parse_args()
 
     # Instantiate all helper classes
-    motion_detector = MotionDetector()
+    motion_detector = PIRMotionDetector()
     decision_maker = DecisionMaker(max_record_seconds=app_config.get(
         'processor.max_record_seconds'), max_inactive_seconds=app_config.get('processor.max_inactive_seconds'))
     main_size = (app_config.get('processor.video_width'),
