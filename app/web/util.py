@@ -141,7 +141,7 @@ def get_wikipedia_image_and_description(title):
         return None, "No data found"
 
 
-def notify(message, link="", tags=None):
+def notify(message, link="live", tags=None):
     if app_config.get('general.enable_notifications'):
         requests.post("http://ntfy/birdlense",
                       data=message.encode(
