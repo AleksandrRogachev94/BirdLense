@@ -11,7 +11,7 @@ import {
 import { BirdFood, BirdSighting, Settings } from '../types';
 import axios from 'axios';
 
-const useMockData = false; // Set to false to use real API calls
+const useMockData = true; // Set to false to use real API calls
 export const BASE_URL = 'http://smartbirdfeeder.local';
 export const BASE_API_URL = `${BASE_URL}/api/ui`;
 

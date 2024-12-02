@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Timeline } from '../components/Timeline';
-import { TimelineStats } from '../components/TimelineStats';
-import { BirdSighting, Species } from '../types';
+import { Timeline } from './Timeline';
+import { TimelineStats } from './TimelineStats';
+import { BirdSighting, Species } from '../../types';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Divider from '@mui/material/Divider';
@@ -20,7 +20,7 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { renderTimeViewClock } from '@mui/x-date-pickers/timeViewRenderers';
 import dayjs, { Dayjs } from 'dayjs';
 import { useQuery } from '@tanstack/react-query';
-import { fetchTimeline } from '../api/api';
+import { fetchTimeline } from '../../api/api';
 
 function useSpeciesList(sightings: BirdSighting[] | undefined) {
   return sightings

@@ -2,8 +2,8 @@ import React, { useRef, useCallback, useMemo } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { useTheme } from '@mui/material/styles';
-import { Video } from '../../types';
-import { labelToUniqueHexColor } from '../../util';
+import { Video } from '../../../types';
+import { labelToUniqueHexColor } from '../../../util';
 
 interface ProgressBarProps {
   duration: number;

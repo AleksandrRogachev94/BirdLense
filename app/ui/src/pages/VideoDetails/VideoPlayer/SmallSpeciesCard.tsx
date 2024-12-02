@@ -12,9 +12,9 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import GraphicEqIcon from '@mui/icons-material/GraphicEq';
-import { VideoSpecies } from '../../types';
-import { formatConfidence, labelToUniqueHexColor } from '../../util';
-import { BASE_URL } from '../../api/api';
+import { VideoSpecies } from '../../../types';
+import { formatConfidence, labelToUniqueHexColor } from '../../../util';
+import { BASE_URL } from '../../../api/api';
 
 export const SmallSpeciesCard: React.FC<{ species: VideoSpecies }> = ({
   species,

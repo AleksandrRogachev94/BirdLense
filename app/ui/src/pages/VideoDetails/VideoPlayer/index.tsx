@@ -6,8 +6,8 @@ import IconButton from '@mui/material/IconButton';
 import ReactPlayer from 'react-player';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
-import { Video } from '../../types';
-import { BASE_URL } from '../../api/api';
+import { Video } from '../../../types';
+import { BASE_URL } from '../../../api/api';
 import { SmallSpeciesCard } from './SmallSpeciesCard';
 import { ProgressBar } from './ProgressBar';
 

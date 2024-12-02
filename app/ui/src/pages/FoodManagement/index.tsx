@@ -12,8 +12,8 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { fetchBirdFood, toggleBirdFood, addBirdFood } from '../api/api';
-import { BirdFood } from '../types';
+import { fetchBirdFood, toggleBirdFood, addBirdFood } from '../../api/api';
+import { BirdFood } from '../../types';
 
 // BirdFoodManagement Component
 export const FoodManagement = () => {

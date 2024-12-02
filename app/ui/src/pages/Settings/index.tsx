@@ -4,9 +4,9 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import { SettingsForm } from '../components/SettingsForm';
-import { fetchSettings, updateSettings } from '../api/api';
-import { Settings as SettingsType } from '../types';
+import { SettingsForm } from './SettingsForm';
+import { fetchSettings, updateSettings } from '../../api/api';
+import { Settings as SettingsType } from '../../types';
 
 export const Settings: React.FC = () => {
   const queryClient = useQueryClient();

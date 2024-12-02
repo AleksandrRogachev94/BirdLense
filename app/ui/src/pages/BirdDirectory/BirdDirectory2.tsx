@@ -12,7 +12,7 @@ import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import { Search, Info, Heart, Leaf } from 'lucide-react';
-import { BirdTaxonomy } from '../types';
+import { BirdTaxonomy } from '../../types';
 
 const mockBirds: BirdTaxonomy[] = [
   {

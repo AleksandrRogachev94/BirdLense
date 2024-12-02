@@ -6,14 +6,14 @@ import Divider from '@mui/material/Divider';
 import Chip from '@mui/material/Chip';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FoodIcon from '@mui/icons-material/Fastfood';
-import { Video, VideoSpecies } from '../types';
+import { Video, VideoSpecies } from '../../types';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
-import { WeatherCard } from './WeatherCard';
-import { labelToUniqueHexColor } from '../util';
+import { WeatherCard } from '../../components/WeatherCard';
+import { labelToUniqueHexColor } from '../../util';
 
 interface GroupedSpecies {
   species_id: string;

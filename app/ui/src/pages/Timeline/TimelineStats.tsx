@@ -1,8 +1,8 @@
 import Grid from '@mui/material/Grid2';
-import { BirdSighting } from '../types';
+import { BirdSighting } from '../../types';
 import AccessTime from '@mui/icons-material/AccessTime';
 import Pets from '@mui/icons-material/Pets';
-import { StatCard } from './StatCard';
+import { StatCard } from '../../components/StatCard';
 
 const calculateSpeciesSpotted = (data: BirdSighting[]) => {
   const speciesSet = new Set<number>();

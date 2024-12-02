@@ -14,9 +14,9 @@ import Box from '@mui/material/Box';
 import CardActionArea from '@mui/material/CardActionArea';
 import AccessTime from '@mui/icons-material/AccessTime';
 import Thermostat from '@mui/icons-material/Thermostat';
-import { BirdSighting } from '../types';
+import { BirdSighting } from '../../types';
 import { useNavigate } from 'react-router-dom';
-import { formatConfidence } from '../util';
+import { formatConfidence } from '../../util';
 
 export function Timeline({ sightings }: { sightings: BirdSighting[] }) {
   const navigate = useNavigate();

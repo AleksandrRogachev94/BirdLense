@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { fetchBirdDirectory } from '../api/api';
+import { fetchBirdDirectory } from '../../api/api';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import MenuItem from '@mui/material/MenuItem';
@@ -9,8 +9,8 @@ import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import Typography from '@mui/material/Typography';
 import { SelectChangeEvent } from '@mui/material/Select';
-import { BirdDirectoryTreeView } from '../components/BirdDirectoryTreeView';
-import { Species } from '../types';
+import { BirdDirectoryTreeView } from './BirdDirectoryTreeView';
+import { Species } from '../../types';
 
 export const BirdDirectory = () => {
   const [filter, setFilter] = useState<'all' | 'regional'>('regional');

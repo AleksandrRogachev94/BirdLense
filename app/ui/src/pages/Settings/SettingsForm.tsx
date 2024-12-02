@@ -6,8 +6,8 @@ import Grid from '@mui/material/Grid2';
 import Switch from '@mui/material/Switch';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { Settings } from '../types';
-import { fetchCoordinatesByZip } from '../api/api';
+import { Settings } from '../../types';
+import { fetchCoordinatesByZip } from '../../api/api';
 import FormControlLabel from '@mui/material/FormControlLabel';
 
 export const SettingsForm = ({

@@ -1,11 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
-import { fetchVideo } from '../api/api';
+import { fetchVideo } from '../../api/api';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-import { Video } from '../types';
-import { VideoInfo } from '../components/VideoInfo';
-import { VideoPlayer } from '../components/VideoPlayer';
+import { Video } from '../../types';
+import { VideoInfo } from './VideoInfo';
+import { VideoPlayer } from './VideoPlayer';
 
 export const VideoDetails = () => {
   const params = useParams();

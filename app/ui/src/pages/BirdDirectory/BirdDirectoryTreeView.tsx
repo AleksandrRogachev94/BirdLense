@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Species } from '../types';
+import { Species } from '../../types';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 
 interface NestedSpecies extends Species {
