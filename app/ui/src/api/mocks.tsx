@@ -170,9 +170,8 @@ export const mockBirdFood: BirdFood[] = [
 ];
 
 export const mockSetttings: Settings = {
-  web: {
-    host: '0.0.0.0',
-    port: 8080,
+  general: {
+    enable_notifications: true,
   },
   processor: {
     video_width: 1280,

@@ -1,6 +1,5 @@
-import { useRef, useState, useMemo } from 'react';
+import { useRef, useState, useMemo, useCallback } from 'react';
 import Box from '@mui/material/Box';
-import Slider from '@mui/material/Slider';
 import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -111,8 +110,9 @@ export const VideoPlayer = ({ video }: { video: Video }) => {
   const theme = useTheme();
   const videoRef = useRef<ReactPlayer | null>(null);
   const audioRef = useRef<ReactPlayer | null>(null);
+  const progressBarRef = useRef<HTMLDivElement | null>(null);
   const [progress, setProgress] = useState(0);
-  const [playing, setPlaying] = useState(true);
+  const [playing, setPlaying] = useState(false);
 
   const duration =
     new Date(video.end_time).getTime() / 1000 -
@@ -131,14 +131,30 @@ export const VideoPlayer = ({ video }: { video: Video }) => {
     setProgress(state.playedSeconds);
   };
 
-  const handleSeek = (time: number) => {
+  const handleSeek = useCallback((time: number) => {
     if (videoRef.current) {
       videoRef.current.seekTo(time, 'seconds');
-      setProgress(time);
     }
     if (audioRef.current) {
       audioRef.current.seekTo(time, 'seconds');
     }
+    setProgress(time);
+  }, []);
+
+  const handleProgressBarSeek = useCallback(
+    (event: React.MouseEvent) => {
+      if (progressBarRef.current) {
+        const rect = progressBarRef.current.getBoundingClientRect();
+        const seekPosition = (event.clientX - rect.left) / rect.width;
+        const seekTime = seekPosition * duration;
+        handleSeek(seekTime);
+      }
+    },
+    [duration, handleSeek],
+  );
+
+  const togglePlayPause = () => {
+    setPlaying(!playing);
   };
 
   const formatTime = (seconds: number) => {
@@ -150,7 +166,7 @@ export const VideoPlayer = ({ video }: { video: Video }) => {
   return (
     <Box>
       {/* Video Player */}
-      <Box height={500}>
+      <Box height={500} position="relative">
         <ReactPlayer
           ref={videoRef}
           url={`${BASE_URL}/${video.video_path}`}
@@ -168,103 +184,215 @@ export const VideoPlayer = ({ video }: { video: Video }) => {
           height="0"
           width="0"
         />
+
+        {/* Play/Pause Overlay Button */}
+        <IconButton
+          onClick={togglePlayPause}
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            color: 'white',
+            '&:hover': {
+              backgroundColor: 'rgba(0,0,0,0.7)',
+            },
+          }}
+        >
+          {playing ? (
+            <PauseIcon fontSize="large" />
+          ) : (
+            <PlayArrowIcon fontSize="large" />
+          )}
+        </IconButton>
       </Box>
 
       {/* Progress Bar */}
-      <Box sx={{ position: 'relative' }}>
+      <Box sx={{ position: 'relative', mt: 2 }}>
         <Box display="flex" alignItems="center">
-          {/* Play/Stop Icon Button */}
-          <IconButton color="primary" onClick={() => setPlaying(!playing)}>
-            {playing ? (
-              <PauseIcon fontSize="large" />
-            ) : (
-              <PlayArrowIcon fontSize="large" />
-            )}
-          </IconButton>
-
           <Box
+            ref={progressBarRef}
+            onClick={handleProgressBarSeek}
             sx={{
               position: 'relative',
-              height: '8px',
-              backgroundColor: theme.palette.grey[400],
+              height:
+                (() => {
+                  // Sort and group overlapping detections
+                  const sortedSpecies = [...video.species].sort(
+                    (a, b) => a.start_time - b.start_time,
+                  );
+
+                  // More robust layering mechanism
+                  const layers: Array<
+                    Array<{
+                      species: (typeof sortedSpecies)[0];
+                      startPercentage: number;
+                      endPercentage: number;
+                      width: number;
+                    }>
+                  > = [];
+
+                  sortedSpecies.forEach((species) => {
+                    const startPercentage = Math.min(
+                      (species.start_time / duration) * 100,
+                      100,
+                    );
+                    const endPercentage = Math.min(
+                      (species.end_time / duration) * 100,
+                      100,
+                    );
+                    const width = Math.min(
+                      endPercentage - startPercentage,
+                      100 - startPercentage,
+                    );
+
+                    // Find a layer where this detection doesn't overlap
+                    let layerIndex = layers.findIndex(
+                      (layer) =>
+                        !layer.some(
+                          (existingDetection) =>
+                            !(
+                              endPercentage <=
+                                existingDetection.startPercentage ||
+                              startPercentage >= existingDetection.endPercentage
+                            ),
+                        ),
+                    );
+
+                    // If no existing layer works, create a new one
+                    if (layerIndex === -1) {
+                      layerIndex = layers.length;
+                      layers.push([]);
+                    }
+
+                    // Add detection to the appropriate layer
+                    layers[layerIndex].push({
+                      species,
+                      startPercentage,
+                      endPercentage,
+                      width,
+                    });
+                  });
+
+                  // Calculate dynamic height
+                  return layers.length * 12;
+                })() + 'px',
+              backgroundColor: 'white',
               borderRadius: '4px',
               flexGrow: 1,
-              ml: 2,
+              overflow: 'hidden',
+              border: '1px solid #e0e0e0',
+              cursor: 'pointer',
             }}
           >
-            {/* Current Progress */}
+            {/* Played Section */}
             <Box
-              sx={{
-                width: `${(progress / duration) * 100}%`,
-                height: '100%',
-                backgroundColor: theme.palette.grey[700],
-                borderRadius: '4px',
-              }}
-            />
-
-            {/* Detection Markers */}
-            {video.species.map((species, index) => {
-              const startPercentage = Math.min(
-                (species.start_time / duration) * 100,
-                100,
-              );
-              const endPercentage = Math.min(
-                (species.end_time / duration) * 100,
-                100,
-              );
-              const width = Math.min(
-                endPercentage - startPercentage,
-                100 - startPercentage,
-              );
-
-              return (
-                <Box
-                  key={index}
-                  sx={{
-                    position: 'absolute',
-                    left: `${startPercentage}%`,
-                    top: '0',
-                    bottom: '0',
-                    width: `${width}%`,
-                    backgroundColor: labelToUniqueHexColor(
-                      species.species_name,
-                    ),
-                    cursor: 'pointer',
-                  }}
-                  onClick={() => handleSeek(species.start_time)}
-                  title={species.species_name}
-                />
-              );
-            })}
-
-            {/* Slider */}
-            <Slider
-              value={progress}
-              onChange={(_, value) => handleSeek(value as number)}
-              max={duration}
               sx={{
                 position: 'absolute',
-                top: '-10px',
-                width: '100%',
-                color: 'transparent',
-                '& .MuiSlider-thumb': {
-                  backgroundColor: theme.palette.grey[700],
-                },
+                left: 0,
+                top: 0,
+                bottom: 0,
+                width: `${(progress / duration) * 100}%`,
+                backgroundColor: theme.palette.grey[600],
+                zIndex: 1,
               }}
             />
-            {/* Labels */}
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                mt: 1,
-                fontSize: '0.8rem',
-              }}
-            >
-              <Typography>{formatTime(progress)}</Typography>
-              <Typography>{formatTime(duration)}</Typography>
-            </Box>
+
+            {/* Detection Markers - Improved Layered Approach */}
+            {(() => {
+              // Sort and group overlapping detections
+              const sortedSpecies = [...video.species].sort(
+                (a, b) => a.start_time - b.start_time,
+              );
+
+              // More robust layering mechanism
+              const layers: Array<
+                Array<{
+                  species: (typeof sortedSpecies)[0];
+                  startPercentage: number;
+                  endPercentage: number;
+                  width: number;
+                }>
+              > = [];
+
+              sortedSpecies.forEach((species) => {
+                const startPercentage = Math.min(
+                  (species.start_time / duration) * 100,
+                  100,
+                );
+                const endPercentage = Math.min(
+                  (species.end_time / duration) * 100,
+                  100,
+                );
+                const width = Math.min(
+                  endPercentage - startPercentage,
+                  100 - startPercentage,
+                );
+
+                // Find a layer where this detection doesn't overlap
+                let layerIndex = layers.findIndex(
+                  (layer) =>
+                    !layer.some(
+                      (existingDetection) =>
+                        !(
+                          endPercentage <= existingDetection.startPercentage ||
+                          startPercentage >= existingDetection.endPercentage
+                        ),
+                    ),
+                );
+
+                // If no existing layer works, create a new one
+                if (layerIndex === -1) {
+                  layerIndex = layers.length;
+                  layers.push([]);
+                }
+
+                // Add detection to the appropriate layer
+                layers[layerIndex].push({
+                  species,
+                  startPercentage,
+                  endPercentage,
+                  width,
+                });
+              });
+
+              // Render detections across layers
+              return layers.flatMap((layer, layerIdx) =>
+                layer.map((detection, index) => (
+                  <Box
+                    key={`${layerIdx}-${index}`}
+                    sx={{
+                      position: 'absolute',
+                      left: `${detection.startPercentage}%`,
+                      top: `${layerIdx * 12}px`, // Consistent vertical spacing
+                      height: '10px',
+                      width: `${detection.width}%`,
+                      backgroundColor: labelToUniqueHexColor(
+                        detection.species.species_name,
+                      ),
+                      opacity: 0.5,
+                      zIndex: 2,
+                    }}
+                    title={`${detection.species.species_name} (${formatTime(detection.species.start_time)} - ${formatTime(detection.species.end_time)})`}
+                  />
+                )),
+              );
+            })()}
           </Box>
+        </Box>
+
+        {/* Labels */}
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            mt: 1,
+            fontSize: '0.8rem',
+          }}
+        >
+          <Typography>{formatTime(progress)}</Typography>
+          <Typography>{formatTime(duration)}</Typography>
         </Box>
       </Box>
 
@@ -278,8 +406,11 @@ export const VideoPlayer = ({ video }: { video: Video }) => {
       >
         {activeSpecies.length > 0 ? (
           activeSpecies.map((species, index) => (
-            <Grid key={species.species_id} size={{ md: 2 }}>
-              <SmallSpeciesCard key={index} species={species} />
+            <Grid
+              key={`${species.species_id}-${species.start_time}-${index}`}
+              size={{ md: 2 }}
+            >
+              <SmallSpeciesCard species={species} />
             </Grid>
           ))
         ) : (
