@@ -129,9 +129,6 @@ export const VideoPlayer = ({ video }: { video: Video }) => {
 
   const handleProgress = (state: { playedSeconds: number }) => {
     setProgress(state.playedSeconds);
-    if (audioRef.current) {
-      audioRef.current.seekTo(state.playedSeconds, 'seconds');
-    }
   };
 
   const handleSeek = (time: number) => {
