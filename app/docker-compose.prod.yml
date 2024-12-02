@@ -1,76 +1,24 @@
-x-logging: &default-logging
-  driver: "json-file"
-  options:
-    max-size: "5m"
-    max-file: "3"
-
 services:
   nginx:
-    container_name: birdlense_nginx
-    restart: always
-    depends_on:
-      - web
-      - ui
     build:
       context: ./nginx
-    ports:
-      - "80:8080"
-      - "8081:8081"
-    volumes:
-      - ./data:/srv/data
-      - /var/lib/docker/containers:/docker_logs:ro # Expose logs in nginx
-    logging: *default-logging
+    # restart: unless-stopped
 
   processor:
-    container_name: birdlense_processor
     build:
       context: ./processor
-    volumes:
-      - /dev/shm:/dev/shm # used by audio recording
-      - /run/udev:/run/udev:ro
-      - ./app_config:/app/src/app_config
-      - ./data:/app/data
-    devices:
-      - /dev/video0 # video
-      - /dev/snd # audio
-      - /dev/bus/usb # audio
-    ipc: host
-    environment:
-      - API_URL_BASE=http://web:8000/api/processor
-      - LD_LIBRARY_PATH=/opt/vc/lib
-    command: python3 src/main.py
-    privileged: true
-    depends_on:
-      - web
-    logging: *default-logging
+    # restart: unless-stopped
 
   web:
-    container_name: birdlense_web
     build:
       context: ./web
-    depends_on:
-      - ntfy
-    volumes:
-      - ./app_config:/app/app_config
-      - ./data:/app/data
     command: gunicorn -w 1 -b 0.0.0.0:8000 --access-logfile - --error-logfile - app:app
-    logging: *default-logging
+    # restart: unless-stopped
 
   ui:
-    container_name: birdlense_ui
     build:
       context: ./ui
-    logging: *default-logging
+    # restart: unless-stopped
 
-  ntfy:
-    container_name: birdlense_ntfy
-    image: binwiederhier/ntfy
-    command:
-      - serve
-    environment:
-      TZ: "America/New_York" # optional: set desired timezone
-      NTFY_BEHIND_PROXY: "true"
-      NTFY_UPSTREAM_BASE_URL: "https://ntfy.sh"
-      NTFY_BASE_URL: "http://smartbirdfeeder.local:8081"
-    restart: unless-stopped
-    logging: *default-logging
+  # ntfy:
+  # restart: unless-stopped

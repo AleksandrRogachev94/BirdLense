@@ -1,0 +1,28 @@
+services:
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile.dev
+
+  processor:
+    build:
+      context: ./processor
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./processor:/app
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./web:/app
+    command: flask run --host=0.0.0.0 --port=8000 --debug
+
+  ui:
+    build:
+      context: ./ui
+      dockerfile: Dockerfile.dev
+    volumes:
+      - /app/node_modules
+      - ./ui:/app

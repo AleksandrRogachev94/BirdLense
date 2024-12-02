@@ -7,13 +7,10 @@ x-logging: &default-logging
 services:
   nginx:
     container_name: birdlense_nginx
-    restart: always
     depends_on:
       - web
       - ui
-    build:
-      context: ./nginx
-      dockerfile: Dockerfile.dev
+      - processor
     ports:
       - "80:8080"
       - "8081:8081"
@@ -24,13 +21,9 @@ services:
 
   processor:
     container_name: birdlense_processor
-    build:
-      context: ./processor
-      dockerfile: Dockerfile.dev
     volumes:
       - /dev/shm:/dev/shm # used by audio recording
       - /run/udev:/run/udev:ro
-      - ./processor:/app
       - ./app_config:/app/src/app_config
       - ./data:/app/data
     devices:
@@ -49,29 +42,14 @@ services:
 
   web:
     container_name: birdlense_web
-    build:
-      context: ./web
-      dockerfile: Dockerfile.dev
     depends_on:
       - ntfy
-    stop_signal: SIGINT
     volumes:
-      - ./web:/app
       - ./app_config:/app/app_config
-      - ./data:/app/data
-    command: flask run --host=0.0.0.0 --port=8000 --debug
     logging: *default-logging
 
   ui:
     container_name: birdlense_ui
-    build:
-      context: ./ui
-      dockerfile: Dockerfile.dev
-    volumes:
-      - /app/node_modules
-      - ./ui:/app
-      - ./app_config:/app/app_config
-      - ./data:/app/data
     logging: *default-logging
 
   ntfy:
@@ -84,5 +62,4 @@ services:
       NTFY_BEHIND_PROXY: "true"
       NTFY_UPSTREAM_BASE_URL: "https://ntfy.sh"
       NTFY_BASE_URL: "http://smartbirdfeeder.local:8081"
-    restart: unless-stopped
     logging: *default-logging
