@@ -6,17 +6,21 @@ import IconButton from '@mui/material/IconButton';
 import ReactPlayer from 'react-player';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
 import { Video } from '../../../types';
 import { BASE_URL } from '../../../api/api';
 import { SmallSpeciesCard } from './SmallSpeciesCard';
 import { ProgressBar } from './ProgressBar';
+import { SpectrogramPlayer } from './SpectrogramPlayer';
 
 // Main Video Player Component
 export const VideoPlayer: React.FC<{ video: Video }> = ({ video }) => {
   const videoRef = useRef<ReactPlayer | null>(null);
-  const audioRef = useRef<ReactPlayer | null>(null);
-  const [progress, setProgress] = useState(0);
-  const [playing, setPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [progress, setProgress] = useState<number>(0);
+  const [playing, setPlaying] = useState<boolean>(false);
+  const [view, setView] = useState<'video' | 'spectrogram'>('video');
 
   const duration =
     (new Date(video.end_time).getTime() -
@@ -38,9 +42,23 @@ export const VideoPlayer: React.FC<{ video: Video }> = ({ video }) => {
 
   const handleSeek = useCallback((time: number) => {
     videoRef.current?.seekTo(time, 'seconds');
-    audioRef.current?.seekTo(time, 'seconds');
+    // audioRef.current?.seekTo(time, 'seconds');
+    if (audioRef.current) {
+      audioRef.current.currentTime = time;
+    }
     setProgress(time);
   }, []);
+
+  React.useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (playing) {
+      audio.play().catch(console.error);
+    } else {
+      audio.pause();
+    }
+  }, [playing]);
 
   const togglePlayPause = () => {
     setPlaying(!playing);
@@ -48,15 +66,60 @@ export const VideoPlayer: React.FC<{ video: Video }> = ({ video }) => {
 
   return (
     <Box>
-      {/* Video and Audio Players */}
-      <VideoPlayerDisplay
-        video={video}
-        playing={playing}
-        onTogglePlayPause={togglePlayPause}
-        videoRef={videoRef}
-        audioRef={audioRef}
-        onProgress={handleProgress}
+      <audio
+        src={`${BASE_URL}/${video.audio_path}`}
+        style={{ height: 0, width: 0 }}
+        ref={audioRef}
       />
+      <Box sx={{ width: '100%' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+          }}
+        >
+          <Tabs
+            value={view}
+            onChange={(_, newView) => setView(newView)}
+            aria-label="basic tabs example"
+          >
+            <Tab label="Video" value="video" />
+            <Tab label="Spectrogram" value="spectrogram" />
+          </Tabs>
+        </Box>
+
+        <Box sx={{ height: 500, position: 'relative' }}>
+          <Box
+            sx={{
+              height: '100%',
+              bgcolor: 'background.paper',
+              display: view === 'video' ? 'default' : 'none',
+            }}
+          >
+            <VideoPlayerDisplay
+              video={video}
+              playing={playing}
+              onTogglePlayPause={togglePlayPause}
+              videoRef={videoRef}
+              onProgress={handleProgress}
+            />
+          </Box>
+          <Box
+            sx={{
+              height: '100%',
+              bgcolor: 'background.paper',
+              display: view === 'spectrogram' ? 'default' : 'none',
+            }}
+          >
+            <SpectrogramPlayer
+              audioRef={audioRef}
+              playing={playing}
+              onPlayPause={togglePlayPause}
+              progress={progress}
+            />
+          </Box>
+        </Box>
+      </Box>
 
       {/* Progress Bar */}
       <ProgressBar
@@ -102,7 +165,6 @@ interface VideoPlayerDisplayProps {
   playing: boolean;
   onTogglePlayPause: () => void;
   videoRef: React.RefObject<ReactPlayer>;
-  audioRef: React.RefObject<ReactPlayer>;
   onProgress: (state: { playedSeconds: number }) => void;
 }
 
@@ -111,10 +173,9 @@ const VideoPlayerDisplay: React.FC<VideoPlayerDisplayProps> = ({
   playing,
   onTogglePlayPause,
   videoRef,
-  audioRef,
   onProgress,
 }) => (
-  <Box height={500} position="relative">
+  <Box sx={{ height: '100%', position: 'relative' }}>
     <ReactPlayer
       ref={videoRef}
       url={`${BASE_URL}/${video.video_path}`}
@@ -123,14 +184,7 @@ const VideoPlayerDisplay: React.FC<VideoPlayerDisplayProps> = ({
       onProgress={onProgress}
       height="100%"
       width="100%"
-    />
-    <ReactPlayer
-      ref={audioRef}
-      url={`${BASE_URL}/${video.audio_path}`}
-      playing={playing}
-      controls={false}
-      height="0"
-      width="0"
+      onEnded={() => onTogglePlayPause()}
     />
 
     {/* Play/Pause Overlay Button */}
