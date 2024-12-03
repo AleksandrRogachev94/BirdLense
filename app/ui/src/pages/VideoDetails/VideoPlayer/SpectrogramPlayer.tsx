@@ -42,8 +42,6 @@ const colorSchemes: Record<string, ColorScheme> = {
 interface SpectrogramPlayerProps {
   audioRef: React.RefObject<HTMLAudioElement>;
   playing: boolean;
-  onPlayPause: () => void;
-  progress: number;
 }
 
 interface ColorScheme {
@@ -61,8 +59,6 @@ interface AudioNodes {
 export const SpectrogramPlayer: React.FC<SpectrogramPlayerProps> = ({
   audioRef,
   playing,
-  onPlayPause,
-  progress,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const audioNodesRef = useRef<AudioNodes | null>(null);
@@ -218,26 +214,6 @@ export const SpectrogramPlayer: React.FC<SpectrogramPlayerProps> = ({
             backgroundColor: colorSchemes[colorScheme].backgroundColor,
           }}
         />
-        <IconButton
-          onClick={onPlayPause}
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            backgroundColor: 'rgba(0,0,0,0.5)',
-            color: 'white',
-            '&:hover': {
-              backgroundColor: 'rgba(0,0,0,0.7)',
-            },
-          }}
-        >
-          {playing ? (
-            <PauseIcon fontSize="large" />
-          ) : (
-            <PlayArrowIcon fontSize="large" />
-          )}
-        </IconButton>
       </Box>
 
       <Box

@@ -89,6 +89,28 @@ export const VideoPlayer: React.FC<{ video: Video }> = ({ video }) => {
         </Box>
 
         <Box sx={{ height: 500, position: 'relative' }}>
+          <IconButton
+            onClick={togglePlayPause}
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              backgroundColor: 'rgba(0,0,0,0.5)',
+              color: 'white',
+              '&:hover': {
+                backgroundColor: 'rgba(0,0,0,0.7)',
+              },
+              zIndex: 1,
+            }}
+          >
+            {playing ? (
+              <PauseIcon fontSize="large" />
+            ) : (
+              <PlayArrowIcon fontSize="large" />
+            )}
+          </IconButton>
+
           <Box
             sx={{
               height: '100%',
@@ -96,12 +118,15 @@ export const VideoPlayer: React.FC<{ video: Video }> = ({ video }) => {
               display: view === 'video' ? 'default' : 'none',
             }}
           >
-            <VideoPlayerDisplay
-              video={video}
+            <ReactPlayer
+              ref={videoRef}
+              url={`${BASE_URL}/${video.video_path}`}
               playing={playing}
-              onTogglePlayPause={togglePlayPause}
-              videoRef={videoRef}
+              controls={false}
               onProgress={handleProgress}
+              height="100%"
+              width="100%"
+              onEnded={togglePlayPause}
             />
           </Box>
           <Box
@@ -111,12 +136,7 @@ export const VideoPlayer: React.FC<{ video: Video }> = ({ video }) => {
               display: view === 'spectrogram' ? 'default' : 'none',
             }}
           >
-            <SpectrogramPlayer
-              audioRef={audioRef}
-              playing={playing}
-              onPlayPause={togglePlayPause}
-              progress={progress}
-            />
+            <SpectrogramPlayer audioRef={audioRef} playing={playing} />
           </Box>
         </Box>
       </Box>
@@ -158,57 +178,3 @@ export const VideoPlayer: React.FC<{ video: Video }> = ({ video }) => {
     </Box>
   );
 };
-
-// Video Player Display Subcomponent
-interface VideoPlayerDisplayProps {
-  video: Video;
-  playing: boolean;
-  onTogglePlayPause: () => void;
-  videoRef: React.RefObject<ReactPlayer>;
-  onProgress: (state: { playedSeconds: number }) => void;
-}
-
-const VideoPlayerDisplay: React.FC<VideoPlayerDisplayProps> = ({
-  video,
-  playing,
-  onTogglePlayPause,
-  videoRef,
-  onProgress,
-}) => (
-  <Box sx={{ height: '100%', position: 'relative' }}>
-    <ReactPlayer
-      ref={videoRef}
-      url={`${BASE_URL}/${video.video_path}`}
-      playing={playing}
-      controls={false}
-      onProgress={onProgress}
-      height="100%"
-      width="100%"
-      onEnded={() => onTogglePlayPause()}
-    />
-
-    {/* Play/Pause Overlay Button */}
-    <IconButton
-      onClick={onTogglePlayPause}
-      sx={{
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        backgroundColor: 'rgba(0,0,0,0.5)',
-        color: 'white',
-        '&:hover': {
-          backgroundColor: 'rgba(0,0,0,0.7)',
-        },
-      }}
-    >
-      {playing ? (
-        <PauseIcon fontSize="large" />
-      ) : (
-        <PlayArrowIcon fontSize="large" />
-      )}
-    </IconButton>
-  </Box>
-);
-
-export default VideoPlayer;
