@@ -3,7 +3,6 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid2';
 import IconButton from '@mui/material/IconButton';
-import ReactPlayer from 'react-player';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import Tab from '@mui/material/Tab';
@@ -16,7 +15,7 @@ import { SpectrogramPlayer } from './SpectrogramPlayer';
 
 // Main Video Player Component
 export const VideoPlayer: React.FC<{ video: Video }> = ({ video }) => {
-  const videoRef = useRef<ReactPlayer | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [progress, setProgress] = useState<number>(0);
   const [playing, setPlaying] = useState<boolean>(false);
@@ -41,8 +40,9 @@ export const VideoPlayer: React.FC<{ video: Video }> = ({ video }) => {
   };
 
   const handleSeek = useCallback((time: number) => {
-    videoRef.current?.seekTo(time, 'seconds');
-    // audioRef.current?.seekTo(time, 'seconds');
+    if (videoRef.current) {
+      videoRef.current.currentTime = time;
+    }
     if (audioRef.current) {
       audioRef.current.currentTime = time;
     }
@@ -51,12 +51,15 @@ export const VideoPlayer: React.FC<{ video: Video }> = ({ video }) => {
 
   React.useEffect(() => {
     const audio = audioRef.current;
-    if (!audio) return;
+    const video = videoRef.current;
+    if (!audio || !video) return;
 
     if (playing) {
       audio.play().catch(console.error);
+      video.play().catch(console.error);
     } else {
       audio.pause();
+      video.pause();
     }
   }, [playing]);
 
@@ -118,15 +121,14 @@ export const VideoPlayer: React.FC<{ video: Video }> = ({ video }) => {
               display: view === 'video' ? 'default' : 'none',
             }}
           >
-            <ReactPlayer
+            <video
               ref={videoRef}
-              url={`${BASE_URL}/${video.video_path}`}
-              playing={playing}
-              controls={false}
-              onProgress={handleProgress}
-              height="100%"
-              width="100%"
+              src={`${BASE_URL}/${video.video_path}`}
+              onTimeUpdate={(e) =>
+                handleProgress({ playedSeconds: e.currentTarget.currentTime })
+              }
               onEnded={togglePlayPause}
+              style={{ height: '100%', width: '100%' }}
             />
           </Box>
           <Box
