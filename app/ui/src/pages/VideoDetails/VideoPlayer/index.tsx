@@ -79,8 +79,6 @@ export const VideoPlayer: React.FC<{ video: Video }> = ({ video }) => {
     [video.end_time, video.start_time],
   );
 
-  console.log({ duration });
-
   const activeSpecies = useMemo(
     () =>
       video.species.filter(

@@ -1,53 +1,22 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import Box from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import { SelectChangeEvent } from '@mui/material';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import PauseIcon from '@mui/icons-material/Pause';
-
-const colorSchemes: Record<string, ColorScheme> = {
-  jet: {
-    name: 'Jet',
-    backgroundColor: 'rgb(0, 0, 127)',
-    fn: (v: number) => {
-      if (v < 0.25) return `rgb(0, 0, ${Math.floor(127 + 128 * (4 * v))})`;
-      if (v < 0.5) return `rgb(0, ${Math.floor(255 * (4 * (v - 0.25)))}, 255)`;
-      if (v < 0.75)
-        return `rgb(${Math.floor(255 * (4 * (v - 0.5)))}, 255, ${Math.floor(255 * (1 - 4 * (v - 0.5)))})`;
-      return `rgb(255, ${Math.floor(255 * (1 - 4 * (v - 0.75)))}, 0)`;
-    },
-  },
-  hot: {
-    name: 'Hot',
-    backgroundColor: 'rgb(0, 0, 0)',
-    fn: (v: number) => {
-      const val = Math.min(v * 1.5, 1);
-      return `rgb(${Math.floor(255 * val)}, ${Math.floor(127 * val)}, 0)`;
-    },
-  },
-  grayscale: {
-    name: 'Grayscale',
-    backgroundColor: 'rgb(0, 0, 0)',
-    fn: (v: number) => {
-      const intensity = Math.floor(255 * Math.pow(v, 0.5));
-      return `rgb(${intensity}, ${intensity}, ${intensity})`;
-    },
-  },
-};
+import {
+  CANVAS_HEIGHT,
+  CANVAS_WIDTH,
+  colorSchemes,
+  FFT_SIZE,
+  SCROLL_STEP,
+  SMOOTHING_TIME_CONSTANT,
+} from './constants';
 
 interface SpectrogramPlayerProps {
   audioRef: React.RefObject<HTMLAudioElement>;
   playing: boolean;
-}
-
-interface ColorScheme {
-  name: string;
-  fn: (value: number) => string;
-  backgroundColor: string;
 }
 
 interface AudioNodes {
@@ -65,28 +34,16 @@ export const SpectrogramPlayer: React.FC<SpectrogramPlayerProps> = ({
   const animationRef = useRef<number | null>(null);
   const [colorScheme, setColorScheme] = React.useState<string>('jet');
 
-  const FFT_SIZE = 2048;
-  const CANVAS_HEIGHT = 400; // Match video height
-  const CANVAS_WIDTH = 800;
-  const SCROLL_STEP = 1;
-
-  const clearCanvas = () => {
+  const clearCanvas = useCallback(() => {
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext('2d');
     if (!canvas || !ctx) return;
 
     ctx.fillStyle = colorSchemes[colorScheme].backgroundColor;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-  };
+  }, [colorScheme]);
 
-  const cleanupDrawSpectrogram = () => {
-    if (animationRef.current) {
-      cancelAnimationFrame(animationRef.current);
-      animationRef.current = null;
-    }
-  };
-
-  const cleanupAudio = () => {
+  const cleanupAudioNodes = useCallback(() => {
     if (audioNodesRef.current) {
       const { context, source, analyser } = audioNodesRef.current;
       source.disconnect();
@@ -94,54 +51,25 @@ export const SpectrogramPlayer: React.FC<SpectrogramPlayerProps> = ({
       context.close();
       audioNodesRef.current = null;
     }
-  };
+  }, []);
 
-  const initializeAudioNodes = () => {
-    if (!audioRef.current) return; // audio not available
-    if (audioNodesRef.current) return; // already initialized
+  const initializeAudioNodes = useCallback(() => {
+    if (!audioRef.current || audioNodesRef.current) return;
 
     const audioContext = new (window.AudioContext ||
       (window as any).webkitAudioContext)();
     const analyser = audioContext.createAnalyser();
     analyser.fftSize = FFT_SIZE;
-    analyser.smoothingTimeConstant = 0.2;
+    analyser.smoothingTimeConstant = SMOOTHING_TIME_CONSTANT;
 
     const source = audioContext.createMediaElementSource(audioRef.current);
     source.connect(analyser);
     analyser.connect(audioContext.destination);
 
     audioNodesRef.current = { context: audioContext, analyser, source };
-  };
+  }, [audioRef]);
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    canvas.width = CANVAS_WIDTH;
-    canvas.height = CANVAS_HEIGHT;
-    return () => {
-      cleanupDrawSpectrogram();
-      cleanupAudio();
-    };
-  }, []);
-
-  // Handle play/pause
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    if (playing) {
-      initializeAudioNodes();
-      drawSpectrogram();
-    } else {
-      cleanupDrawSpectrogram();
-    }
-  }, [playing]);
-
-  useEffect(() => {
-    clearCanvas();
-  }, [colorScheme]);
-
-  const drawSpectrogram = () => {
+  const drawSpectrogram = useCallback(() => {
     const canvas = canvasRef.current;
     const audioNodes = audioNodesRef.current;
 
@@ -154,7 +82,7 @@ export const SpectrogramPlayer: React.FC<SpectrogramPlayerProps> = ({
     const freqData = new Uint8Array(analyser.frequencyBinCount);
     analyser.getByteFrequencyData(freqData);
 
-    // Scroll the existing spectrogram left
+    // Scroll existing content
     const imageData = ctx.getImageData(
       SCROLL_STEP,
       0,
@@ -168,9 +96,9 @@ export const SpectrogramPlayer: React.FC<SpectrogramPlayerProps> = ({
     ctx.fillRect(canvas.width - SCROLL_STEP, 0, SCROLL_STEP, canvas.height);
 
     // Draw new frequency data
-    for (let i = 0; i < freqData.length; i++) {
-      const value = Math.pow(freqData[i] / 255.0, 0.7);
-      const color = colorSchemes[colorScheme].fn(value);
+    freqData.forEach((value, i) => {
+      const normalizedValue = Math.pow(value / 255, 0.7);
+      const color = colorSchemes[colorScheme].fn(normalizedValue);
       const y = Math.floor((i / freqData.length) * canvas.height);
 
       ctx.fillStyle = color;
@@ -180,10 +108,37 @@ export const SpectrogramPlayer: React.FC<SpectrogramPlayerProps> = ({
         SCROLL_STEP,
         1,
       );
-    }
+    });
 
     animationRef.current = requestAnimationFrame(drawSpectrogram);
-  };
+  }, [colorScheme]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (canvas) {
+      canvas.width = CANVAS_WIDTH;
+      canvas.height = CANVAS_HEIGHT;
+    }
+
+    return () => {
+      if (animationRef.current) cancelAnimationFrame(animationRef.current);
+      cleanupAudioNodes();
+    };
+  }, [cleanupAudioNodes]);
+
+  useEffect(() => {
+    if (playing) {
+      initializeAudioNodes();
+      drawSpectrogram();
+    } else if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+      animationRef.current = null;
+    }
+  }, [playing, initializeAudioNodes, drawSpectrogram]);
+
+  useEffect(() => {
+    clearCanvas();
+  }, [colorScheme, clearCanvas]);
 
   const handleColorSchemeChange = (event: SelectChangeEvent) => {
     setColorScheme(event.target.value);
@@ -248,5 +203,3 @@ export const SpectrogramPlayer: React.FC<SpectrogramPlayerProps> = ({
     </Box>
   );
 };
-
-export default SpectrogramPlayer;
