@@ -13,7 +13,7 @@ start-dev:
 
 stop-dev:
 	@echo "Stopping Docker Compose services..."
-	@sudo docker compose -f docker-compose.yml -f docker-compose.dev.yml down
+	@sudo docker compose -f docker-compose.base.yml -f docker-compose.dev.yml down
 	@echo "Docker Compose services stopped."
 
 # PROD

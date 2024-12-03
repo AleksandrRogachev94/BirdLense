@@ -1,3 +1,4 @@
+RPi.GPIO==0.7.1 # prerequisite for gpiozero
 gpiozero==2.0.1
 pyyaml==6.0.1
 lapx==0.5.9.post1

@@ -1,5 +1,5 @@
 # Use the base image
-FROM ultralytics/ultralytics:latest-arm64
+FROM ultralytics/ultralytics:8.3.40-arm64
 
 RUN echo "deb http://archive.raspberrypi.org/debian/ bookworm main" > /etc/apt/sources.list.d/raspi.list \
   && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 82B129927FA3303E
