@@ -87,11 +87,12 @@ export const SpectrogramPlayer: React.FC<SpectrogramPlayerProps> = ({
     ctx.moveTo(halfWidth, 0);
     ctx.lineTo(halfWidth, canvas.height);
     ctx.stroke();
+  }, [pxPerSecond, detections, labelToUniqueHexColor]);
 
-    if (playing) {
-      animationRef.current = requestAnimationFrame(drawSpectrogram);
-    }
-  }, [playing, pxPerSecond, detections, labelToUniqueHexColor]);
+  const drawSpectrogramAnimate = useCallback(() => {
+    drawSpectrogram();
+    animationRef.current = requestAnimationFrame(drawSpectrogramAnimate);
+  }, [drawSpectrogram]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -111,18 +112,19 @@ export const SpectrogramPlayer: React.FC<SpectrogramPlayerProps> = ({
     return () => {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
+        animationRef.current = null;
       }
     };
   }, [drawSpectrogram, imageUrl]);
 
   useEffect(() => {
     if (playing) {
-      drawSpectrogram();
+      drawSpectrogramAnimate();
     } else if (animationRef.current) {
       cancelAnimationFrame(animationRef.current);
       animationRef.current = null;
     }
-  }, [playing, drawSpectrogram]);
+  }, [playing, drawSpectrogramAnimate]);
 
   return (
     <Box sx={{ height: '100%', bgcolor: 'black' }}>
