@@ -1,205 +1,139 @@
 import React, { useEffect, useRef, useCallback } from 'react';
 import Box from '@mui/material/Box';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import { SelectChangeEvent } from '@mui/material';
-import {
-  CANVAS_HEIGHT,
-  CANVAS_WIDTH,
-  colorSchemes,
-  FFT_SIZE,
-  SCROLL_STEP,
-  SMOOTHING_TIME_CONSTANT,
-} from './constants';
+import { VideoSpecies } from '../../../types';
+import { labelToUniqueHexColor } from '../../../util';
+
+const pxPerSecond = 75; // comes from spectrogram generation code in processor
 
 interface SpectrogramPlayerProps {
+  imageUrl: string;
   audioRef: React.RefObject<HTMLAudioElement>;
   playing: boolean;
-}
-
-interface AudioNodes {
-  context: AudioContext;
-  analyser: AnalyserNode;
-  source: MediaElementAudioSourceNode;
+  detections: VideoSpecies[];
 }
 
 export const SpectrogramPlayer: React.FC<SpectrogramPlayerProps> = ({
+  imageUrl,
   audioRef,
   playing,
+  detections,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const audioNodesRef = useRef<AudioNodes | null>(null);
+  const imageRef = useRef<HTMLImageElement | null>(null);
   const animationRef = useRef<number | null>(null);
-  const [colorScheme, setColorScheme] = React.useState<string>('jet');
-
-  const clearCanvas = useCallback(() => {
-    const canvas = canvasRef.current;
-    const ctx = canvas?.getContext('2d');
-    if (!canvas || !ctx) return;
-
-    ctx.fillStyle = colorSchemes[colorScheme].backgroundColor;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-  }, [colorScheme]);
-
-  const cleanupAudioNodes = useCallback(() => {
-    if (audioNodesRef.current) {
-      const { context, source, analyser } = audioNodesRef.current;
-      source.disconnect();
-      analyser.disconnect();
-      context.close();
-      audioNodesRef.current = null;
-    }
-  }, []);
-
-  const initializeAudioNodes = useCallback(() => {
-    if (!audioRef.current || audioNodesRef.current) return;
-
-    const audioContext = new (window.AudioContext ||
-      (window as any).webkitAudioContext)();
-    const analyser = audioContext.createAnalyser();
-    analyser.fftSize = FFT_SIZE;
-    analyser.smoothingTimeConstant = SMOOTHING_TIME_CONSTANT;
-
-    const source = audioContext.createMediaElementSource(audioRef.current);
-    source.connect(analyser);
-    analyser.connect(audioContext.destination);
-
-    audioNodesRef.current = { context: audioContext, analyser, source };
-  }, [audioRef]);
 
   const drawSpectrogram = useCallback(() => {
     const canvas = canvasRef.current;
-    const audioNodes = audioNodesRef.current;
-
-    if (!canvas || !audioNodes) return;
+    const image = imageRef.current;
+    if (!canvas || !image || !audioRef.current) return;
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const { analyser } = audioNodes;
-    const freqData = new Uint8Array(analyser.frequencyBinCount);
-    analyser.getByteFrequencyData(freqData);
+    const currentTime = audioRef.current.currentTime;
+    const currentPx = currentTime * pxPerSecond;
+    const halfWidth = canvas.width / 2;
 
-    // Scroll existing content
-    const imageData = ctx.getImageData(
-      SCROLL_STEP,
+    // Background
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Draw spectrogram
+    ctx.drawImage(
+      image,
+      currentPx - halfWidth,
       0,
-      canvas.width - SCROLL_STEP,
+      canvas.width,
+      image.height,
+      0,
+      0,
+      canvas.width,
       canvas.height,
     );
-    ctx.putImageData(imageData, 0, 0);
 
-    // Clear the rightmost strip
-    ctx.fillStyle = colorSchemes[colorScheme].backgroundColor;
-    ctx.fillRect(canvas.width - SCROLL_STEP, 0, SCROLL_STEP, canvas.height);
+    // Draw detections at the bottom
+    detections.forEach((detection) => {
+      const startPx =
+        detection.start_time * pxPerSecond - currentPx + halfWidth;
+      const width = (detection.end_time - detection.start_time) * pxPerSecond;
+      const color = labelToUniqueHexColor(detection.species_name);
 
-    // Draw new frequency data
-    freqData.forEach((value, i) => {
-      const normalizedValue = Math.pow(value / 255, 0.7);
-      const color = colorSchemes[colorScheme].fn(normalizedValue);
-      const y = Math.floor((i / freqData.length) * canvas.height);
+      const barHeight = 30;
+      const barY = canvas.height - barHeight;
 
+      // Detection bar with background
+      ctx.fillStyle = `${color}20`;
+      ctx.fillRect(startPx, barY, width, barHeight);
+
+      // Top border
       ctx.fillStyle = color;
-      ctx.fillRect(
-        canvas.width - SCROLL_STEP,
-        canvas.height - y - 1,
-        SCROLL_STEP,
-        1,
+      ctx.fillRect(startPx, barY, width, 2);
+
+      // Species name
+      ctx.fillStyle = '#fff';
+      ctx.font = '12px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText(
+        detection.species_name,
+        startPx + width / 2,
+        canvas.height - 10,
       );
     });
 
-    animationRef.current = requestAnimationFrame(drawSpectrogram);
-  }, [colorScheme]);
+    // Playhead line
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(halfWidth, 0);
+    ctx.lineTo(halfWidth, canvas.height);
+    ctx.stroke();
+
+    if (playing) {
+      animationRef.current = requestAnimationFrame(drawSpectrogram);
+    }
+  }, [playing, pxPerSecond, detections, labelToUniqueHexColor]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (canvas) {
-      canvas.width = CANVAS_WIDTH;
-      canvas.height = CANVAS_HEIGHT;
+      canvas.width = 800;
+      canvas.height = 400;
     }
 
-    return () => {
-      if (animationRef.current) cancelAnimationFrame(animationRef.current);
-      cleanupAudioNodes();
+    // Load spectrogram image
+    const image = new Image();
+    image.src = imageUrl;
+    image.onload = () => {
+      imageRef.current = image;
+      drawSpectrogram();
     };
-  }, [cleanupAudioNodes]);
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [drawSpectrogram, imageUrl]);
 
   useEffect(() => {
     if (playing) {
-      initializeAudioNodes();
       drawSpectrogram();
     } else if (animationRef.current) {
       cancelAnimationFrame(animationRef.current);
       animationRef.current = null;
     }
-  }, [playing, initializeAudioNodes, drawSpectrogram]);
-
-  useEffect(() => {
-    clearCanvas();
-  }, [colorScheme, clearCanvas]);
-
-  const handleColorSchemeChange = (event: SelectChangeEvent) => {
-    setColorScheme(event.target.value);
-  };
+  }, [playing, drawSpectrogram]);
 
   return (
-    <Box
-      sx={{
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        bgcolor: 'black',
-      }}
-    >
-      <Box
-        sx={{
-          flex: 1,
-          position: 'relative',
+    <Box sx={{ height: '100%', bgcolor: 'black' }}>
+      <canvas
+        ref={canvasRef}
+        style={{
           width: '100%',
           height: '100%',
+          backgroundColor: 'black',
         }}
-      >
-        <canvas
-          ref={canvasRef}
-          style={{
-            width: '100%',
-            height: '100%',
-            backgroundColor: colorSchemes[colorScheme].backgroundColor,
-          }}
-        />
-      </Box>
-
-      <Box
-        sx={{
-          position: 'absolute',
-          top: 16,
-          right: 16,
-        }}
-      >
-        <FormControl
-          size="small"
-          sx={{
-            minWidth: 120,
-            bgcolor: 'background.paper',
-            borderRadius: 1,
-          }}
-        >
-          <InputLabel>Color Scheme</InputLabel>
-          <Select
-            value={colorScheme}
-            label="Color Scheme"
-            onChange={handleColorSchemeChange}
-          >
-            {Object.entries(colorSchemes).map(([key, scheme]) => (
-              <MenuItem key={key} value={key}>
-                {scheme.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </Box>
+      />
     </Box>
   );
 };
