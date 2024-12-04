@@ -137,6 +137,15 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
                   ),
                   opacity: 0.5,
                   zIndex: 2,
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    opacity: 0.8,
+                    transform: 'scaleY(1.2)',
+                    boxShadow: `0 0 8px ${labelToUniqueHexColor(
+                      detection.species.species_name,
+                    )}`,
+                    zIndex: 3,
+                  },
                 }}
                 title={`${detection.species.species_name} (${formatTime(detection.species.start_time)} - ${formatTime(detection.species.end_time)})`}
               />
