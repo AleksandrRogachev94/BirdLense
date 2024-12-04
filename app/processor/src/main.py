@@ -111,12 +111,13 @@ def main():
                 # give CPU some time to do something else
                 time.sleep(0.005)
         finally:
-            video_source.stop_recording()
             audio_source.stop_recording()
+            video_source.stop_recording()
             end_time = datetime.now(timezone.utc)
 
         try:
-            audio_detections = audio_processor.run(audio_output)
+            audio_detections, spectrogram_path = audio_processor.run(
+                audio_output)
         except Exception as e:
             logging.error(e)
             audio_detections = []
@@ -129,7 +130,7 @@ def main():
             # if len(video_detections) + len(audio_detections) > 0:
             if len(video_detections) > 0:
                 api.create_video(video_detections, audio_detections, start_time,
-                                 end_time, video_output, audio_output)
+                                 end_time, video_output, audio_output, spectrogram_path)
             else:
                 # no detections, delete folder and do nothing
                 shutil.rmtree(output_path)

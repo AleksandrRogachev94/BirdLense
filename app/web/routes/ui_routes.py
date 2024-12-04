@@ -41,6 +41,7 @@ def register_routes(app):
             'end_time': video.end_time.isoformat(),
             'video_path': video.video_path,
             'audio_path': video.audio_path,
+            'spectrogram_path': video.spectrogram_path,
             'favorite': video.favorite,
             'weather': {
                 'main': video.weather_main,
@@ -60,7 +61,6 @@ def register_routes(app):
                     'confidence': vs.confidence,
                     'source': vs.source,
                     'image_url': vs.species.image_url,
-                    'spectrogram_path': vs.spectrogram_path,
                 } for vs in video.video_species
             ],
             'food': [

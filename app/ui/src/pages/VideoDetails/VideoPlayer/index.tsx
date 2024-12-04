@@ -157,8 +157,9 @@ export const VideoPlayer: React.FC<{ video: Video }> = ({ video }) => {
           <SpectrogramPlayer
             audioRef={audioRef}
             playing={playing}
-            imageUrl={`${BASE_URL}/data/newspectrogram.jpg`}
+            imageUrl={`${BASE_URL}/${video.spectrogram_path}`}
             detections={video.species}
+            key={view}
           />
         </Box>
       </Box>

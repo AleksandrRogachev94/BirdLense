@@ -38,7 +38,8 @@ class AudioProcessor:
             hop_length=hop_length,
             n_mels=128,
             fmin=200,
-            fmax=12000
+            fmax=12000,
+            power=2.0
         )
         S_db = librosa.power_to_db(mel_spec, ref=np.max)
 
@@ -53,7 +54,7 @@ class AudioProcessor:
             x_axis='time',
             y_axis='mel',
             hop_length=hop_length,
-            vmin=-70,
+            vmin=-60,
             vmax=0
         )
 

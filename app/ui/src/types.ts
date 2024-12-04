@@ -28,7 +28,6 @@ export interface VideoSpecies {
   confidence: number;
   source: string;
   image_url?: string;
-  spectrogram_path?: string;
 }
 
 export interface Weather {
@@ -48,6 +47,7 @@ export interface Video {
   end_time: string;
   video_path: string;
   audio_path: string;
+  spectrogram_path: string;
   favorite: boolean;
   weather: Weather;
   species: VideoSpecies[];

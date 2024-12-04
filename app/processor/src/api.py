@@ -36,7 +36,7 @@ class API():
         # No need for try/except here since _send_request handles errors
         self._send_request('POST', 'notify/detections', {'detection': species})
 
-    def create_video(self, species_video, species_audio, start_time, end_time, video_path, audio_path):
+    def create_video(self, species_video, species_audio, start_time, end_time, video_path, audio_path, spectrogram_path):
         video_data = {
             'processor_version': '1',
             'species': [{**sp, 'source': 'video'} for sp in species_video] + [{**sp, 'source': 'audio'} for sp in species_audio],
@@ -44,6 +44,7 @@ class API():
             'end_time': end_time.isoformat(),
             'video_path': video_path,
             'audio_path': audio_path,
+            'spectrogram_path': spectrogram_path
         }
         response = self._send_request('POST', 'videos', video_data)
         return response.json()  # Assuming the response contains useful data

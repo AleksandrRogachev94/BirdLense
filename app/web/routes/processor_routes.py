@@ -28,6 +28,7 @@ def register_routes(app):
             'end_time': end_time,
             'video_path': data['video_path'],
             'audio_path': data['audio_path'],
+            'spectrogram_path': data['spectrogram_path'],
             **weather_fetcher.fetch()
         }
 
@@ -49,7 +50,6 @@ def register_routes(app):
             end_time = sp['end_time']
             confidence = sp['confidence']
             source = sp['source']
-            spectrogram_path = sp.get('spectrogram_path')
             if species_name is None or start_time is None or end_time is None or confidence is None or source is None:
                 return {'error': 'Invalid species data'}, 400
 
@@ -71,7 +71,6 @@ def register_routes(app):
                 end_time=end_time,
                 confidence=confidence,
                 source=source,
-                spectrogram_path=spectrogram_path,
                 # to use it for optimized searching/sorting
                 created_at=new_video.start_time + timedelta(seconds=start_time)
             )

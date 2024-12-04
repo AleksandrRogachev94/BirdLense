@@ -27,8 +27,6 @@ class VideoSpecies(db.Model):
     confidence: Mapped[float] = mapped_column(Float, nullable=False)
     source: Mapped[str] = mapped_column(
         String, nullable=False)  # video or audio
-    spectrogram_path: Mapped[str] = mapped_column(
-        String, nullable=True)  # spectrogram image for for source = 'audio'
     video: Mapped["Video"] = relationship(back_populates="video_species")
     species: Mapped["Species"] = relationship(back_populates="video_species")
 
@@ -93,6 +91,8 @@ class Video(db.Model):
         DateTime(timezone=True), nullable=False)
     video_path: Mapped[str] = mapped_column(nullable=False)
     audio_path: Mapped[str] = mapped_column(nullable=False)
+    spectrogram_path: Mapped[str] = mapped_column(
+        String, nullable=True)  # spectrogram image
     favorite: Mapped[bool] = mapped_column(
         nullable=False, default=False, server_default="false")
     # Weather data
