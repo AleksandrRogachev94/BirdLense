@@ -116,6 +116,19 @@ export const SpectrogramPlayer: React.FC<SpectrogramPlayerProps> = ({
   }, [drawSpectrogram, imageUrl]);
 
   useEffect(() => {
+    // This effect is needed for seeking when paused since animation is off
+    const audio = audioRef.current;
+    if (!audio) return;
+    const handleSeeked = () => {
+      drawSpectrogram();
+    };
+    audio.addEventListener('seeked', handleSeeked);
+    return () => {
+      audio.removeEventListener('seeked', handleSeeked);
+    };
+  }, [drawSpectrogram]);
+
+  useEffect(() => {
     if (playing) {
       drawSpectrogramAnimate();
     } else if (animationRef.current) {
