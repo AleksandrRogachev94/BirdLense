@@ -15,15 +15,15 @@ import { SpectrogramPlayer } from './SpectrogramPlayer';
 import { useVideoAudioSync } from './useVideoAudioSync';
 
 interface ViewToggleProps {
-  view: 'video' | 'spectrogram';
-  onChange: (view: 'video' | 'spectrogram') => void;
+  view: 'video' | 'audio';
+  onChange: (view: 'video' | 'audio') => void;
 }
 
 const ViewToggle: React.FC<ViewToggleProps> = ({ view, onChange }) => (
   <Box sx={{ display: 'flex', justifyContent: 'center' }}>
     <Tabs value={view} onChange={(_, newView) => onChange(newView)}>
       <Tab label="Video" value="video" />
-      <Tab label="Spectrogram" value="spectrogram" />
+      <Tab label="Audio" value="audio" />
     </Tabs>
   </Box>
 );
@@ -65,7 +65,7 @@ const ActiveSpeciesDisplay: React.FC<ActiveSpeciesDisplayProps> = ({
 export const VideoPlayer: React.FC<{ video: Video }> = ({ video }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
-  const [view, setView] = useState<'video' | 'spectrogram'>('video');
+  const [view, setView] = useState<'video' | 'audio'>('video');
   const [error, setError] = useState<string | null>(null);
 
   const { playing, progress, handleProgress, handleSeek, togglePlayPause } =
@@ -151,7 +151,7 @@ export const VideoPlayer: React.FC<{ video: Video }> = ({ video }) => {
           sx={{
             height: '100%',
             bgcolor: 'background.paper',
-            display: view === 'spectrogram' ? 'default' : 'none',
+            display: view === 'audio' ? 'default' : 'none',
           }}
         >
           <SpectrogramPlayer
@@ -169,6 +169,7 @@ export const VideoPlayer: React.FC<{ video: Video }> = ({ video }) => {
         progress={progress}
         video={video}
         onSeek={handleSeek}
+        view={view}
       />
 
       <ActiveSpeciesDisplay species={activeSpecies} />

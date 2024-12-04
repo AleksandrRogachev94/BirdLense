@@ -10,6 +10,7 @@ interface ProgressBarProps {
   progress: number;
   video: Video;
   onSeek: (time: number) => void;
+  view: 'audio' | 'video';
 }
 
 export const ProgressBar: React.FC<ProgressBarProps> = ({
@@ -17,6 +18,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   progress,
   video,
   onSeek,
+  view,
 }) => {
   const theme = useTheme();
   const progressBarRef = useRef<HTMLDivElement | null>(null);
@@ -40,7 +42,10 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   );
 
   const detectionLayers = useMemo(() => {
-    const sortedSpecies = [...video.species].sort(
+    // Filter species based on view type
+    const filteredSpecies = video.species.filter((s) => s.source === view);
+
+    const sortedSpecies = [...filteredSpecies].sort(
       (a, b) => a.start_time - b.start_time,
     );
 
@@ -89,7 +94,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
     });
 
     return layers;
-  }, [video.species, duration]);
+  }, [video.species, duration, view]);
 
   return (
     <Box sx={{ position: 'relative', mt: 2 }}>
@@ -99,7 +104,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
           onClick={handleProgressBarSeek}
           sx={{
             position: 'relative',
-            height: `${detectionLayers.length * 12}px`,
+            height: `${Math.max(detectionLayers.length * 12, 12)}px`,
             backgroundColor: 'white',
             borderRadius: '4px',
             flexGrow: 1,
@@ -147,7 +152,9 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
                     zIndex: 3,
                   },
                 }}
-                title={`${detection.species.species_name} (${formatTime(detection.species.start_time)} - ${formatTime(detection.species.end_time)})`}
+                title={`${detection.species.species_name} (${formatTime(
+                  detection.species.start_time,
+                )} - ${formatTime(detection.species.end_time)})`}
               />
             )),
           )}
