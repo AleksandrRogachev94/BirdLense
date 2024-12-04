@@ -46,6 +46,7 @@ services:
       - ntfy
     volumes:
       - ./app_config:/app/app_config
+      - ./data:/app/data
     logging: *default-logging
 
   ui:
