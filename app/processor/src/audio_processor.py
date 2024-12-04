@@ -21,30 +21,27 @@ class AudioProcessor:
         self.sample_rate = 48000
 
     def generate_spectrogram(self, ndarray: np.ndarray, sr: int, output_path: str,
-                             px_per_second: int = 75, height_px: int = 300,
+                             px_per_second: int = 100, height_px: int = 256,
                              dpi: int = 100) -> None:
-        """Generate spectrogram from audio ndarray data"""
+        """Generate mel spectrogram from audio ndarray in 500-12000Hz range"""
         start_total = time.time()
         duration = len(ndarray) / sr
         width_px = int(duration * px_per_second)
 
-        # STFT computation
-        start_stft = time.time()
-        n_fft = 1024
-        hop_length = n_fft // 4
-        D = librosa.stft(ndarray, n_fft=n_fft, hop_length=hop_length)
-        stft_time = time.time() - start_stft
-        self.logger.info(f"STFT computation time: {stft_time:.2f}s")
+        n_fft = 2048
+        hop_length = int(sr / px_per_second)
 
-        # DB conversion
-        start_db = time.time()
-        S_db = librosa.amplitude_to_db(np.abs(D), ref=np.max)
-        S_db = np.clip(S_db, a_min=-80, a_max=0)
-        db_time = time.time() - start_db
-        self.logger.info(f"dB conversion time: {db_time:.2f}s")
+        mel_spec = librosa.feature.melspectrogram(
+            y=ndarray,
+            sr=sr,
+            n_fft=n_fft,
+            hop_length=hop_length,
+            n_mels=128,
+            fmin=200,
+            fmax=12000
+        )
+        S_db = librosa.power_to_db(mel_spec, ref=np.max)
 
-        # Plot creation and saving
-        start_plot = time.time()
         fig = plt.figure(figsize=(width_px/dpi, height_px/dpi))
         ax = plt.Axes(fig, [0., 0., 1., 1.])
         ax.set_axis_off()
@@ -52,21 +49,20 @@ class AudioProcessor:
 
         librosa.display.specshow(
             S_db, sr=sr, ax=ax,
-            cmap='viridis',
+            cmap='magma',
             x_axis='time',
-            y_axis='hz',
-            hop_length=hop_length
+            y_axis='mel',
+            hop_length=hop_length,
+            vmin=-70,
+            vmax=0
         )
 
         plt.savefig(output_path, dpi=dpi, bbox_inches=None,
-                    pad_inches=0, pil_kwargs={'quality': 90, 'optimize': True})
+                    pad_inches=0, pil_kwargs={'quality': 85, 'optimize': True})
         plt.close()
-        plot_time = time.time() - start_plot
-        self.logger.info(f"Plot generation and save time: {plot_time:.2f}s")
 
-        total_time = time.time() - start_total
         self.logger.info(
-            f"Total spectrogram generation time: {total_time:.2f}s")
+            f"Total spectrogram generation time: {time.time() - start_total:.2f}s")
 
     def get_regional_species(self):
         species = self.species_list.return_list(
@@ -127,9 +123,7 @@ class AudioProcessor:
 
         # Generate spectrogram
         spectrogram_path = os.path.join(
-            os.path.dirname(audio_path),
-            f"{os.path.splitext(os.path.basename(audio_path))[0]}_spectrogram.jpg"
-        )
+            os.path.dirname(audio_path), "spectrogram.jpg")
         self.generate_spectrogram(
             recording.ndarray, self.sample_rate, spectrogram_path)
 
