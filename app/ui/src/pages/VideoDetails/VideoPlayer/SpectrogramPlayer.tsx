@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import { VideoSpecies } from '../../../types';
 import { labelToUniqueHexColor } from '../../../util';
 
-const pxPerSecond = 75; // comes from spectrogram generation code in processor
+const pxPerSecond = 100; // comes from spectrogram generation code in processor
 
 interface SpectrogramPlayerProps {
   imageUrl: string;
@@ -19,6 +19,7 @@ export const SpectrogramPlayer: React.FC<SpectrogramPlayerProps> = ({
   detections,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const parentRef = useRef<HTMLCanvasElement | null>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
   const animationRef = useRef<number | null>(null);
 
@@ -35,7 +36,7 @@ export const SpectrogramPlayer: React.FC<SpectrogramPlayerProps> = ({
     const halfWidth = canvas.width / 2;
 
     // Background
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Draw spectrogram
@@ -95,17 +96,14 @@ export const SpectrogramPlayer: React.FC<SpectrogramPlayerProps> = ({
   }, [drawSpectrogram]);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (canvas) {
-      canvas.width = 800;
-      canvas.height = 400;
-    }
-
     // Load spectrogram image
     const image = new Image();
     image.src = imageUrl;
     image.onload = () => {
       imageRef.current = image;
+      if (canvasRef.current) {
+        canvasRef.current.height = image.height;
+      }
       drawSpectrogram();
     };
 
@@ -126,8 +124,31 @@ export const SpectrogramPlayer: React.FC<SpectrogramPlayerProps> = ({
     }
   }, [playing, drawSpectrogramAnimate]);
 
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const parent = parentRef.current;
+    // ResizeObserver to watch for changes in the parent's size
+    const resizeObserver = new ResizeObserver(() => {
+      if (parent && canvas) {
+        canvas.width = parent.offsetWidth;
+        drawSpectrogram();
+      }
+    });
+    // Observe the parent container for size changes
+    if (parent) {
+      resizeObserver.observe(parent);
+    }
+    // Clean up the observer on component unmount
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
+
   return (
-    <Box sx={{ height: '100%', bgcolor: 'black' }}>
+    <Box
+      sx={{ height: '100%', width: '100%', bgcolor: 'black' }}
+      ref={parentRef}
+    >
       <canvas
         ref={canvasRef}
         style={{
