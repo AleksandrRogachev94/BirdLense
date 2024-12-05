@@ -2,23 +2,21 @@ import React, { useRef, useCallback, useMemo } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { useTheme } from '@mui/material/styles';
-import { Video } from '../../../types';
+import { VideoSpecies } from '../../../types';
 import { labelToUniqueHexColor } from '../../../util';
 
 interface ProgressBarProps {
   duration: number;
   progress: number;
-  video: Video;
   onSeek: (time: number) => void;
-  view: 'audio' | 'video';
+  detections: VideoSpecies[];
 }
 
 export const ProgressBar: React.FC<ProgressBarProps> = ({
   duration,
   progress,
-  video,
   onSeek,
-  view,
+  detections,
 }) => {
   const theme = useTheme();
   const progressBarRef = useRef<HTMLDivElement | null>(null);
@@ -42,23 +40,16 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   );
 
   const detectionLayers = useMemo(() => {
-    // Filter species based on view type
-    const filteredSpecies = video.species.filter((s) => s.source === view);
-
-    const sortedSpecies = [...filteredSpecies].sort(
-      (a, b) => a.start_time - b.start_time,
-    );
-
     const layers: Array<
       Array<{
-        species: (typeof sortedSpecies)[0];
+        species: (typeof detections)[0];
         startPercentage: number;
         endPercentage: number;
         width: number;
       }>
     > = [];
 
-    sortedSpecies.forEach((species) => {
+    detections.forEach((species) => {
       const startPercentage = Math.min(
         (species.start_time / duration) * 100,
         100,
@@ -94,7 +85,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
     });
 
     return layers;
-  }, [video.species, duration, view]);
+  }, [detections, duration]);
 
   return (
     <Box sx={{ position: 'relative', mt: 2 }}>

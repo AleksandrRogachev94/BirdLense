@@ -78,13 +78,22 @@ export const VideoPlayer: React.FC<{ video: Video }> = ({ video }) => {
     [video.end_time, video.start_time],
   );
 
-  const activeSpecies = useMemo(
+  // Filter species based on view type
+  const filteredDetections = useMemo(
     () =>
-      video.species.filter(
+      video.species
+        .filter((s) => s.source === view)
+        .sort((a, b) => a.start_time - b.start_time),
+    [video.species, view],
+  );
+
+  const activeDetections = useMemo(
+    () =>
+      filteredDetections.filter(
         (species) =>
           progress >= species.start_time && progress <= species.end_time,
       ),
-    [progress, video.species],
+    [progress, filteredDetections],
   );
 
   if (error) {
@@ -150,7 +159,7 @@ export const VideoPlayer: React.FC<{ video: Video }> = ({ video }) => {
             audioRef={videoRef}
             playing={playing}
             imageUrl={`${BASE_URL}/${video.spectrogram_path}`}
-            detections={video.species}
+            detections={filteredDetections}
             key={view}
           />
         </Box>
@@ -159,12 +168,11 @@ export const VideoPlayer: React.FC<{ video: Video }> = ({ video }) => {
       <ProgressBar
         duration={duration}
         progress={progress}
-        video={video}
+        detections={filteredDetections}
         onSeek={handleSeek}
-        view={view}
       />
 
-      <ActiveSpeciesDisplay species={activeSpecies} />
+      <ActiveSpeciesDisplay species={activeDetections} />
     </Box>
   );
 };
