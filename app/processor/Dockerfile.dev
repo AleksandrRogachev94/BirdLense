@@ -6,7 +6,7 @@ RUN echo "deb http://archive.raspberrypi.org/debian/ bookworm main" > /etc/apt/s
 
 # Install ALSA utilities, lame for audio recording, and picamera2 for video recording
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
-  alsa-utils lame ffmpeg python3-picamera2 \
+  alsa-utils lame ffmpeg pulseaudio-utils python3-picamera2 \
   && apt-get clean \
   && apt-get autoremove \
   && rm -rf /var/cache/apt/archives/* \

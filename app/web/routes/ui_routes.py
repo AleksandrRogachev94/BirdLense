@@ -40,7 +40,6 @@ def register_routes(app):
             'start_time': video.start_time.isoformat(),
             'end_time': video.end_time.isoformat(),
             'video_path': video.video_path,
-            'audio_path': video.audio_path,
             'spectrogram_path': video.spectrogram_path,
             'favorite': video.favorite,
             'weather': {

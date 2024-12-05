@@ -2,6 +2,7 @@ import time
 import logging
 import numpy as np
 from ultralytics import YOLO
+import cv2
 
 
 class FrameProcessor:
@@ -29,6 +30,7 @@ class FrameProcessor:
         if img is None:
             raise Exception('Frame is missing')
         self.cnt += 1
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)  # incoming frame is BGR
 
         # Detect
         st = time.time()

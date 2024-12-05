@@ -3,7 +3,6 @@ import time
 from datetime import datetime, timezone
 import argparse
 import logging
-from logging.handlers import RotatingFileHandler
 import os
 import shutil
 from frame_processor import FrameProcessor
@@ -11,8 +10,7 @@ from motion_detectors.pir import PIRMotionDetector
 from decision_maker import DecisionMaker
 from fps_tracker import FPSTracker
 from api import API
-from sources.audio_source import AudioSource
-from sources.camera_source import CameraSource
+from sources.media_source import MediaSource
 from sources.video_file_source import VideoFileSource
 from audio_processor import AudioProcessor
 from app_config.app_config import app_config
@@ -60,9 +58,8 @@ def main():
         'processor.max_record_seconds'), max_inactive_seconds=app_config.get('processor.max_inactive_seconds'))
     main_size = (app_config.get('processor.video_width'),
                  app_config.get('processor.video_height'))
-    video_source = CameraSource(main_size=main_size) if not args.input else VideoFileSource(
+    media_source = MediaSource(main_size=main_size) if not args.input else VideoFileSource(
         args.input, main_size=main_size)
-    audio_source = AudioSource()
     audio_processor = AudioProcessor(lat=app_config.get(
         'secrets.latitude'), lon=app_config.get('secrets.longitude'))
     regional_species = audio_processor.get_regional_species()
@@ -80,13 +77,11 @@ def main():
         # Configure video sources
         output_path = get_output_path()
         video_output = f"{output_path}/video.mp4"
-        audio_output = f"{output_path}/audio.mp4"
 
-        video_source.start_recording(video_output)
-        audio_source.start_recording(audio_output)
+        media_source.start_recording(video_output)
 
         logging.info(
-            f'Motion detected. Processing started. Recording video to "{video_output}" and audio to "{audio_output}"')
+            f'Motion detected. Processing started. Recording video and audio to "{video_output}"')
         start_time = datetime.now(timezone.utc)
 
         # Video processing loop
@@ -94,7 +89,7 @@ def main():
             frame_processor.reset()
             decision_maker.reset()
             while True:
-                frame = video_source.capture()
+                frame = media_source.capture()
                 if frame is None:
                     break
                 with FPSTracker():
@@ -111,13 +106,12 @@ def main():
                 # give CPU some time to do something else
                 time.sleep(0.005)
         finally:
-            audio_source.stop_recording()
-            video_source.stop_recording()
+            media_source.stop_recording()
             end_time = datetime.now(timezone.utc)
 
         try:
             audio_detections, spectrogram_path = audio_processor.run(
-                audio_output)
+                video_output)
         except Exception as e:
             logging.error(e)
             audio_detections = []
@@ -130,15 +124,14 @@ def main():
             # if len(video_detections) + len(audio_detections) > 0:
             if len(video_detections) > 0:
                 api.create_video(video_detections, audio_detections, start_time,
-                                 end_time, video_output, audio_output, spectrogram_path)
+                                 end_time, video_output, spectrogram_path)
             else:
                 # no detections, delete folder and do nothing
                 shutil.rmtree(output_path)
         except Exception as e:
             logging.error(e)
 
-    frame_processor.close()
-    video_source.close()
+    media_source.close()
 
 
 if __name__ == "__main__":

@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
-export const useVideoAudioSync = (
+export const useVideoControl = (
   videoRef: React.RefObject<HTMLVideoElement>,
-  audioRef: React.RefObject<HTMLAudioElement>,
 ) => {
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -13,7 +12,6 @@ export const useVideoAudioSync = (
 
   const handleSeek = useCallback((time: number) => {
     if (videoRef.current) videoRef.current.currentTime = time;
-    if (audioRef.current) audioRef.current.currentTime = time;
     setProgress(time);
   }, []);
 
@@ -21,18 +19,14 @@ export const useVideoAudioSync = (
     setPlaying((prev) => !prev);
   }, []);
 
+  // Handle play/pause
   useEffect(() => {
-    const audio = audioRef.current;
     const video = videoRef.current;
-    if (!audio || !video) return;
+    if (!video) return;
 
     if (playing) {
-      Promise.all([
-        audio.play().catch(console.error),
-        video.play().catch(console.error),
-      ]);
+      video.play().catch(console.error);
     } else {
-      audio.pause();
       video.pause();
     }
   }, [playing]);

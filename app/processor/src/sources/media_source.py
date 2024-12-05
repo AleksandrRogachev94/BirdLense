@@ -7,7 +7,8 @@ from http import server
 from threading import Condition
 from picamera2 import Picamera2
 from picamera2.encoders import H264Encoder, JpegEncoder, Quality
-from picamera2.outputs import FfmpegOutput, FileOutput
+from picamera2.outputs import FileOutput
+from .ffmpeg_output_mono_audio import FfmpegOutputMonoAudio
 
 
 class StreamingOutput(io.BufferedIOBase):
@@ -91,17 +92,24 @@ def recording_worker(control_queue: multiprocessing.Queue, frame_queue: multipro
 
         if command == "start":
             processor_active = True
-            encoder.output = [FfmpegOutput(data)]
+            output = FfmpegOutputMonoAudio(data, audio=True,
+                                           audio_samplerate=48000, audio_codec="aac",
+                                           audio_bitrate=128000)
+            encoder.output = [output]
             picam2.start_encoder(encoder, quality=Quality.MEDIUM)
             if not recording:
                 picam2.start()
                 recording = True
+            # push first frame to signal that recording has started
+            frame_queue.put(picam2.capture_array("main"))
         elif command == "stop":
             processor_active = False
             picam2.stop_encoder(encoder)
             if not active_clients:
                 picam2.stop()
                 recording = False
+            # put empty frame to signal that recording has stopped
+            frame_queue.put(None)
         elif command == "capture":
             frame_queue.put(picam2.capture_array("main"))
         elif command == "client_connect":
@@ -124,7 +132,7 @@ def recording_worker(control_queue: multiprocessing.Queue, frame_queue: multipro
     logging.info("Shutting down recording worker")
 
 
-class CameraSource:
+class MediaSource:
     """Manages camera recording and streaming."""
 
     def __init__(self, main_size: tuple = (1280, 720), lores_size: tuple = (640, 640)):
@@ -138,12 +146,17 @@ class CameraSource:
 
     def start_recording(self, output: str):
         self.control_queue.put(("start", output))
+        # capture first frame before proceeding to make sure camera is running
+        self.frame_queue.get()
 
     def stop_recording(self):
         self.control_queue.put(("stop", None))
+        # capture empty frame before proceeding to make sure camera is stopped
+        self.frame_queue.get()
 
     def capture(self):
         self.control_queue.put(("capture", None))
+        # it's BGR in reality, no need to convert cv2.COLOR_YUV420p2RGB, some weird picamera2 behavior
         return self.frame_queue.get()
 
     def close(self):

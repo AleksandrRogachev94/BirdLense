@@ -12,7 +12,7 @@ import { BASE_URL } from '../../../api/api';
 import { SmallSpeciesCard } from './SmallSpeciesCard';
 import { ProgressBar } from './ProgressBar';
 import { SpectrogramPlayer } from './SpectrogramPlayer';
-import { useVideoAudioSync } from './useVideoAudioSync';
+import { useVideoControl } from './useVideoControl';
 
 interface ViewToggleProps {
   view: 'video' | 'audio';
@@ -64,12 +64,11 @@ const ActiveSpeciesDisplay: React.FC<ActiveSpeciesDisplayProps> = ({
 
 export const VideoPlayer: React.FC<{ video: Video }> = ({ video }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const audioRef = useRef<HTMLAudioElement>(null);
   const [view, setView] = useState<'video' | 'audio'>('video');
   const [error, setError] = useState<string | null>(null);
 
   const { playing, progress, handleProgress, handleSeek, togglePlayPause } =
-    useVideoAudioSync(videoRef, audioRef);
+    useVideoControl(videoRef);
 
   const duration = useMemo(
     () =>
@@ -98,13 +97,6 @@ export const VideoPlayer: React.FC<{ video: Video }> = ({ video }) => {
 
   return (
     <Box>
-      <audio
-        ref={audioRef}
-        src={`${BASE_URL}/${video.audio_path}`}
-        style={{ height: 0, width: 0 }}
-        onError={() => setError('Failed to load audio')}
-      />
-
       <ViewToggle view={view} onChange={setView} />
 
       <Box sx={{ height: 500, position: 'relative' }}>
@@ -155,7 +147,7 @@ export const VideoPlayer: React.FC<{ video: Video }> = ({ video }) => {
           }}
         >
           <SpectrogramPlayer
-            audioRef={audioRef}
+            audioRef={videoRef}
             playing={playing}
             imageUrl={`${BASE_URL}/${video.spectrogram_path}`}
             detections={video.species}

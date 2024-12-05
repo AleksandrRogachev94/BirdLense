@@ -24,6 +24,8 @@ services:
     volumes:
       - /dev/shm:/dev/shm # used by audio recording
       - /run/udev:/run/udev:ro
+      - "${XDG_RUNTIME_DIR}/pulse:${XDG_RUNTIME_DIR}/pulse" # pulseaudio proxy
+      - "${HOME}/.config/pulse/cookie:/root/.config/pulse/cookie" # pulseaudio proxy
       - ./app_config:/app/src/app_config
       - ./data:/app/data
     devices:
@@ -33,8 +35,10 @@ services:
     ipc: host
     environment:
       - API_URL_BASE=http://web:8000/api/processor
+      - PULSE_SERVER=unix:${XDG_RUNTIME_DIR}/pulse/native # pulseaudio proxy
       - LD_LIBRARY_PATH=/opt/vc/lib
-    command: python3 src/main.py
+    # Command to test pulseaudio setup: "pactl list short sources"
+    command: python src/main.py
     privileged: true
     depends_on:
       - web

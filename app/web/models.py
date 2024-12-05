@@ -90,7 +90,6 @@ class Video(db.Model):
     end_time: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), nullable=False)
     video_path: Mapped[str] = mapped_column(nullable=False)
-    audio_path: Mapped[str] = mapped_column(nullable=False)
     spectrogram_path: Mapped[str] = mapped_column(
         String, nullable=True)  # spectrogram image
     favorite: Mapped[bool] = mapped_column(

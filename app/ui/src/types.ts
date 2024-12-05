@@ -46,7 +46,6 @@ export interface Video {
   start_time: string;
   end_time: string;
   video_path: string;
-  audio_path: string;
   spectrogram_path: string;
   favorite: boolean;
   weather: Weather;

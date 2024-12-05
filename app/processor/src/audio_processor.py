@@ -1,6 +1,7 @@
 import time
 import logging
 import os
+import subprocess
 import numpy as np
 import matplotlib.pyplot as plt
 import librosa
@@ -19,6 +20,13 @@ class AudioProcessor:
         self.analyzer = Analyzer()
         self.species_list = SpeciesList()
         self.sample_rate = 48000
+
+    def extract_audio(self, video_path):
+        temp_path = f"{os.path.splitext(video_path)[0]}_temp.wav"
+        subprocess.run(['ffmpeg', '-i', video_path, '-vn', '-acodec', 'pcm_s16le',
+                        '-ar', str(self.sample_rate), '-ac', '1', '-y', temp_path],
+                       check=True, stderr=subprocess.PIPE)
+        return temp_path
 
     def generate_spectrogram(self, ndarray: np.ndarray, sr: int, output_path: str,
                              px_per_second: int = 100, height_px: int = 256,
@@ -83,9 +91,7 @@ class AudioProcessor:
         if not detections:
             return []
 
-        # Sort detections by start time
         sorted_detections = sorted(detections, key=lambda x: x['start_time'])
-
         merged = []
         current = sorted_detections[0]
 
@@ -99,47 +105,54 @@ class AudioProcessor:
                 current['confidence'] = max(
                     current['confidence'], next_det['confidence'])
             else:
-                # Add the current detection to merged list and update current
                 merged.append(current)
                 current = next_det
 
-        # Add the last detection
         merged.append(current)
-
         return merged
 
-    def run(self, audio_path):
-        self.logger.info(f'Processing audio "{audio_path}"...')
+    def run(self, video_path):
+        self.logger.info(f'Processing audio from video "{video_path}"...')
         st = time.time()
 
-        recording = Recording(
-            self.analyzer,
-            audio_path,
-            lat=self.lat,
-            lon=self.lon,
-            date=datetime.now(),
-            min_conf=0.5,
-        )
-        recording.analyze()
+        try:
+            # Extract audio to temporary WAV file
+            temp_audio_path = self.extract_audio(video_path)
 
-        # Generate spectrogram
-        spectrogram_path = os.path.join(
-            os.path.dirname(audio_path), "spectrogram.jpg")
-        self.generate_spectrogram(
-            recording.ndarray, self.sample_rate, spectrogram_path)
+            recording = Recording(
+                self.analyzer,
+                temp_audio_path,
+                lat=self.lat,
+                lon=self.lon,
+                date=datetime.now(),
+                min_conf=0.5,
+            )
+            recording.analyze()
 
-        self.logger.info(
-            f'Total Audio Processing Time: {(time.time() - st) * 1000:.0f} msec')
+            # Generate spectrogram
+            spectrogram_path = os.path.join(
+                os.path.dirname(video_path), "spectrogram.jpg")
+            self.generate_spectrogram(
+                recording.ndarray, self.sample_rate, spectrogram_path)
 
-        # Convert detections and merge adjacent ones
-        raw_detections = [{
-            'species_name': det['common_name'],
-            'start_time': det['start_time'],
-            'end_time': det['end_time'],
-            'confidence': det['confidence'],
-            'source': 'audio'
-        } for det in recording.detections]
+            self.logger.info(
+                f'Total Audio Processing Time: {(time.time() - st) * 1000:.0f} msec')
 
-        merged_detections = self.merge_detections(raw_detections)
+            # Convert detections and merge adjacent ones
+            raw_detections = [{
+                'species_name': det['common_name'],
+                'start_time': det['start_time'],
+                'end_time': det['end_time'],
+                'confidence': det['confidence'],
+                'source': 'audio'
+            } for det in recording.detections]
 
-        return merged_detections, spectrogram_path
+            merged_detections = self.merge_detections(raw_detections)
+
+            # Cleanup temporary file
+            os.remove(temp_audio_path)
+            return merged_detections, spectrogram_path
+
+        except Exception as e:
+            self.logger.error(f'Error processing audio: {e}')
+            return [], None

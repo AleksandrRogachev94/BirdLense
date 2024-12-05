@@ -27,7 +27,6 @@ def register_routes(app):
             'start_time': start_time,
             'end_time': end_time,
             'video_path': data['video_path'],
-            'audio_path': data['audio_path'],
             'spectrogram_path': data['spectrogram_path'],
             **weather_fetcher.fetch()
         }
