@@ -136,7 +136,7 @@ def register_routes(app):
 
     @app.route('/api/processor/notify/motion', methods=['POST'])
     def notify_motion_route():
-        notify(f"Motion detected", tags="eyes")
+        # notify(f"Motion detected", tags="eyes")
         return {'message': f'Successfully received notification of motion'}, 200
 
     @app.route('/api/processor/activity_log', methods=['POST'])
