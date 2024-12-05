@@ -15,9 +15,6 @@ from sources.video_file_source import VideoFileSource
 from audio_processor import AudioProcessor
 from app_config.app_config import app_config
 
-# Configure the root logger
-log_directory = 'data/logs/processor'
-os.makedirs(log_directory, exist_ok=True)
 # Set up logging
 logging.basicConfig(
     level=logging.INFO,

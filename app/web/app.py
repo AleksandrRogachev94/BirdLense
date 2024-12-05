@@ -9,9 +9,6 @@ import routes.processor_routes
 from models import db
 from seed.seed import seed
 
-# Configure the root logger
-log_directory = 'data/logs/web'
-os.makedirs(log_directory, exist_ok=True)
 # Set up logging
 logging.basicConfig(
     level=logging.INFO,
