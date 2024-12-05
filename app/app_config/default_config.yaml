@@ -9,7 +9,7 @@ processor:
   tracker: "bytetrack.yaml"
   max_record_seconds: 60 # maximum length of video/audio recording
   max_inactive_seconds: 10 # maximum number of seconds with no activity before stopping recording
-  save_images: true
+  save_images: false # save frames with detectiond to disk. Testing only
 
 # Add your secrets and other configurations here
 secrets:
