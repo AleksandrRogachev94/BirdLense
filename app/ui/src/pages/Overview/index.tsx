@@ -20,6 +20,7 @@ import { fetchOverviewData, fetchWeather } from '../../api/api';
 import { WeatherCard } from '../../components/WeatherCard';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { formatHourToLocalTime } from '../../util';
 
 const Heatmap = ({
   data,
@@ -192,7 +193,7 @@ const StatsGrid = ({
       <StatCard
         icon={TrendingUp}
         title="Busiest Hour"
-        value={stats.busiestHour}
+        value={formatHourToLocalTime(stats.busiestHour)}
       />
     </Grid>
     <Grid size={{ xs: 12, sm: 4 }}>

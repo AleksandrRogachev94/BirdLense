@@ -18,3 +18,9 @@ export const labelToUniqueHexColor = (label: string): string => {
 export const formatConfidence = (confidedence: number): string => {
   return `${Math.round(confidedence * 100)}%`;
 };
+
+export const formatHourToLocalTime = (utcHour: number): number => {
+  const date = new Date();
+  date.setUTCHours(utcHour, 0, 0, 0);
+  return date.getHours();
+};
