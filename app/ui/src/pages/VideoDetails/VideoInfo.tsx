@@ -14,6 +14,7 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import { WeatherCard } from '../../components/WeatherCard';
 import { labelToUniqueHexColor } from '../../util';
+import { Link } from 'react-router-dom';
 
 interface GroupedSpecies {
   species_id: string;
@@ -123,7 +124,13 @@ export const VideoInfo = ({ video }: { video: Video }) => {
                     </Typography>
                   </CardContent>
                   <CardActions>
-                    <Button size="small">Learn More</Button>
+                    <Button
+                      size="small"
+                      component={Link}
+                      to={`/species/${group.species_id}`}
+                    >
+                      Learn More
+                    </Button>
                   </CardActions>
                 </Card>
               </Grid>

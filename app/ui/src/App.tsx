@@ -13,6 +13,7 @@ import { Settings } from './pages/Settings';
 import { Overview } from './pages/Overview';
 import { LivePage } from './pages/Live';
 import { VideoDetails } from './pages/VideoDetails';
+import SpeciesSummary from './pages/SpeciesSummary';
 
 const theme = createTheme({
   palette: {
@@ -47,9 +48,10 @@ function App() {
                 <Route path="/timeline" element={<TimelinePage />} />
                 <Route path="/videos/:id" element={<VideoDetails />} />
                 <Route path="/food" element={<FoodManagement />} />
-                <Route path="/birds" element={<BirdDirectory />} />
+                <Route path="/species" element={<BirdDirectory />} />
                 <Route path="/live" element={<LivePage />} />
                 <Route path="/settings" element={<Settings />} />
+                <Route path="/species/:id" element={<SpeciesSummary />} />
               </Routes>
             </Container>
           </main>

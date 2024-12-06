@@ -21,7 +21,7 @@ const pages = [
   { label: 'Overview', url: '/' },
   { label: 'Timeline', url: '/timeline' },
   { label: 'Food Management', url: '/food' },
-  { label: 'Bird Directory', url: '/birds' },
+  { label: 'Bird Directory', url: '/species' },
 ];
 
 export function Navigation() {

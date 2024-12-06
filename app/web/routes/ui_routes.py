@@ -2,7 +2,7 @@ import os
 from flask import request, send_from_directory, abort
 from sqlalchemy import func, case, distinct
 from datetime import datetime, timezone, timedelta
-from models import ActivityLog, db, BirdFood, Video, Species, VideoSpecies
+from models import ActivityLog, db, BirdFood, Video, Species, VideoSpecies, video_bird_food_association
 from util import weather_fetcher
 from app_config.app_config import app_config
 
@@ -101,7 +101,8 @@ def register_routes(app):
 
     @app.route('/api/ui/birdfood', methods=['GET'])
     def get_birdfood():
-        bird_food = BirdFood.query.all()
+        bird_food = BirdFood.query.order_by(
+            BirdFood.active.desc(), BirdFood.created_at.asc()).all()
         bird_food_list = [{
             'id': food.id,
             'name': food.name,
@@ -313,3 +314,115 @@ def register_routes(app):
 
         except Exception as e:
             return {"error": str(e)}, 500
+
+    @app.route('/api/ui/species/<int:species_id>/summary', methods=['GET'])
+    def get_species_summary(species_id):
+        # Get the species
+        species = Species.query.get(species_id)
+        if not species:
+            return {'error': 'Species not found'}, 404
+
+        # Calculate date ranges
+        now = datetime.now(timezone.utc)
+        last_24h = now - timedelta(days=1)
+        last_7d = now - timedelta(days=7)
+        last_30d = now - timedelta(days=30)
+
+        # Base query for detections
+        base_query = db.session.query(VideoSpecies).filter(
+            VideoSpecies.species_id == species_id
+        )
+
+        # Get detection counts for different time periods
+        detections_24h = base_query.filter(
+            VideoSpecies.created_at >= last_24h).count()
+        detections_7d = base_query.filter(
+            VideoSpecies.created_at >= last_7d).count()
+        detections_30d = base_query.filter(
+            VideoSpecies.created_at >= last_30d).count()
+
+        # Get first and last sighting dates
+        first_sighting = base_query.order_by(
+            VideoSpecies.created_at.asc()).first()
+        last_sighting = base_query.order_by(
+            VideoSpecies.created_at.desc()).first()
+
+        # Get hourly activity pattern (0-23)
+        hourly_activity = db.session.query(
+            func.strftime('%H', VideoSpecies.created_at).label('hour'),
+            func.count().label('count')
+        ).filter(
+            VideoSpecies.species_id == species_id,
+            VideoSpecies.created_at >= last_30d
+        ).group_by('hour').all()
+
+        # Convert to 24-element list with 0s for missing hours
+        activity_by_hour = [0] * 24
+        for hour, count in hourly_activity:
+            activity_by_hour[int(hour)] = count
+
+        # Get weather preferences
+        weather_stats = db.session.query(
+            Video.weather_temp,
+            Video.weather_clouds,
+            func.count().label('count')
+        ).join(
+            VideoSpecies, Video.id == VideoSpecies.video_id
+        ).filter(
+            VideoSpecies.species_id == species_id,
+            Video.weather_temp.isnot(None)
+        ).group_by(
+            Video.weather_temp,
+            Video.weather_clouds
+        ).all()
+
+        # Get most common food present during sightings
+        food_preferences = db.session.query(
+            BirdFood.name,
+            func.count().label('count')
+        ).join(
+            video_bird_food_association,
+            BirdFood.id == video_bird_food_association.c.birdfood_id
+        ).join(
+            Video,
+            Video.id == video_bird_food_association.c.video_id
+        ).join(
+            VideoSpecies,
+            VideoSpecies.video_id == Video.id
+        ).filter(
+            VideoSpecies.species_id == species_id
+        ).group_by(
+            BirdFood.name
+        ).order_by(
+            func.count().desc()
+        ).limit(5).all()
+
+        return {
+            'species': {
+                'id': species.id,
+                'name': species.name,
+                'image_url': species.image_url,
+                'description': species.description,
+            },
+            'stats': {
+                'detections_24h': detections_24h,
+                'detections_7d': detections_7d,
+                'detections_30d': detections_30d,
+                'first_sighting': first_sighting.created_at.isoformat() if first_sighting else None,
+                'last_sighting': last_sighting.created_at.isoformat() if last_sighting else None,
+            },
+            'activity_by_hour': activity_by_hour,
+            'weather_stats': [
+                {
+                    'temp': stat[0],
+                    'clouds': stat[1],
+                    'count': stat[2]
+                } for stat in weather_stats
+            ],
+            'food_preferences': [
+                {
+                    'name': pref[0],
+                    'count': pref[1]
+                } for pref in food_preferences
+            ]
+        }
