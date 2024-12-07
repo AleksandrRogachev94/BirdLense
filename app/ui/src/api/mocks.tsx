@@ -4,6 +4,7 @@ import {
   OverviewData,
   Settings,
   Species,
+  SpeciesSummary,
   Video,
   Weather,
 } from '../types';
@@ -113,37 +114,38 @@ export const mockVideo: Video = {
   id: 'abc123',
   processor_version: 'v1.2.3',
   start_time: '2024-11-22T10:00:00Z',
-  end_time: '2024-11-22T10:00:46Z',
+  end_time: '2024-11-22T10:00:13Z',
   video_path: 'https://www.youtube.com/watch?v=H6_YpVBzqNw',
-  audio_path: '/audio/abc123.mp3',
+  spectrogram_path:
+    'https://www.izotope.com/storage-cms/images/6/3/9/9/259936-1-eng-GB/5b817a665294-Dialogue-shown-in-a-spectrogram.png',
   favorite: false,
   weather: mockWeather,
   species: [
     {
-      species_id: 'sparrow_001',
+      species_id: 1,
       species_name: 'House Sparrow',
-      start_time: 10,
-      end_time: 20,
+      start_time: 1,
+      end_time: 5,
       confidence: 0.98,
       source: 'video',
       image_url:
         'https://images.unsplash.com/photo-1654567835135-2a39ea442e45?q=80&w=3432&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     },
     {
-      species_id: 'sparrow_001',
+      species_id: 1,
       species_name: 'House Sparrow',
-      start_time: 25,
-      end_time: 35,
+      start_time: 3,
+      end_time: 6,
       confidence: 0.85,
       source: 'audio',
       image_url:
         'https://images.unsplash.com/photo-1654567835135-2a39ea442e45?q=80&w=3432&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     },
     {
-      species_id: 'robin_002',
+      species_id: 2,
       species_name: 'European Robin',
-      start_time: 30,
-      end_time: 40,
+      start_time: 7,
+      end_time: 9,
       confidence: 0.92,
       source: 'audio',
       image_url:
@@ -325,6 +327,35 @@ export const mockOverviewData: OverviewData = {
         1, 3, 5, 7, 9, 2, 4, 6, 8, 10, 1, 3, 5, 7, 9, 2, 4, 6, 8, 10, 1, 3, 5,
         7,
       ],
+    },
+  ],
+};
+
+export const mockSpeciesSummary: SpeciesSummary = {
+  activity_by_hour: [
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0,
+  ],
+  food_preferences: [],
+  species: {
+    description:
+      "The house finch (Haemorhous mexicanus) is a North American bird in the finch family. It is native to Mexico and southwestern United States, but has since been introduced to the eastern part of North America and Hawaii; it is now found year-round in all parts of the United States and most of Mexico, with some residing near the border of Canada. There are estimated to be 40 million house finches across North America, making it the second-most populous finch, just behind the American goldfinch. The house finch and the other two American rosefinches (Cassin's and purple finch) are placed in the genus Haemorhous.",
+    id: 721,
+    image_url:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/House_finch_%2833688%292.jpg/300px-House_finch_%2833688%292.jpg',
+    name: 'House Finch (Female/immature)',
+  },
+  stats: {
+    detections_24h: 0,
+    detections_30d: 1,
+    detections_7d: 1,
+    first_sighting: '2024-12-05T20:25:22.879572',
+    last_sighting: '2024-12-05T20:25:22.879572',
+  },
+  weather_stats: [
+    {
+      clouds: 100,
+      count: 1,
+      temp: 2.07,
     },
   ],
 };

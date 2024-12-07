@@ -5,13 +5,14 @@ import {
   mockBirdSighting,
   mockOverviewData,
   mockSetttings,
+  mockSpeciesSummary,
   mockVideo,
   mockWeather,
 } from './mocks';
-import { BirdFood, BirdSighting, Settings } from '../types';
+import { BirdFood, BirdSighting, Settings, SpeciesSummary } from '../types';
 import axios from 'axios';
 
-const useMockData = true; // Set to false to use real API calls
+const useMockData = false; // Set to false to use real API calls
 export const BASE_URL = 'http://smartbirdfeeder.local';
 export const BASE_API_URL = `${BASE_URL}/api/ui`;
 
@@ -156,6 +157,20 @@ export const fetchOverviewData = async (date: string) => {
     return mockOverviewData;
   } else {
     const response = await axios.get(`${BASE_API_URL}/overview?date=${date}`);
+    return response.data;
+  }
+};
+
+export const fetchSpeciesSummary = async (
+  speciesId: number,
+): Promise<SpeciesSummary> => {
+  if (useMockData) {
+    await sleep(1000);
+    return mockSpeciesSummary;
+  } else {
+    const response = await axios.get(
+      `${BASE_API_URL}/species/${speciesId}/summary`,
+    );
     return response.data;
   }
 };

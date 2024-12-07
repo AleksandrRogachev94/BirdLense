@@ -21,7 +21,7 @@ export interface BirdSighting {
 }
 
 export interface VideoSpecies {
-  species_id: string;
+  species_id: number;
   species_name: string;
   start_time: number; // seconds from video start time
   end_time: number; // seconds from video start time
@@ -122,4 +122,30 @@ export interface OverviewStats {
 export interface OverviewData {
   topSpecies: OverviewTopSpecies[];
   stats: OverviewStats;
+}
+
+export interface SpeciesSummary {
+  species: {
+    id: number;
+    name: string;
+    image_url: string | null;
+    description: string | null;
+  };
+  stats: {
+    detections_24h: number;
+    detections_7d: number;
+    detections_30d: number;
+    first_sighting: string | null;
+    last_sighting: string | null;
+  };
+  activity_by_hour: number[];
+  weather_stats: Array<{
+    temp: number;
+    clouds: number;
+    count: number;
+  }>;
+  food_preferences: Array<{
+    name: string;
+    count: number;
+  }>;
 }

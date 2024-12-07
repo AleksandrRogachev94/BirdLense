@@ -14,32 +14,9 @@ import InfoIcon from '@mui/material/Icon/Icon';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CloudIcon from '@mui/icons-material/Cloud';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
-
-interface SpeciesSummary {
-  species: {
-    id: number;
-    name: string;
-    image_url: string | null;
-    description: string | null;
-  };
-  stats: {
-    detections_24h: number;
-    detections_7d: number;
-    detections_30d: number;
-    first_sighting: string | null;
-    last_sighting: string | null;
-  };
-  activity_by_hour: number[];
-  weather_stats: Array<{
-    temp: number;
-    clouds: number;
-    count: number;
-  }>;
-  food_preferences: Array<{
-    name: string;
-    count: number;
-  }>;
-}
+import { SpeciesSummary } from '../../types';
+import { fetchSpeciesSummary } from '../../api/api';
+import { CircularProgress } from '@mui/material';
 
 const StatCard = ({
   icon,
@@ -66,22 +43,22 @@ const StatCard = ({
   </Card>
 );
 
-const SpeciesSummary = () => {
+const SpeciesSummaryPage = () => {
   const { id } = useParams<{ id: string }>();
   const speciesId = id ? +id : undefined;
 
-  const { data, isLoading } = useQuery<SpeciesSummary>({
+  const { data, isLoading, error } = useQuery<SpeciesSummary>({
     queryKey: ['speciesSummary', speciesId],
-    queryFn: async () => {
-      const response = await fetch(`/api/ui/species/${speciesId}/summary`);
-      if (!response.ok) throw new Error('Network response was not ok');
-      return response.json();
-    },
+    queryFn: () => fetchSpeciesSummary(speciesId as number),
   });
 
-  if (isLoading || !data) {
-    return <Typography>Loading...</Typography>;
-  }
+  if (isLoading)
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+        <CircularProgress />
+      </Box>
+    );
+  if (error || !data) return <div>Error loading data.</div>;
 
   const hours = Array.from(
     { length: 24 },
@@ -265,4 +242,4 @@ const SpeciesSummary = () => {
   );
 };
 
-export default SpeciesSummary;
+export default SpeciesSummaryPage;
