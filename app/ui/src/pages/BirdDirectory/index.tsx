@@ -12,21 +12,89 @@ import { SelectChangeEvent } from '@mui/material/Select';
 import { BirdDirectoryTreeView } from './BirdDirectoryTreeView';
 import { Species } from '../../types';
 
-export const BirdDirectory = () => {
-  const [filter, setFilter] = useState<'all' | 'regional'>('regional');
+type FilterType = 'all' | 'regional' | 'observed';
 
-  const {
-    data: birds,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ['bird-directory', filter],
-    queryFn: () => fetchBirdDirectory(filter),
-    enabled: !!filter, // Only run the query if there's a filter selected
+interface NestedSpecies extends Species {
+  children: NestedSpecies[];
+}
+
+const convertToNested = (speciesList: Species[]): NestedSpecies[] => {
+  const speciesMap = new Map<number, NestedSpecies>();
+
+  // First pass: Create all nodes with initial counts
+  speciesList.forEach((species) => {
+    speciesMap.set(species.id, {
+      ...species,
+      children: [],
+      count: species.count || 0, // Initialize with species count or 0
+    });
   });
 
-  const handleFilterChange = (event: SelectChangeEvent<'all' | 'regional'>) => {
-    setFilter(event.target.value as 'all' | 'regional');
+  // Second pass: Build tree structure
+  const result: NestedSpecies[] = [];
+  speciesList.forEach((species) => {
+    if (species.parent_id === null) {
+      result.push(speciesMap.get(species.id)!);
+    } else {
+      const parent = speciesMap.get(species.parent_id);
+      if (parent) {
+        parent.children.push(speciesMap.get(species.id)!);
+      }
+    }
+  });
+
+  // Helper function to calculate total count for a node and its descendants
+  const calculateTotalCount = (node: NestedSpecies): number => {
+    const childrenCount = node.children.reduce((sum, child) => {
+      return sum + calculateTotalCount(child);
+    }, 0);
+    node.count = (node.count || 0) + childrenCount;
+    return node.count;
+  };
+
+  // Calculate counts starting from root nodes
+  result.forEach(calculateTotalCount);
+
+  return result[0].children;
+};
+
+const filterNestedSpecies = (
+  species: NestedSpecies[],
+  filter: FilterType,
+): NestedSpecies[] => {
+  return species
+    .map((species) => ({
+      ...species,
+      children: filterNestedSpecies(species.children, filter),
+    }))
+    .filter((species) => {
+      switch (filter) {
+        case 'regional':
+          return species.active || species.children.length > 0;
+        case 'observed':
+          return (species.count || 0) > 0 || species.children.length > 0;
+        default:
+          return true;
+      }
+    });
+};
+
+export const BirdDirectory = () => {
+  const [filter, setFilter] = useState<FilterType>('observed');
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['bird-directory'],
+    queryFn: () => fetchBirdDirectory(),
+    select: (data) => {
+      // First convert to nested structure
+      const nestedSpecies = convertToNested(data);
+      // Then filter the tree while preserving hierarchy
+      return filterNestedSpecies(nestedSpecies, filter);
+    },
+  });
+
+  const handleFilterChange = (event: SelectChangeEvent<FilterType>) => {
+    setFilter(event.target.value as FilterType);
   };
 
   if (isLoading)
@@ -35,7 +103,7 @@ export const BirdDirectory = () => {
         <CircularProgress />
       </Box>
     );
-  if (error) return <div>Error loading sightings data.</div>;
+  if (error) return <div>Error loading bird directory data.</div>;
 
   return (
     <>
@@ -56,13 +124,14 @@ export const BirdDirectory = () => {
             label="Filter"
             sx={{ minWidth: 100 }}
           >
-            <MenuItem value="all">All</MenuItem>
+            <MenuItem value="all">All Species</MenuItem>
             <MenuItem value="regional">Regional</MenuItem>
+            <MenuItem value="observed">Observed</MenuItem>
           </Select>
         </FormControl>
       </Box>
 
-      <BirdDirectoryTreeView birds={birds as Species[]} onSelect={() => {}} />
+      <BirdDirectoryTreeView birds={data || []} onSelect={() => {}} />
     </>
   );
 };

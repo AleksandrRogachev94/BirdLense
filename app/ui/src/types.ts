@@ -102,6 +102,7 @@ export interface Species {
   image_url: string | null;
   description: string | null;
   active: boolean;
+  count?: number;
 }
 
 export interface OverviewTopSpecies {

@@ -269,23 +269,27 @@ def register_routes(app):
 
     @app.route('/api/ui/species', methods=['GET'])
     def get_all_species():
-        filter_value = request.args.get('filter', 'all').lower()
-        # Build query
-        query = db.session.query(Species)
-        if filter_value == 'regional':
-            query = query.filter(Species.active == True)
-        # Execute query and fetch results
-        species_list = query.order_by(Species.name.asc()).all()
+        # Build base query
+        query = db.session.query(
+            Species,
+            func.count(VideoSpecies.id).label('count')
+        ).outerjoin(VideoSpecies)
+
+        # Group by species and order by name
+        species_list = query.group_by(
+            Species.id).order_by(Species.name.asc()).all()
+
         # Construct the response
         return [
             {
-                'id': species.id,
-                'name': species.name,
-                'parent_id': species.parent_id,
-                'created_at': species.created_at.isoformat(),
-                'image_url': species.image_url,
-                'description': species.description,
-                'active': species.active
+                'id': species.Species.id,
+                'name': species.Species.name,
+                'parent_id': species.Species.parent_id,
+                'created_at': species.Species.created_at.isoformat(),
+                'image_url': species.Species.image_url,
+                'description': species.Species.description,
+                'active': species.Species.active,
+                'count': species.count
             }
             for species in species_list
         ]
