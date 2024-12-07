@@ -11,173 +11,202 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
+import MUILink from '@mui/material/Link';
 import MenuIcon from '@mui/icons-material/Menu';
 import EmojiNatureIcon from '@mui/icons-material/EmojiNature';
 import SettingsIcon from '@mui/icons-material/Settings';
 import LiveTvIcon from '@mui/icons-material/LiveTv';
-import MUILink from '@mui/material/Link';
 
-const pages = [
-  { label: 'Overview', url: '/' },
-  { label: 'Timeline', url: '/timeline' },
-  { label: 'Food Management', url: '/food' },
-  { label: 'Bird Directory', url: '/species' },
-];
+const NAVIGATION_ITEMS = [
+  { label: 'Overview', path: '/' },
+  { label: 'Timeline', path: '/timeline' },
+  { label: 'Food Management', path: '/food' },
+  { label: 'Bird Directory', path: '/species' },
+] as const;
 
 export function Navigation() {
   const location = useLocation();
-  const currentTab = pages.findIndex((page) => {
-    const locationWithoutQuery = location.pathname.split('?')[0];
-    return page.url === locationWithoutQuery;
-  });
+  const currentPath = location.pathname.split('?')[0];
 
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
-    null,
-  );
-  const [anchorElSettings, setAnchorElSettings] =
+  // Only set the tab value if we're on a known route
+  const currentTabValue = React.useMemo(() => {
+    const index = NAVIGATION_ITEMS.findIndex(
+      (item) => item.path === currentPath,
+    );
+    return index >= 0 ? index : false;
+  }, [currentPath]);
+
+  const [mobileMenuAnchor, setMobileMenuAnchor] =
+    React.useState<null | HTMLElement>(null);
+  const [settingsMenuAnchor, setSettingsMenuAnchor] =
     React.useState<null | HTMLElement>(null);
 
-  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) =>
-    setAnchorElNav(event.currentTarget);
-  const handleCloseNavMenu = () => setAnchorElNav(null);
-
-  const handleOpenSettingsMenu = (event: React.MouseEvent<HTMLElement>) =>
-    setAnchorElSettings(event.currentTarget);
-  const handleCloseSettingsMenu = () => setAnchorElSettings(null);
-
-  const renderTabs = () => (
-    <Tabs
-      value={Math.max(currentTab, 0)}
-      textColor="inherit"
-      indicatorColor="secondary"
-    >
-      {pages.map((page) => (
-        <Tab
-          key={page.label}
-          label={page.label}
-          component={Link}
-          to={page.url}
-        />
-      ))}
-    </Tabs>
-  );
-
-  const renderMobileMenu = () => (
-    <Menu
-      id="menu-appbar"
-      anchorEl={anchorElNav}
-      anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-      keepMounted
-      transformOrigin={{ vertical: 'top', horizontal: 'left' }}
-      open={Boolean(anchorElNav)}
-      onClose={handleCloseNavMenu}
-    >
-      {pages.map((page) => (
-        <MenuItem
-          key={page.label}
-          onClick={handleCloseNavMenu}
-          component={Link}
-          to={page.url}
-        >
-          <Typography textAlign="center">{page.label}</Typography>
-        </MenuItem>
-      ))}
-    </Menu>
-  );
-
-  const renderSettingsMenu = () => (
-    <Menu
-      id="settings-menu"
-      anchorEl={anchorElSettings}
-      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-      keepMounted
-      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-      open={Boolean(anchorElSettings)}
-      onClose={handleCloseSettingsMenu}
-    >
-      <MenuItem
-        onClick={handleCloseSettingsMenu}
-        component={Link}
-        to="/settings"
-      >
-        <Typography textAlign="center">Settings</Typography>
-      </MenuItem>
-      <MenuItem onClick={handleCloseSettingsMenu}>
-        <MUILink
-          sx={{ textDecoration: 'none', '&:hover': { textDecoration: 'none' } }}
-          href="/data/" // replace with actual URL
-          target="_blank"
-          rel="noopener noreferrer"
-          color="inherit"
-        >
-          Data Viewer
-        </MUILink>
-      </MenuItem>
-    </Menu>
-  );
+  const handleMobileMenuClose = () => setMobileMenuAnchor(null);
+  const handleSettingsMenuClose = () => setSettingsMenuAnchor(null);
 
   return (
-    <AppBar position="static" color="primary" sx={{ mb: 4 }}>
+    <AppBar position="sticky" color="primary" sx={{ mb: 4 }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <EmojiNatureIcon
-            sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }}
-          />
-          <Typography
-            variant="h6"
-            sx={{ flexGrow: 0, mr: 4, display: { xs: 'none', md: 'flex' } }}
+          {/* Logo Section - Desktop */}
+          <Box
+            sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}
           >
-            Smart Bird Feeder
-          </Typography>
+            <EmojiNatureIcon sx={{ mr: 1 }} />
+            <Typography variant="h6" sx={{ mr: 4 }}>
+              Smart Bird Feeder
+            </Typography>
+          </Box>
 
+          {/* Mobile Menu */}
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
             <IconButton
               size="large"
-              onClick={handleOpenNavMenu}
+              onClick={(e) => setMobileMenuAnchor(e.currentTarget)}
               color="inherit"
+              aria-label="menu"
             >
               <MenuIcon />
             </IconButton>
-            {renderMobileMenu()}
+            <Menu
+              anchorEl={mobileMenuAnchor}
+              open={Boolean(mobileMenuAnchor)}
+              onClose={handleMobileMenuClose}
+              keepMounted
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+              transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+            >
+              {NAVIGATION_ITEMS.map((item) => (
+                <MenuItem
+                  key={item.path}
+                  onClick={handleMobileMenuClose}
+                  component={Link}
+                  to={item.path}
+                  selected={currentPath === item.path}
+                >
+                  {item.label}
+                </MenuItem>
+              ))}
+              <MenuItem
+                onClick={handleMobileMenuClose}
+                component={Link}
+                to="/live"
+                selected={currentPath === '/live'}
+              >
+                <LiveTvIcon sx={{ mr: 1 }} />
+                Live View
+              </MenuItem>
+            </Menu>
           </Box>
 
-          <Typography
-            variant="h6"
-            sx={{ flexGrow: 0, mr: 4, display: { xs: 'flex', md: 'none' } }}
+          {/* Logo Section - Mobile */}
+          <Box
+            sx={{
+              display: { xs: 'flex', md: 'none' },
+              flexGrow: 1,
+              alignItems: 'center',
+            }}
           >
-            Smart Bird Feeder
-          </Typography>
-
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {renderTabs()}
+            <EmojiNatureIcon sx={{ mr: 1 }} />
+            <Typography variant="h6">Smart Bird Feeder</Typography>
           </Box>
 
-          <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-            <Button>Secondary</Button>
+          {/* Desktop Navigation Tabs */}
+          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+            <Tabs
+              value={currentTabValue}
+              textColor="inherit"
+              indicatorColor="secondary"
+              aria-label="navigation tabs"
+              sx={{
+                '& .MuiTab-root': {
+                  color: 'white',
+                  opacity: 0.7,
+                  '&.Mui-selected': {
+                    color: 'white',
+                    opacity: 1,
+                  },
+                },
+              }}
+            >
+              {NAVIGATION_ITEMS.map((item, index) => (
+                <Tab
+                  key={item.path}
+                  label={item.label}
+                  component={Link}
+                  to={item.path}
+                  value={index}
+                />
+              ))}
+            </Tabs>
+          </Box>
+
+          {/* Action Buttons */}
+          <Box
+            sx={{
+              display: { xs: 'none', md: 'flex' },
+              gap: 1,
+              alignItems: 'center',
+            }}
+          >
             <Button
               component={Link}
               to="/live"
-              sx={{
-                color: 'white', // Text color
-              }}
+              color="inherit"
               startIcon={<LiveTvIcon />}
-              variant="text"
+              sx={{
+                bgcolor:
+                  currentPath === '/live'
+                    ? 'rgba(255, 255, 255, 0.12)'
+                    : 'transparent',
+                '&:hover': {
+                  bgcolor: 'rgba(255, 255, 255, 0.2)',
+                },
+              }}
             >
               Live
             </Button>
-          </Box>
-
-          {/* Settings Icon and Menu */}
-          <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
             <IconButton
-              size="large"
-              onClick={handleOpenSettingsMenu}
               color="inherit"
+              onClick={(e) => setSettingsMenuAnchor(e.currentTarget)}
+              aria-label="settings"
+              aria-controls="settings-menu"
+              aria-expanded={Boolean(settingsMenuAnchor)}
             >
               <SettingsIcon />
             </IconButton>
-            {renderSettingsMenu()}
           </Box>
+
+          {/* Settings Menu */}
+          <Menu
+            id="settings-menu"
+            anchorEl={settingsMenuAnchor}
+            open={Boolean(settingsMenuAnchor)}
+            onClose={handleSettingsMenuClose}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+          >
+            <MenuItem
+              component={Link}
+              to="/settings"
+              onClick={handleSettingsMenuClose}
+              selected={currentPath === '/settings'}
+            >
+              Settings
+            </MenuItem>
+            <MenuItem onClick={handleSettingsMenuClose}>
+              <MUILink
+                href="/data/"
+                target="_blank"
+                rel="noopener noreferrer"
+                color="inherit"
+                underline="none"
+                sx={{ display: 'block', width: '100%' }}
+              >
+                Data Viewer
+              </MUILink>
+            </MenuItem>
+          </Menu>
         </Toolbar>
       </Container>
     </AppBar>
