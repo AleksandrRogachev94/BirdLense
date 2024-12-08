@@ -21,6 +21,9 @@ import { renderTimeViewClock } from '@mui/x-date-pickers/timeViewRenderers';
 import dayjs, { Dayjs } from 'dayjs';
 import { useQuery } from '@tanstack/react-query';
 import { fetchTimeline } from '../../api/api';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import Checkbox from '@mui/material/Checkbox';
+import ListItemText from '@mui/material/ListItemText';
 
 function useSpeciesList(sightings: BirdSighting[] | undefined) {
   return sightings
@@ -39,37 +42,26 @@ function useSpeciesList(sightings: BirdSighting[] | undefined) {
 
 function useFilteredSightings(
   sightings: BirdSighting[] | undefined,
-  speciesId: string,
+  selectedSpeciesIds: number[],
 ) {
   return sightings?.filter(
-    (sighting) => speciesId === 'all' || sighting.species.id === +speciesId,
+    (sighting) =>
+      selectedSpeciesIds.length === 0 ||
+      selectedSpeciesIds.includes(sighting.species.id),
   );
 }
 
-function useTimelinePage() {
-  const [searchParams] = useSearchParams();
-  const [speciesId, setSpeciesId] = useState<string>('all');
-  const [date, setDate] = useState<Dayjs | null>(dayjs());
-  const [time, setTime] = useState<Dayjs | null>(dayjs());
-
-  // Get initial values from query params
-  useEffect(() => {
-    const paramDateTime = searchParams.get('date');
-    if (paramDateTime) {
-      const dt = dayjs(paramDateTime);
-      setDate(dt);
-      setTime(dt);
-    }
-    const paramSpeciesId = searchParams.get('speciesId');
-    if (paramSpeciesId) setSpeciesId(paramSpeciesId);
-  }, [searchParams]);
-
-  return [speciesId, date, time, setSpeciesId, setDate, setTime] as const;
-}
-
 export function TimelinePage() {
-  const [speciesId, date, time, setSpeciesId, setDate, setTime] =
-    useTimelinePage();
+  const [searchParams] = useSearchParams();
+  const [selectedSpeciesIds, setSelectedSpeciesIds] = useState<number[]>([]);
+  const [date, setDate] = useState<Dayjs | null>(() => {
+    const paramDateTime = searchParams.get('date');
+    return paramDateTime ? dayjs(paramDateTime) : dayjs();
+  });
+  const [time, setTime] = useState<Dayjs | null>(() => {
+    const paramDateTime = searchParams.get('date');
+    return paramDateTime ? dayjs(paramDateTime) : dayjs();
+  });
 
   const {
     data: sightings,
@@ -78,7 +70,6 @@ export function TimelinePage() {
   } = useQuery({
     queryKey: ['birdSightings', date, time],
     queryFn: () => {
-      // When no time is selected, default to the start of the day (00:00)
       const finalDateTime = time
         ? date?.set('hour', time.hour()).set('minute', time.minute())
         : date?.startOf('day');
@@ -90,8 +81,40 @@ export function TimelinePage() {
     enabled: !!date,
   });
 
+  // Set initial species selection based on URL param
+  useEffect(() => {
+    if (sightings) {
+      const speciesId = searchParams.get('speciesId');
+      if (speciesId) {
+        // Find all species in the sightings that have the speciesId as their parent_id
+        const childSpeciesIds = [
+          ...new Set(
+            sightings
+              .map((sighting) => sighting.species)
+              .filter((species) => species.parent_id === Number(speciesId))
+              .map((species) => Number(species.id)),
+          ),
+        ];
+
+        // If we found any children, select them all
+        if (childSpeciesIds.length > 0) {
+          setSelectedSpeciesIds(childSpeciesIds);
+        }
+      }
+    }
+  }, [searchParams, sightings]);
+
   const speciesList = useSpeciesList(sightings);
-  const filteredSightings = useFilteredSightings(sightings, speciesId);
+  const filteredSightings = useFilteredSightings(sightings, selectedSpeciesIds);
+
+  const handleSpeciesChange = (event: { target: { value: any } }) => {
+    const value = event.target.value;
+    setSelectedSpeciesIds(
+      typeof value === 'string'
+        ? value.split(',').map(Number)
+        : value.map(Number),
+    );
+  };
 
   if (isLoading)
     return (
@@ -138,14 +161,25 @@ export function TimelinePage() {
           <InputLabel id="species-select-label">Species</InputLabel>
           <Select
             labelId="species-select-label"
-            value={speciesId}
-            onChange={(e) => setSpeciesId(e.target.value)}
-            label="Species"
+            multiple
+            value={selectedSpeciesIds}
+            onChange={handleSpeciesChange}
+            input={<OutlinedInput label="Species" />}
+            renderValue={(selected) =>
+              selected.length === 0
+                ? 'All'
+                : speciesList
+                    .filter((species) => selected.includes(Number(species.id)))
+                    .map((species) => species.name)
+                    .join(', ')
+            }
           >
-            <MenuItem value="all">All</MenuItem>
             {speciesList.map((species) => (
-              <MenuItem key={species.id} value={species.id}>
-                {species.name}
+              <MenuItem key={species.id} value={Number(species.id)}>
+                <Checkbox
+                  checked={selectedSpeciesIds.includes(Number(species.id))}
+                />
+                <ListItemText primary={species.name} />
               </MenuItem>
             ))}
           </Select>
@@ -158,3 +192,5 @@ export function TimelinePage() {
     </>
   );
 }
+
+export default TimelinePage;

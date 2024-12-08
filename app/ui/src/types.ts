@@ -13,6 +13,7 @@ export interface BirdSighting {
     id: number;
     name: string;
     image_url?: string;
+    parent_id?: number;
   };
   food: {
     id: string;
