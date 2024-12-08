@@ -1,6 +1,6 @@
-import os
-from flask import request, send_from_directory, abort
-from sqlalchemy import func, case, distinct
+from flask import request
+from sqlalchemy import func, case, distinct, or_
+from sqlalchemy.orm import aliased
 from datetime import datetime, timezone, timedelta
 from models import ActivityLog, db, BirdFood, Video, Species, VideoSpecies, video_bird_food_association
 from util import weather_fetcher
@@ -129,26 +129,51 @@ def register_routes(app):
         end_of_day = date.replace(
             hour=23, minute=59, second=59, microsecond=999999)
 
-        # Query to get top species with hourly detections for the given day
-        top_species_query = db.session.query(
+        # Subquery to get active species and their direct child species
+        ParentSpecies = aliased(Species)  # Alias for self-join
+        active_species_subq = db.session.query(
             Species.id,
             Species.name,
-            # Generate hourly counts using SQLite's strftime function to extract the hour
+            case(
+                (Species.active == True, Species.id),
+                else_=Species.parent_id
+            ).label('group_id')
+        ).outerjoin(
+            ParentSpecies,
+            Species.parent_id == ParentSpecies.id
+        ).filter(
+            or_(
+                Species.active == True,  # Active species
+                ParentSpecies.active == True  # Parent species is active
+            )
+        ).subquery()
+
+        # Query to get top species with hourly detections for the given day
+        top_species_query = db.session.query(
+            active_species_subq.c.group_id.label('id'),
+            Species.name.label('name'),  # Get the parent species name
             *[
-                func.count(
+                func.sum(
                     case(
                         (func.strftime('%H', VideoSpecies.created_at)
-                         == str(hour).zfill(2), 1),  # condition
-                        else_=None  # default for non-matching cases
+                         == str(hour).zfill(2), 1),
+                        else_=0
                     )
                 ).label(f'detection_hour_{hour}')
                 for hour in range(24)
             ]
-        ).join(VideoSpecies, VideoSpecies.species_id == Species.id) \
-            .filter(VideoSpecies.created_at >= start_of_day, VideoSpecies.created_at <= end_of_day) \
-            .group_by(Species.id) \
-            .order_by(func.count(VideoSpecies.id).desc()) \
-            .limit(10)  # Limit to top 10 species
+        ).join(
+            Species, Species.id == active_species_subq.c.group_id
+        ).join(
+            VideoSpecies, VideoSpecies.species_id == active_species_subq.c.id
+        ).filter(
+            VideoSpecies.created_at >= start_of_day,
+            VideoSpecies.created_at <= end_of_day
+        ).group_by(
+            active_species_subq.c.group_id
+        ).order_by(
+            func.sum(case((VideoSpecies.id.isnot(None), 1), else_=0)).desc()
+        ).limit(10)
 
         # Format the top species data
         top_species = []
@@ -156,13 +181,14 @@ def register_routes(app):
             species_data = {
                 'id': species.id,
                 'name': species.name,
-                'detections': [getattr(species, f'detection_hour_{hour}', 0) for hour in range(24)]
+                'detections': [getattr(species, f'detection_hour_{hour}', 0) or 0 for hour in range(24)]
             }
             top_species.append(species_data)
 
-        # Query to get overall statistics for the given day
+        # Query to get overall statistics for the given day, considering active species grouping
         stats_query = db.session.query(
-            func.count(distinct(Species.id)).label('uniqueSpecies'),
+            func.count(distinct(active_species_subq.c.group_id)
+                       ).label('uniqueSpecies'),
             func.count(VideoSpecies.id).label('totalDetections'),
             func.sum(
                 case(
@@ -184,9 +210,12 @@ def register_routes(app):
             ).label('audioDetections'),
             func.strftime('%H', func.max(VideoSpecies.created_at)
                           ).label('busiestHour')
-        ).join(VideoSpecies, VideoSpecies.species_id == Species.id) \
-            .filter(VideoSpecies.created_at >= start_of_day, VideoSpecies.created_at <= end_of_day) \
-            .first()
+        ).join(
+            active_species_subq, VideoSpecies.species_id == active_species_subq.c.id
+        ).filter(
+            VideoSpecies.created_at >= start_of_day,
+            VideoSpecies.created_at <= end_of_day
+        ).first()
 
         # Format stats data
         stats = {
@@ -198,13 +227,10 @@ def register_routes(app):
             'busiestHour': int(stats_query.busiestHour) if stats_query.busiestHour else 0
         }
 
-        # Construct the final overview data
-        overview_data = {
+        return {
             'topSpecies': top_species,
             'stats': stats
-        }
-
-        return overview_data, 200
+        }, 200
 
     @app.route('/api/ui/timeline', methods=['GET'])
     def get_video_species():
@@ -256,6 +282,7 @@ def register_routes(app):
                     'id': record.species.id,
                     'name': record.species.name,
                     'image_url': record.species.image_url,
+                    'parent_id': record.species.parent_id,
                 },
                 'food': [
                     {

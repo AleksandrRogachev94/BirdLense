@@ -85,47 +85,21 @@ def register_routes(app):
 
     @app.route('/api/processor/species/active', methods=['PUT'])
     def set_active_species():
+        """Set which species are active based on audio detector's capabilities."""
         active_names = request.json
 
-        # Step 1: Mark all species as inactive
+        # Reset all to inactive
         db.session.query(Species).update({'active': False})
 
-        def activate_species_and_descendants(species_id):
-            species = db.session.query(
-                Species).filter_by(id=species_id).first()
-            if species:
-                species.active = True
-                # Recursively update all descendants to active
-                children = db.session.query(Species).filter_by(
-                    parent_id=species_id).all()
-                for child in children:
-                    activate_species_and_descendants(child.id)
-
-        def activate_species_and_ascendants(species_id):
-            species = db.session.query(
-                Species).filter_by(id=species_id).first()
-            if species:
-                species.active = True
-                # Recursively update all ascendants to active
-                if species.parent_id:
-                    activate_species_and_ascendants(species.parent_id)
-
+        # Set provided species as active
         for name in active_names:
-            # Step 2: Find or create the species
             species = db.session.query(Species).filter_by(name=name).first()
             if species:
-                # Ensure this species, its descendants, and its ascendants are marked as active
-                activate_species_and_descendants(species.id)
-                activate_species_and_ascendants(species.id)
+                species.active = True
             else:
                 app.logger.warn(f'Unknown active species "{name}"')
-                # Create the species if it does not exist
-                # species = Species(name=name, active=True)
-                # db.session.add(species)
 
-        # Commit all changes at the end
         db.session.commit()
-
         return {"message": "success"}, 200
 
     @app.route('/api/processor/notify/detections', methods=['POST'])
