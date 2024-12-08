@@ -54,11 +54,12 @@ function useTimelinePage() {
 
   // Get initial values from query params
   useEffect(() => {
-    const paramDate = searchParams.get('date');
-    if (paramDate) setDate(dayjs(paramDate));
-    const paramTime = searchParams.get('time');
-    if (paramTime) setTime(dayjs(paramTime));
-    if (paramTime === '') setTime(null);
+    const paramDateTime = searchParams.get('date');
+    if (paramDateTime) {
+      const dt = dayjs(paramDateTime);
+      setDate(dt);
+      setTime(dt);
+    }
     const paramSpeciesId = searchParams.get('speciesId');
     if (paramSpeciesId) setSpeciesId(paramSpeciesId);
   }, [searchParams]);
