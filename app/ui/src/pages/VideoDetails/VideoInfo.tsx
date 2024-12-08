@@ -17,7 +17,7 @@ import { labelToUniqueHexColor } from '../../util';
 import { Link } from 'react-router-dom';
 
 interface GroupedSpecies {
-  species_id: string;
+  species_id: number;
   species_name: string;
   image_url?: string;
   detections: VideoSpecies[];

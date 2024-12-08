@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link as RouterLink } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -9,14 +9,17 @@ import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid2';
+import Alert from '@mui/material/Alert';
+import Link from '@mui/material/Link';
 import { LineChart, ScatterChart } from '@mui/x-charts';
-import InfoIcon from '@mui/material/Icon/Icon';
+import InfoIcon from '@mui/icons-material/Info';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CloudIcon from '@mui/icons-material/Cloud';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
+import { CircularProgress } from '@mui/material';
 import { SpeciesSummary } from '../../types';
 import { fetchSpeciesSummary } from '../../api/api';
-import { CircularProgress } from '@mui/material';
+import { labelToUniqueHexColor } from '../../util';
 
 const StatCard = ({
   icon,
@@ -65,21 +68,51 @@ const SpeciesSummaryPage = () => {
     (_, i) => `${i.toString().padStart(2, '0')}:00`,
   );
 
-  // Adjust the activity data array to match local timezone
+  // Adjust timezone for activity data
   const tzOffset = new Date().getTimezoneOffset() / 60;
-  const localActivity = data.activity_by_hour.map((_, idx) => {
-    // Convert UTC index to local index by adding the offset
-    let localIdx = idx + tzOffset;
-    // Handle wraparound for negative indices or indices >= 24
-    if (localIdx < 0) localIdx += 24;
-    if (localIdx >= 24) localIdx -= 24;
-    return data.activity_by_hour[Math.floor(localIdx)];
-  });
+  const adjustTimeZone = (activity: number[]) =>
+    activity.map((_, idx) => {
+      let localIdx = idx + tzOffset;
+      if (localIdx < 0) localIdx += 24;
+      if (localIdx >= 24) localIdx -= 24;
+      return activity[Math.floor(localIdx)];
+    });
 
-  console.log({ activity: data.activity_by_hour, localActivity });
+  const localActivity = adjustTimeZone(data.stats.hourlyActivity);
+  const subspeciesActivities = data.subspecies.map((sub) => ({
+    name: sub.species.name,
+    data: adjustTimeZone(sub.stats.hourlyActivity),
+  }));
 
   return (
     <Box p={3}>
+      {/* Show parent link if species is not active */}
+      {!data.species.active && data.species.parent && (
+        <Alert
+          severity="info"
+          sx={{ mb: 3 }}
+          action={
+            <Link
+              component={RouterLink}
+              to={`/species/${data.species.parent.id}`}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                height: '100%',
+                color: 'primary.main',
+                textDecoration: 'none',
+                '&:hover': {
+                  textDecoration: 'underline',
+                },
+              }}
+            >
+              View {data.species.parent.name}
+            </Link>
+          }
+        >
+          This is a subspecies of {data.species.parent.name}
+        </Alert>
+      )}
       {/* Header Section */}
       <Paper elevation={0} sx={{ mb: 4, bgcolor: 'background.default' }}>
         <Grid container spacing={4} alignItems="center">
@@ -114,29 +147,58 @@ const SpeciesSummaryPage = () => {
         <Grid size={{ xs: 12, md: 4 }}>
           <StatCard
             icon={<InfoIcon fontSize="small" />}
-            title="Detection Stats"
+            title="Total Detection Stats"
           >
             <Stack spacing={1.5}>
               <Typography variant="body1">
-                Last 24 hours: <strong>{data.stats.detections_24h}</strong>
+                Last 24 hours:{' '}
+                <strong>{data.stats.detections.detections_24h}</strong>
               </Typography>
               <Typography variant="body1">
-                Last 7 days: <strong>{data.stats.detections_7d}</strong>
+                Last 7 days:{' '}
+                <strong>{data.stats.detections.detections_7d}</strong>
               </Typography>
               <Typography variant="body1">
-                Last 30 days: <strong>{data.stats.detections_30d}</strong>
+                Last 30 days:{' '}
+                <strong>{data.stats.detections.detections_30d}</strong>
               </Typography>
+              {data.subspecies.length > 0 && (
+                <>
+                  <Divider />
+                  {data.subspecies.map((sub) => (
+                    <Box key={sub.species.id}>
+                      <Link
+                        variant="subtitle2"
+                        color="primary"
+                        component={RouterLink}
+                        to={`/species/${sub.species.id}`}
+                      >
+                        {sub.species.name}
+                      </Link>
+                      <Typography variant="body2">
+                        24h: {sub.stats.detections.detections_24h} | 7d:{' '}
+                        {sub.stats.detections.detections_7d} | 30d:{' '}
+                        {sub.stats.detections.detections_30d}
+                      </Typography>
+                    </Box>
+                  ))}
+                </>
+              )}
               <Divider />
-              {data.stats.first_sighting && (
+              {data.stats.timeRange.first_sighting && (
                 <Typography variant="body2" color="text.secondary">
                   First seen:{' '}
-                  {new Date(data.stats.first_sighting).toLocaleDateString()}
+                  {new Date(
+                    data.stats.timeRange.first_sighting,
+                  ).toLocaleDateString()}
                 </Typography>
               )}
-              {data.stats.last_sighting && (
+              {data.stats.timeRange.last_sighting && (
                 <Typography variant="body2" color="text.secondary">
                   Last seen:{' '}
-                  {new Date(data.stats.last_sighting).toLocaleDateString()}
+                  {new Date(
+                    data.stats.timeRange.last_sighting,
+                  ).toLocaleDateString()}
                 </Typography>
               )}
             </Stack>
@@ -165,10 +227,15 @@ const SpeciesSummaryPage = () => {
                 series={[
                   {
                     data: localActivity,
-                    area: true,
-                    color: '#059669',
-                    label: 'Detections',
+                    // area: true,
+                    color: labelToUniqueHexColor(data.species.name as string),
+                    label: 'Total',
                   },
+                  ...subspeciesActivities.map((sub) => ({
+                    data: sub.data,
+                    color: labelToUniqueHexColor(sub.name as string),
+                    label: sub.name,
+                  })),
                 ]}
                 height={250}
               />
@@ -188,25 +255,17 @@ const SpeciesSummaryPage = () => {
                 height={250}
                 series={[
                   {
-                    data: data.weather_stats.map((stat, index) => ({
+                    data: data.stats.weather.map((stat, index) => ({
                       id: index,
                       x: stat.temp,
                       y: stat.clouds,
                       size: Math.min(20, Math.max(5, stat.count / 5)),
                     })),
-                    label: 'Sightings',
+                    label: 'Total Sightings',
                   },
                 ]}
-                xAxis={[
-                  {
-                    label: 'Temperature (°C)',
-                  },
-                ]}
-                yAxis={[
-                  {
-                    label: 'Cloudiness (%)',
-                  },
-                ]}
+                xAxis={[{ label: 'Temperature (°C)' }]}
+                yAxis={[{ label: 'Cloudiness (%)' }]}
               />
             </Box>
           </StatCard>
@@ -219,7 +278,7 @@ const SpeciesSummaryPage = () => {
             title="Common Food During Sightings"
           >
             <Stack spacing={2}>
-              {data.food_preferences.map((food) => (
+              {data.stats.food.map((food) => (
                 <Box
                   key={food.name}
                   sx={{

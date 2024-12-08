@@ -99,6 +99,10 @@ export interface Species {
   id: number;
   name: string;
   parent_id: number | null;
+  parent?: {
+    name: string;
+    id: string;
+  };
   created_at: string;
   image_url: string | null;
   description: string | null;
@@ -126,28 +130,42 @@ export interface OverviewData {
   stats: OverviewStats;
 }
 
+export interface DetectionCounts {
+  detections_24h: number;
+  detections_7d: number;
+  detections_30d: number;
+}
+
+export interface TimestampRange {
+  first_sighting: string | null;
+  last_sighting: string | null;
+}
+
 export interface SpeciesSummary {
-  species: {
-    id: number;
-    name: string;
-    image_url: string | null;
-    description: string | null;
-  };
+  species: Partial<Species>;
+
+  // Aggregate stats
   stats: {
-    detections_24h: number;
-    detections_7d: number;
-    detections_30d: number;
-    first_sighting: string | null;
-    last_sighting: string | null;
+    detections: DetectionCounts;
+    timeRange: TimestampRange;
+    hourlyActivity: number[];
+    weather: Array<{
+      temp: number;
+      clouds: number;
+      count: number;
+    }>;
+    food: Array<{
+      name: string;
+      count: number;
+    }>;
   };
-  activity_by_hour: number[];
-  weather_stats: Array<{
-    temp: number;
-    clouds: number;
-    count: number;
-  }>;
-  food_preferences: Array<{
-    name: string;
-    count: number;
+
+  // Child species summaries
+  subspecies: Array<{
+    species: Partial<Species>;
+    stats: {
+      detections: DetectionCounts;
+      hourlyActivity: number[];
+    };
   }>;
 }

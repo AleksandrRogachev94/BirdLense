@@ -141,6 +141,16 @@ def get_wikipedia_image_and_description(title):
         return None, "No data found"
 
 
+# Update missing species data from Wikipedia. Returns True if any data was updated.
+def update_species_info_from_wiki(sp):
+    if not sp.image_url or not sp.description:
+        clean_name = re.sub(r'\(.*\)', '', sp.name).strip()
+        sp.image_url, sp.description = get_wikipedia_image_and_description(
+            clean_name)
+        return True
+    return False
+
+
 def notify(message, link="live", tags=None):
     if app_config.get('general.enable_notifications'):
         requests.post("http://ntfy/birdlense",

@@ -347,30 +347,73 @@ export const mockOverviewData: OverviewData = {
 };
 
 export const mockSpeciesSummary: SpeciesSummary = {
-  activity_by_hour: [
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0,
-  ],
-  food_preferences: [],
   species: {
-    description:
-      "The house finch (Haemorhous mexicanus) is a North American bird in the finch family. It is native to Mexico and southwestern United States, but has since been introduced to the eastern part of North America and Hawaii; it is now found year-round in all parts of the United States and most of Mexico, with some residing near the border of Canada. There are estimated to be 40 million house finches across North America, making it the second-most populous finch, just behind the American goldfinch. The house finch and the other two American rosefinches (Cassin's and purple finch) are placed in the genus Haemorhous.",
-    id: 721,
-    image_url:
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/House_finch_%2833688%292.jpg/300px-House_finch_%2833688%292.jpg',
-    name: 'House Finch (Female/immature)',
+    description: null,
+    id: 719,
+    image_url: null,
+    name: 'House Finch',
+    active: true,
   },
   stats: {
-    detections_24h: 0,
-    detections_30d: 1,
-    detections_7d: 1,
-    first_sighting: '2024-12-05T20:25:22.879572',
-    last_sighting: '2024-12-05T20:25:22.879572',
+    detections: {
+      detections_24h: 0,
+      detections_30d: 4,
+      detections_7d: 4,
+    },
+    food: [],
+    hourlyActivity: [
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0,
+    ],
+    timeRange: {
+      first_sighting: '2024-12-05T20:05:19.945915',
+      last_sighting: '2024-12-05T20:25:22.879572',
+    },
+    weather: [
+      {
+        clouds: 100,
+        count: 4,
+        temp: 2,
+      },
+    ],
   },
-  weather_stats: [
+  subspecies: [
     {
-      clouds: 100,
-      count: 1,
-      temp: 2.07,
+      species: {
+        id: 720,
+        image_url:
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/House_finch_%2833688%292.jpg/300px-House_finch_%2833688%292.jpg',
+        name: 'House Finch (Adult Male)',
+      },
+      stats: {
+        detections: {
+          detections_24h: 0,
+          detections_30d: 3,
+          detections_7d: 3,
+        },
+        hourlyActivity: [
+          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0,
+          0,
+        ],
+      },
+    },
+    {
+      species: {
+        id: 721,
+        image_url:
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/House_finch_%2833688%292.jpg/300px-House_finch_%2833688%292.jpg',
+        name: 'House Finch (Female/immature)',
+      },
+      stats: {
+        detections: {
+          detections_24h: 0,
+          detections_30d: 1,
+          detections_7d: 1,
+        },
+        hourlyActivity: [
+          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,
+          0,
+        ],
+      },
     },
   ],
 };
