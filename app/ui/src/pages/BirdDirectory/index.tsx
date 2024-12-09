@@ -61,16 +61,23 @@ const convertToNested = (speciesList: Species[]): NestedSpecies[] => {
 const filterNestedSpecies = (
   species: NestedSpecies[],
   filter: FilterType,
+  hasActiveParent: boolean = false,
 ): NestedSpecies[] => {
   return species
     .map((species) => ({
       ...species,
-      children: filterNestedSpecies(species.children, filter),
+      children: filterNestedSpecies(
+        species.children,
+        filter,
+        species.active || hasActiveParent,
+      ),
     }))
     .filter((species) => {
       switch (filter) {
         case 'regional':
-          return species.active || species.children.length > 0;
+          return (
+            hasActiveParent || species.active || species.children.length > 0
+          );
         case 'observed':
           return (species.count || 0) > 0 || species.children.length > 0;
         default:
