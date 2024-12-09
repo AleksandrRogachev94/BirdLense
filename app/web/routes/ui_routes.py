@@ -104,11 +104,13 @@ def register_routes(app):
     @app.route('/api/ui/birdfood', methods=['GET'])
     def get_birdfood():
         bird_food = BirdFood.query.order_by(
-            BirdFood.active.desc(), BirdFood.created_at.asc()).all()
+            BirdFood.name.desc()).all()
         bird_food_list = [{
             'id': food.id,
             'name': food.name,
-            'active': food.active
+            'active': food.active,
+            'description': food.description,
+            'image_url': food.image_url
         } for food in bird_food]
 
         return bird_food_list, 200

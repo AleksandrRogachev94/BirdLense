@@ -61,6 +61,8 @@ export interface BirdFood {
   id: number;
   name: string;
   active: boolean;
+  description?: string;
+  image_url?: string;
 }
 
 export interface BirdTaxonomy {
