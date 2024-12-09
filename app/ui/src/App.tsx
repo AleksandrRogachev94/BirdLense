@@ -1,4 +1,3 @@
-import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
@@ -14,6 +13,7 @@ import { Overview } from './pages/Overview';
 import { LivePage } from './pages/Live';
 import { VideoDetails } from './pages/VideoDetails';
 import SpeciesSummary from './pages/SpeciesSummary';
+import { SystemMonitor } from './pages/SystemMonitor';
 
 const theme = createTheme({
   palette: {
@@ -52,6 +52,7 @@ function App() {
                 <Route path="/live" element={<LivePage />} />
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/species/:id" element={<SpeciesSummary />} />
+                <Route path="/system/monitor" element={<SystemMonitor />} />
               </Routes>
             </Container>
           </main>

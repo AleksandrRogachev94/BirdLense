@@ -4,6 +4,9 @@ FROM python:3.9-alpine
 # Set the working directory
 WORKDIR /app
 
+# dependencies needed to build psutil
+RUN apk add --no-cache gcc python3-dev musl-dev linux-headers
+
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 COPY . .

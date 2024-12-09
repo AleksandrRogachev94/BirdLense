@@ -49,6 +49,8 @@ services:
     depends_on:
       - ntfy
     volumes:
+      - /proc:/host/proc:ro # Access CPU/memory stats
+      - /sys:/host/sys:ro # Access temperature sensors
       - ./app_config:/app/app_config
       - ./data:/app/data
     logging: *default-logging
