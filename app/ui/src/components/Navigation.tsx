@@ -196,11 +196,11 @@ export function Navigation() {
             </MenuItem>
             <MenuItem
               component={Link}
-              to="/system/monitor"
+              to="/system"
               onClick={handleSettingsMenuClose}
-              selected={currentPath === '/system/monitor'}
+              selected={currentPath === '/system'}
             >
-              System Monitor
+              System Info
             </MenuItem>
             <MenuItem onClick={handleSettingsMenuClose}>
               <MUILink

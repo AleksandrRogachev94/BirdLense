@@ -104,7 +104,7 @@ def register_routes(app):
     @app.route('/api/ui/birdfood', methods=['GET'])
     def get_birdfood():
         bird_food = BirdFood.query.order_by(
-            BirdFood.name.desc()).all()
+            BirdFood.name.asc()).all()
         bird_food_list = [{
             'id': food.id,
             'name': food.name,
@@ -557,3 +557,30 @@ def register_routes(app):
         except Exception as e:
             app.logger.error(f"Error getting system metrics: {str(e)}")
             return {'error': 'Failed to get system metrics'}, 500
+
+    @app.route('/api/ui/activity', methods=['GET'])
+    def get_activity():
+        month = request.args.get('month', datetime.now().strftime('%Y-%m'))
+        start_date = datetime.strptime(month, '%Y-%m')
+        end_date = (start_date.replace(day=1) +
+                    timedelta(days=32)).replace(day=1)
+
+        activities = db.session.query(
+            func.strftime('%Y-%m-%d', ActivityLog.created_at).label('date'),
+            func.sum(
+                func.strftime('%s', ActivityLog.updated_at) -
+                func.strftime('%s', ActivityLog.created_at)
+            ).label('total_uptime')  # in seconds
+        ).filter(
+            ActivityLog.type == 'heartbeat',
+            ActivityLog.created_at >= start_date,
+            ActivityLog.created_at < end_date
+        ).group_by(
+            func.strftime('%Y-%m-%d', ActivityLog.created_at)
+        ).all()
+
+        return [{
+            'date': day,
+            # convert to hours
+            'totalUptime': round(duration / 3600, 1) if duration else 0
+        } for day, duration in activities]

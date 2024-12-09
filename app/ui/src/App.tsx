@@ -13,7 +13,7 @@ import { Overview } from './pages/Overview';
 import { LivePage } from './pages/Live';
 import { VideoDetails } from './pages/VideoDetails';
 import SpeciesSummary from './pages/SpeciesSummary';
-import { SystemMonitor } from './pages/SystemMonitor';
+import { System } from './pages/System';
 
 const theme = createTheme({
   palette: {
@@ -52,7 +52,7 @@ function App() {
                 <Route path="/live" element={<LivePage />} />
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/species/:id" element={<SpeciesSummary />} />
-                <Route path="/system/monitor" element={<SystemMonitor />} />
+                <Route path="/system" element={<System />} />
               </Routes>
             </Container>
           </main>
