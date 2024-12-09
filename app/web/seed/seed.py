@@ -23,52 +23,52 @@ def seed_bird_food():
         {
             'name': 'Black-oil Sunflower Seeds',
             'description': 'High in energy with thin shells. Preferred food for cardinals, chickadees, finches, sparrows, and occasionally woodpeckers.',
-            'image_url': 'data/bird-food-images/black-oil-sunflower-seeds.jpg',
+            'image_url': 'data/images/food/black-oil-sunflower-seeds.jpg',
         },
         {
             'name': 'Cracked Corn',
             'description': 'Inexpensive grain attractive to doves, quail, and sparrows. Best mixed with millet.',
-            'image_url': 'data/bird-food-images/cracked-corn.jpg',
+            'image_url': 'data/images/food/cracked-corn.jpg',
         },
         {
             'name': 'Fruit',
             'description': 'Attracts orioles, mockingbirds, catbirds, bluebirds, robins, and waxwings. Includes oranges, grapes, raisins.',
-            'image_url': "data/bird-food-images/fruit.jpg",
+            'image_url': "data/images/food/fruit.jpg",
         },
         {
             'name': 'Hulled Sunflower Seeds',
             'description': '"No mess" sunflower without shells. Preferred by many birds but spoils quickly if wet.',
-            'image_url': "data/bird-food-images/hulled-sunflower-seeds.jpg",
+            'image_url': "data/images/food/hulled-sunflower-seeds.jpg",
         },
         {
             'name': 'Mealworms',
             'description': 'High protein larvae attracting chickadees, titmice, wrens, nuthatches, and especially bluebirds.',
-            'image_url': "data/bird-food-images/mealworms.jpg",
+            'image_url': "data/images/food/mealworms.jpg",
         },
         {
             'name': 'Millet',
             'description': 'Small, round grain favored by ground foraging birds like juncos and sparrows.',
-            'image_url': "data/bird-food-images/millets.jpg"
+            'image_url': "data/images/food/millets.jpg"
         },
         {
             'name': 'Nyjer',
             'description': 'Small seed from Africa attracting finches including American Goldfinch, Pine Siskin, and Common Redpoll.',
-            'image_url': 'data/bird-food-images/nyjer.jpg',
+            'image_url': 'data/images/food/nyjer.jpg',
         },
         {
             'name': 'Peanuts',
             'description': 'Popular with jays, chickadees, nuthatches, and titmice. Can be offered shelled or unshelled.',
-            'image_url': 'data/bird-food-images/peanuts.jpg',
+            'image_url': 'data/images/food/peanuts.jpg',
         },
         {
             'name': 'Safflower',
             'description': 'White sunflower-like seed attracting cardinals and other big-billed birds.',
-            'image_url': "data/bird-food-images/safflower.jpg",
+            'image_url': "data/images/food/safflower.jpg",
         },
         {
             'name': 'Suet',
             'description': 'Beef kidney fat attractive to insect-eating birds. Available plain or in processed cakes with seeds.',
-            'image_url': 'data/bird-food-images/suet.jpg',
+            'image_url': 'data/images/food/suet.jpg',
         }
     ]
 
