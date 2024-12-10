@@ -1,83 +1,55 @@
 import json
-import re
 from flask import request
-from datetime import datetime, timezone, timedelta
-from models import ActivityLog, db, BirdFood, Video, Species, VideoSpecies
-from util import weather_fetcher, update_species_info_from_wiki, notify
+from datetime import datetime, timezone
+from models import ActivityLog, db, BirdFood, Video, Species, VideoSpecies, SpeciesVisit
+from util import weather_fetcher, notify
+from services.visit_processor import VisitProcessor
 
 
 def register_routes(app):
     @app.route('/api/processor/videos', methods=['POST'])
     def create_video():
         data = request.json
-
-        # Convert start_time and end_time strings to datetime objects
-        start_time_str = data.get('start_time')
-        end_time_str = data.get('end_time')
-
         try:
-            start_time = datetime.fromisoformat(start_time_str)
-            end_time = datetime.fromisoformat(end_time_str)
+            start_time = datetime.fromisoformat(data.get('start_time'))
+            end_time = datetime.fromisoformat(data.get('end_time'))
         except ValueError as e:
             return {'error': f'Invalid datetime format: {e}'}, 400
 
-        # Extract data from JSON request
-        video_data = {
-            'processor_version': data['processor_version'],
-            'start_time': start_time,
-            'end_time': end_time,
-            'video_path': data['video_path'],
-            'spectrogram_path': data['spectrogram_path'],
-            **weather_fetcher.fetch()
-        }
-
-        # List of species detected in the video
+        # Validate required data
         species_list = data.get('species', [])
         if not species_list:
             return {'error': 'Missing species'}, 400
 
-        # Fetch all active bird foods from the database
-        active_bird_foods = BirdFood.query.filter_by(active=True).all()
-
-        # Create new Video instance
-        new_video = Video(**video_data)
-
-        # Associate species and bird food with the new video
-        for sp in species_list:
-            species_name = sp['species_name']
-            start_time = sp['start_time']
-            end_time = sp['end_time']
-            confidence = sp['confidence']
-            source = sp['source']
-            if species_name is None or start_time is None or end_time is None or confidence is None or source is None:
-                return {'error': 'Invalid species data'}, 400
-
-            species = Species.query.filter_by(name=species_name).first()
-            if not species:
-                app.logger.warn(f'Video has unknown species "{species_name}"')
-                continue
-
-            # Update missing species data from Wikipedia
-            update_species_info_from_wiki(species)
-
-            video_species = VideoSpecies(
-                species_id=species.id,
+        try:
+            # Create video record
+            video = Video(
+                processor_version=data['processor_version'],
                 start_time=start_time,
                 end_time=end_time,
-                confidence=confidence,
-                source=source,
-                # to use it for optimized searching/sorting
-                created_at=new_video.start_time + timedelta(seconds=start_time)
+                video_path=data['video_path'],
+                spectrogram_path=data['spectrogram_path'],
+                **weather_fetcher.fetch()
             )
-            new_video.video_species.append(video_species)
+            db.session.add(video)
 
-        new_video.food.extend(active_bird_foods)
+            # Add active bird foods
+            active_bird_foods = BirdFood.query.filter_by(active=True).all()
+            video.food.extend(active_bird_foods)
 
-        # Save the new video record
-        db.session.add(new_video)
-        db.session.commit()
+            # Process all detections
+            visit_processor = VisitProcessor(db, app.logger)
+            visit_processor.process_detections(video, species_list)
 
-        return {'message': 'Video and associated data inserted successfully.'}, 201
+            # Save everything
+            db.session.commit()
+
+            return {'message': 'Video and associated data inserted successfully.'}, 201
+
+        except Exception as e:
+            db.session.rollback()
+            app.logger.error(f'Error processing video: {str(e)}')
+            return {'error': 'Failed to process video'}, 500
 
     @app.route('/api/processor/species/active', methods=['PUT'])
     def set_active_species():

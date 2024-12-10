@@ -16,8 +16,10 @@ db = SQLAlchemy(model_class=Base)
 # Many-To-Many with additional columns
 class VideoSpecies(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
-    video_id: Mapped[int] = mapped_column(ForeignKey("video.id"))
-    species_id: Mapped[int] = mapped_column(ForeignKey("species.id"))
+    video_id: Mapped[int] = mapped_column(Integer, ForeignKey("video.id"))
+    species_id: Mapped[int] = mapped_column(Integer, ForeignKey("species.id"))
+    species_visit_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("species_visit.id"), nullable=True)
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False)
     start_time: Mapped[float] = mapped_column(
@@ -29,6 +31,8 @@ class VideoSpecies(db.Model):
         String, nullable=False)  # video or audio
     video: Mapped["Video"] = relationship(back_populates="video_species")
     species: Mapped["Species"] = relationship(back_populates="video_species")
+    species_visit: Mapped["SpeciesVisit"] = relationship(
+        back_populates="video_species")
 
     __table_args__ = (
         # improves both queries: created_at/species_id and just species_id
@@ -38,14 +42,15 @@ class VideoSpecies(db.Model):
               'species_id', desc('created_at')),
         # for video details queries
         Index('ix_videospecies_video_id', 'video_id'),
+        Index('ix_videospecies_species_visit_id', 'species_visit_id'),
     )
 
 
 # Many-To-Many
 video_bird_food_association = Table(
     'video_bird_food_association', Base.metadata,
-    Column('video_id', String, ForeignKey('video.id'), primary_key=True),
-    Column('birdfood_id', String, ForeignKey(
+    Column('video_id', Integer, ForeignKey('video.id'), primary_key=True),
+    Column('birdfood_id', Integer, ForeignKey(
         'bird_food.id'), primary_key=True),
 )
 
@@ -65,6 +70,8 @@ class Species(db.Model):
     children = relationship("Species", back_populates="parent")
     parent = relationship(
         "Species", back_populates="children", remote_side=[id])
+    species_visits: Mapped[List["SpeciesVisit"]
+                           ] = relationship(back_populates="species")
 
     __table_args__ = (
         Index('ix_species_parent_id', 'parent_id'),
@@ -130,4 +137,30 @@ class ActivityLog(db.Model):
 
     __table_args__ = (
         Index('ix_activitylog_type_created_at', 'type', desc('created_at')),
+    )
+
+
+class SpeciesVisit(db.Model):
+    """Represents a continuous period when a species species was present, groups video and audio detections"""
+    id: Mapped[int] = mapped_column(primary_key=True)
+    species_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey('species.id'), nullable=False)
+    start_time: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False)
+    end_time: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False)
+    max_simultaneous: Mapped[int] = mapped_column(
+        Integer, nullable=False, default=1)  # Max birds seen at once
+    created_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now())
+
+    species: Mapped["Species"] = relationship(back_populates="species_visits")
+    video_species: Mapped[List["VideoSpecies"]] = relationship(
+        back_populates="species_visit")
+
+    __table_args__ = (
+        Index('ix_speciesvisit_created_at_species',
+              desc('start_time'), 'species_id'),
+        Index('ix_speciesvisit_species_created_at',
+              'species_id', desc('start_time')),
     )
