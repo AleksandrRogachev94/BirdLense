@@ -27,10 +27,10 @@ class FrameProcessor:
                 f'Filtered video classes: {[self.model.names[cls] for cls in self.classes]}')
 
     def run(self, img):
+        # incoming frame is BGR
         if img is None:
             raise Exception('Frame is missing')
         self.cnt += 1
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)  # incoming frame is BGR
 
         # Detect
         st = time.time()

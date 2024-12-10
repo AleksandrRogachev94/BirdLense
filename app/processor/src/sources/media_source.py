@@ -9,6 +9,7 @@ from picamera2 import Picamera2
 from picamera2.encoders import H264Encoder, JpegEncoder, Quality
 from picamera2.outputs import FileOutput
 from .ffmpeg_output_mono_audio import FfmpegOutputMonoAudio
+import cv2
 
 
 class StreamingOutput(io.BufferedIOBase):
@@ -156,8 +157,10 @@ class MediaSource:
 
     def capture(self):
         self.control_queue.put(("capture", None))
-        # it's BGR in reality, no need to convert cv2.COLOR_YUV420p2RGB, some weird picamera2 behavior
-        return self.frame_queue.get()
+        # it's RGB in reality, no need to convert cv2.COLOR_YUV420p2RGB, some weird picamera2 behavior
+        image = self.frame_queue.get()
+        # return BGR
+        return cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
     def close(self):
         self.control_queue.put(("exit", None))

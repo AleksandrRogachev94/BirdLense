@@ -81,6 +81,7 @@ class VideoFileSource:
 
     def capture(self):
         self.control_queue.put(("capture", None))
+        # return BGR
         return self.frame_queue.get()
 
     def close(self):
