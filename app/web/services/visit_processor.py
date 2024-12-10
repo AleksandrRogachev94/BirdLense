@@ -101,7 +101,6 @@ class VisitProcessor:
                 video_species = self.process_audio_detection(
                     species=species,
                     video=video,
-                    video_start=video.start_time,
                     detection_start=det['start_time'],
                     detection_end=det['end_time'],
                     confidence=det['confidence']
@@ -170,7 +169,7 @@ class VisitProcessor:
                 .order_by(SpeciesVisit.end_time.desc())
                 .first())
 
-    def _update_simultaneous_count(self, visit: "SpeciesVisit") -> None:
+    def _update_simultaneous_count(self, visit: SpeciesVisit) -> None:
         """Updates max_simultaneous count based on overlapping video detections"""
         video_detections = [
             vs for vs in visit.video_species if vs.source == 'video']
