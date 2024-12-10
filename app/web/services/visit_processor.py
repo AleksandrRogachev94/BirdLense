@@ -75,7 +75,7 @@ class VisitProcessor:
         Returns list of created VideoSpecies records.
         """
         video_species_records = []
-        visits_to_update = set()
+        visits_to_update = {}  # Map (species_id, start_time) to visit data
 
         # First pass: Process all detections
         for det in detections:
@@ -95,7 +95,14 @@ class VisitProcessor:
                     detection_end=det['end_time'],
                     confidence=det['confidence']
                 )
-                visits_to_update.add(visit)
+                # Create tuple key from visit attributes
+                visit_key = (visit.species_id, visit.start_time)
+                if visit_key not in visits_to_update:
+                    visits_to_update[visit_key] = {
+                        'visit': visit,
+                        'detections': []
+                    }
+                visits_to_update[visit_key]['detections'].append(video_species)
                 video_species_records.append(video_species)
             else:  # audio
                 video_species = self.process_audio_detection(
@@ -109,8 +116,9 @@ class VisitProcessor:
                     video_species_records.append(video_species)
 
         # Second pass: Update simultaneous counts for affected visits
-        for visit in visits_to_update:
-            self._update_simultaneous_count(visit)
+        for visit_data in visits_to_update.values():
+            self._update_simultaneous_count(
+                visit_data['visit'], visit_data['detections'])
 
         return video_species_records
 
@@ -169,10 +177,18 @@ class VisitProcessor:
                 .order_by(SpeciesVisit.end_time.desc())
                 .first())
 
-    def _update_simultaneous_count(self, visit: SpeciesVisit) -> None:
-        """Updates max_simultaneous count based on overlapping video detections"""
+    def _update_simultaneous_count(self, visit: SpeciesVisit, current_detections: List[VideoSpecies]) -> None:
+        """
+        Updates max_simultaneous count based on overlapping video detections from the current video.
+        Takes into account that VideoSpecies start/end times are relative offsets from video start.
+
+        Args:
+            visit: The species visit to update
+            current_detections: List of VideoSpecies records from the current video being processed
+        """
+        # Filter for just video detections
         video_detections = [
-            vs for vs in visit.video_species if vs.source == 'video']
+            vs for vs in current_detections if vs.source == 'video']
         if not video_detections:
             return
 
@@ -191,4 +207,5 @@ class VisitProcessor:
                     break
             max_concurrent = max(max_concurrent, concurrent)
 
-        visit.max_simultaneous = max_concurrent
+        # Update the visit with the highest concurrent count found
+        visit.max_simultaneous = max(visit.max_simultaneous, max_concurrent)
