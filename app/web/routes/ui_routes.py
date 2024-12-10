@@ -2,7 +2,7 @@ from flask import request
 from sqlalchemy import func, case, distinct, or_
 from sqlalchemy.orm import aliased
 from datetime import datetime, timezone, timedelta
-from models import ActivityLog, db, BirdFood, Video, Species, VideoSpecies, video_bird_food_association
+from models import ActivityLog, db, BirdFood, Video, Species, VideoSpecies, SpeciesVisit, video_bird_food_association
 from util import weather_fetcher, update_species_info_from_wiki
 from app_config.app_config import app_config
 import re
@@ -155,12 +155,12 @@ def register_routes(app):
         # Query to get top species with hourly detections for the given day
         top_species_query = db.session.query(
             active_species_subq.c.group_id.label('id'),
-            Species.name.label('name'),  # Get the parent species name
+            Species.name.label('name'),
             *[
                 func.sum(
                     case(
-                        (func.strftime('%H', VideoSpecies.created_at)
-                         == str(hour).zfill(2), 1),
+                        (func.strftime('%H', SpeciesVisit.start_time) == str(hour).zfill(2),
+                         SpeciesVisit.max_simultaneous),
                         else_=0
                     )
                 ).label(f'detection_hour_{hour}')
@@ -169,14 +169,14 @@ def register_routes(app):
         ).join(
             Species, Species.id == active_species_subq.c.group_id
         ).join(
-            VideoSpecies, VideoSpecies.species_id == active_species_subq.c.id
+            SpeciesVisit, SpeciesVisit.species_id == active_species_subq.c.id
         ).filter(
-            VideoSpecies.created_at >= start_of_day,
-            VideoSpecies.created_at <= end_of_day
+            SpeciesVisit.start_time >= start_of_day,
+            SpeciesVisit.start_time <= end_of_day
         ).group_by(
             active_species_subq.c.group_id
         ).order_by(
-            func.sum(case((VideoSpecies.id.isnot(None), 1), else_=0)).desc()
+            func.sum(SpeciesVisit.max_simultaneous).desc()
         ).limit(10)
 
         # Format the top species data
@@ -189,36 +189,52 @@ def register_routes(app):
             }
             top_species.append(species_data)
 
-        # Query to get overall statistics for the given day, considering active species grouping
+        # Statistics query
         stats_query = db.session.query(
             func.count(distinct(active_species_subq.c.group_id)
                        ).label('uniqueSpecies'),
-            func.count(VideoSpecies.id).label('totalDetections'),
+            func.sum(SpeciesVisit.max_simultaneous).label('totalDetections'),
             func.sum(
                 case(
-                    (VideoSpecies.created_at >= start_of_day, 1),
+                    (SpeciesVisit.start_time >= date - timedelta(hours=1),
+                     SpeciesVisit.max_simultaneous),
                     else_=0
                 )
             ).label('lastHourDetections'),
-            func.sum(
-                case(
-                    (VideoSpecies.source == 'video', 1),
-                    else_=0
-                )
-            ).label('videoDetections'),
-            func.sum(
-                case(
-                    (VideoSpecies.source == 'audio', 1),
-                    else_=0
-                )
-            ).label('audioDetections'),
-            func.strftime('%H', func.max(VideoSpecies.created_at)
+            func.avg(
+                func.strftime('%s', SpeciesVisit.end_time) -
+                func.strftime('%s', SpeciesVisit.start_time)
+            ).label('avgVisitDuration'),
+            func.strftime('%H', func.max(SpeciesVisit.start_time)
                           ).label('busiestHour')
         ).join(
-            active_species_subq, VideoSpecies.species_id == active_species_subq.c.id
+            active_species_subq, SpeciesVisit.species_id == active_species_subq.c.id
         ).filter(
-            VideoSpecies.created_at >= start_of_day,
-            VideoSpecies.created_at <= end_of_day
+            SpeciesVisit.start_time >= start_of_day,
+            SpeciesVisit.start_time <= end_of_day
+        ).first()
+
+        # Calculate total detection durations by source
+        source_duration_query = db.session.query(
+            func.sum(
+                case(
+                    (VideoSpecies.source == 'video',
+                     VideoSpecies.end_time - VideoSpecies.start_time),
+                    else_=0
+                )
+            ).label('video_duration'),
+            func.sum(
+                case(
+                    (VideoSpecies.source == 'audio',
+                     VideoSpecies.end_time - VideoSpecies.start_time),
+                    else_=0
+                )
+            ).label('audio_duration')
+        ).join(
+            SpeciesVisit, VideoSpecies.species_visit_id == SpeciesVisit.id
+        ).filter(
+            SpeciesVisit.start_time >= start_of_day,
+            SpeciesVisit.start_time <= end_of_day
         ).first()
 
         # Format stats data
@@ -226,9 +242,13 @@ def register_routes(app):
             'uniqueSpecies': stats_query.uniqueSpecies if stats_query.uniqueSpecies else 0,
             'totalDetections': stats_query.totalDetections if stats_query.totalDetections else 0,
             'lastHourDetections': stats_query.lastHourDetections if stats_query.lastHourDetections else 0,
-            'videoDetections': stats_query.videoDetections if stats_query.videoDetections else 0,
-            'audioDetections': stats_query.audioDetections if stats_query.audioDetections else 0,
-            'busiestHour': int(stats_query.busiestHour) if stats_query.busiestHour else 0
+            'busiestHour': int(stats_query.busiestHour) if stats_query.busiestHour else 0,
+            # in seconds
+            'avgVisitDuration': round(stats_query.avgVisitDuration or 0),
+            # in seconds
+            'videoDuration': round(source_duration_query.video_duration or 0),
+            # in seconds
+            'audioDuration': round(source_duration_query.audio_duration or 0)
         }
 
         return {

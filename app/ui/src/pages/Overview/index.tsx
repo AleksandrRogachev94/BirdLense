@@ -15,8 +15,15 @@ import { StatCard } from '../../components/StatCard';
 import DailyPatternChart from './DailyPatternChart';
 import Pets from '@mui/icons-material/Pets';
 import TrendingUp from '@mui/icons-material/TrendingUp';
-import Videocam from '@mui/icons-material/Videocam';
-import Audiotrack from '@mui/icons-material/Audiotrack';
+import Timer from '@mui/icons-material/Timer';
+import AccessTime from '@mui/icons-material/AccessTime';
+import VideoSettings from '@mui/icons-material/VideoSettings';
+
+const formatHour = (hour: number) => {
+  const date = new Date();
+  date.setUTCHours(hour, 0, 0, 0);
+  return date.toLocaleTimeString([], { hour: 'numeric', hour12: true });
+};
 
 export const Overview = () => {
   const [selectedDay, setSelectedDay] = useState<Dayjs>(dayjs());
@@ -43,6 +50,10 @@ export const Overview = () => {
       </Box>
     );
   if (errorSightings || errorWeather) return <div>Error loading data.</div>;
+
+  const ratio =
+    (overviewData?.stats.audioDuration || 0) /
+    (overviewData?.stats.videoDuration || 1);
 
   return (
     <Box sx={{ py: 4 }}>
@@ -85,23 +96,30 @@ export const Overview = () => {
             </Grid>
             <Grid size={{ xs: 12, sm: 6, md: 4 }}>
               <StatCard
-                icon={Pets}
+                icon={AccessTime}
                 title="Last Hour"
                 value={overviewData?.stats.lastHourDetections || 0}
               />
             </Grid>
-            <Grid size={{ xs: 12, sm: 6, md: 6 }}>
+            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
               <StatCard
-                icon={Videocam}
-                title="Video Detections"
-                value={overviewData?.stats.videoDetections || 0}
+                icon={Timer}
+                title="Average Visit"
+                value={`${Math.round(overviewData?.stats.avgVisitDuration || 0)} sec`}
               />
             </Grid>
-            <Grid size={{ xs: 12, sm: 6, md: 6 }}>
+            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
               <StatCard
-                icon={Audiotrack}
-                title="Audio Detections"
-                value={overviewData?.stats.audioDetections || 0}
+                icon={AccessTime}
+                title="Busiest Hour"
+                value={formatHour(overviewData?.stats.busiestHour || 0)}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+              <StatCard
+                icon={VideoSettings}
+                title="Audio/Video Ratio"
+                value={ratio.toFixed(2)}
               />
             </Grid>
           </Grid>
