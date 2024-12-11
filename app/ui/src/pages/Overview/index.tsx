@@ -58,25 +58,30 @@ export const Overview = () => {
     (overviewData?.stats.videoDuration || 1);
 
   return (
-    <Box sx={{ pb: 4 }}>
-      {/* Header */}
-      <Box
-        display="flex"
+    <Box>
+      <Grid
+        container
+        sx={{ pb: 4 }}
+        spacing={3}
         justifyContent="space-between"
         alignItems="center"
-        mb={4}
       >
-        <PageHelp {...overviewHelpConfig} />
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DatePicker
-            label="Date"
-            value={selectedDay}
-            onChange={(newValue) => setSelectedDay(newValue as Dayjs)}
-            disableFuture
-            format="YYYY-MM-DD"
-          />
-        </LocalizationProvider>
-      </Box>
+        {/* Header */}
+        <Grid size={{ xs: 12, sm: 8 }}>
+          <PageHelp {...overviewHelpConfig} />
+        </Grid>
+        <Grid size={{ xs: 12, sm: 4 }}>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker
+              label="Date"
+              value={selectedDay}
+              onChange={(newValue) => setSelectedDay(newValue as Dayjs)}
+              disableFuture
+              format="YYYY-MM-DD"
+            />
+          </LocalizationProvider>
+        </Grid>
+      </Grid>
 
       <Grid container spacing={3} sx={{ minHeight: '300px' }}>
         {/* Stats Cards */}
