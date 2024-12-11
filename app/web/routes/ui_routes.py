@@ -23,7 +23,7 @@ def register_routes(app):
             'pressure': weather.get('weather_pressure'),
             'clouds': weather.get('weather_clouds'),
             'wind_speed': weather.get('weather_wind_speed'),
-        }
+        } if weather else {}
 
     @app.route('/api/ui/videos/<int:video_id>', methods=['GET'])
     def get_video_details(video_id):
