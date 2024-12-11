@@ -123,9 +123,10 @@ export interface OverviewStats {
   uniqueSpecies: number;
   totalDetections: number;
   lastHourDetections: number;
-  videoDetections: number;
-  audioDetections: number;
+  videoDuration: number;
+  audioDuration: number;
   busiestHour: number;
+  avgVisitDuration: number;
 }
 
 export interface OverviewData {

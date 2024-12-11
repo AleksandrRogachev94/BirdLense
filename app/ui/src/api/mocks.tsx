@@ -1,6 +1,6 @@
 import {
   BirdFood,
-  BirdSighting,
+  SpeciesVisit,
   OverviewData,
   Settings,
   Species,
@@ -9,93 +9,148 @@ import {
   Weather,
 } from '../types';
 
-export const mockBirdSighting: BirdSighting[] = [
+export const mockTimeline: SpeciesVisit[] = [
   {
-    id: 1,
-    video_id: 'vid_001',
-    start_time: '2024-11-22T11:05:00Z',
-    end_time: '2024-11-22T11:07:10Z', // Random duration: 130 seconds
-    confidence: 0.85,
-    source: 'video',
-    weather: {
-      temp: 18.3,
-      clouds: 10,
-    },
+    detections: [
+      {
+        confidence: 1,
+        end_time: '2024-12-10T22:21:39.032583+00:00',
+        source: 'video',
+        start_time: '2024-12-10T22:21:39.032583+00:00',
+        video_id: 9,
+      },
+      {
+        confidence: 0.880770206451416,
+        end_time: '2024-12-10T22:21:27.395195+00:00',
+        source: 'audio',
+        start_time: '2024-12-10T22:21:24.395195+00:00',
+        video_id: 8,
+      },
+      {
+        confidence: 0.9271260499954224,
+        end_time: '2024-12-10T22:21:18.395195+00:00',
+        source: 'audio',
+        start_time: '2024-12-10T22:21:15.395195+00:00',
+        video_id: 8,
+      },
+      {
+        confidence: 1,
+        end_time: '2024-12-10T22:21:26.395195+00:00',
+        source: 'video',
+        start_time: '2024-12-10T22:21:10.395195+00:00',
+        video_id: 8,
+      },
+      {
+        confidence: 0.9794095158576965,
+        end_time: '2024-12-10T22:21:12.395195+00:00',
+        source: 'audio',
+        start_time: '2024-12-10T22:21:06.395195+00:00',
+        video_id: 8,
+      },
+      {
+        confidence: 0.9253225922584534,
+        end_time: '2024-12-10T22:20:55.531709+00:00',
+        source: 'audio',
+        start_time: '2024-12-10T22:20:52.531709+00:00',
+        video_id: 7,
+      },
+      {
+        confidence: 1,
+        end_time: '2024-12-10T22:20:56.531709+00:00',
+        source: 'video',
+        start_time: '2024-12-10T22:20:44.531709+00:00',
+        video_id: 7,
+      },
+      {
+        confidence: 0.9835028052330017,
+        end_time: '2024-12-10T22:20:46.531709+00:00',
+        source: 'audio',
+        start_time: '2024-12-10T22:20:40.531709+00:00',
+        video_id: 7,
+      },
+    ],
+    end_time: '2024-12-10T22:21:39.032583+00:00',
+    id: 5,
+    max_simultaneous: 1,
     species: {
-      id: 1,
-      name: 'Northern Cardinal',
+      id: 648,
       image_url:
-        'https://images.unsplash.com/photo-1623715618305-ceb095873eb1?q=80&w=3474&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Male_northern_cardinal_in_Central_Park_%2852612%29.jpg/300px-Male_northern_cardinal_in_Central_Park_%2852612%29.jpg',
+      name: 'Northern Cardinal (Adult Male)',
+      parent_id: 647,
     },
-    food: {
-      id: '1',
-      name: 'Sunflower Seeds',
+    start_time: '2024-12-10T22:20:44.531709+00:00',
+    weather: {
+      clouds: 100,
+      temp: 10.47,
     },
   },
   {
-    id: 3,
-    video_id: 'vid_003',
-    start_time: '2024-11-22T10:10:00Z',
-    end_time: '2024-11-22T10:13:40Z', // Random duration: 220 seconds
-    confidence: 0.95,
-    source: 'video',
-    weather: {
-      temp: 20.5,
-      clouds: 50,
-    },
-    species: {
-      id: 3,
-      name: 'House Sparrow',
-      image_url:
-        'https://images.unsplash.com/photo-1654567835135-2a39ea442e45?q=80&w=3432&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    },
-    food: {
-      id: '3',
-      name: 'Bird Mix',
-    },
-  },
-  {
-    id: 2,
-    video_id: 'vid_002',
-    start_time: '2024-11-22T09:00:00Z',
-    end_time: '2024-11-22T09:04:15Z', // Random duration: 255 seconds
-    confidence: 0.9,
-    source: 'audio',
-    weather: {
-      temp: 19.0,
-      clouds: 25,
-    },
-    species: {
-      id: 2,
-      name: 'Blue Jay',
-      image_url:
-        'https://images.unsplash.com/photo-1649115727823-5215e906dd57?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    },
-    food: {
-      id: '2',
-      name: 'Peanuts',
-    },
-  },
-  {
+    detections: [
+      {
+        confidence: 0.9436666965484619,
+        end_time: '2024-12-10T22:02:29.428220+00:00',
+        source: 'audio',
+        start_time: '2024-12-10T22:02:26.428220+00:00',
+        video_id: 6,
+      },
+      {
+        confidence: 0.8,
+        end_time: '2024-12-10T22:02:29.428220+00:00',
+        source: 'video',
+        start_time: '2024-12-10T22:02:19.428220+00:00',
+        video_id: 6,
+      },
+      {
+        confidence: 0.9004615545272827,
+        end_time: '2024-12-10T22:02:20.428220+00:00',
+        source: 'audio',
+        start_time: '2024-12-10T22:02:17.428220+00:00',
+        video_id: 6,
+      },
+      {
+        confidence: 0.8789811730384827,
+        end_time: '2024-12-10T22:02:00.180914+00:00',
+        source: 'audio',
+        start_time: '2024-12-10T22:01:57.180914+00:00',
+        video_id: 5,
+      },
+      {
+        confidence: 0.9217528104782104,
+        end_time: '2024-12-10T22:01:51.180914+00:00',
+        source: 'audio',
+        start_time: '2024-12-10T22:01:45.180914+00:00',
+        video_id: 5,
+      },
+      {
+        confidence: 1,
+        end_time: '2024-12-10T22:01:59.180914+00:00',
+        source: 'video',
+        start_time: '2024-12-10T22:01:44.180914+00:00',
+        video_id: 5,
+      },
+      {
+        confidence: 0.5056995153427124,
+        end_time: '2024-12-10T22:01:42.180914+00:00',
+        source: 'audio',
+        start_time: '2024-12-10T22:01:39.180914+00:00',
+        video_id: 5,
+      },
+    ],
+    end_time: '2024-12-10T22:02:29.428220+00:00',
     id: 4,
-    video_id: 'vid_004',
-    start_time: '2024-11-22T08:15:00Z',
-    end_time: '2024-11-22T08:16:40Z', // Random duration: 100 seconds
-    confidence: 0.8,
-    source: 'audio',
-    weather: {
-      temp: 17.8,
-      clouds: 80,
-    },
+    max_simultaneous: 2,
     species: {
-      id: 4,
-      name: 'European Robin',
+      id: 648,
       image_url:
-        'https://images.unsplash.com/photo-1627141124845-eaad4d550a53?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Male_northern_cardinal_in_Central_Park_%2852612%29.jpg/300px-Male_northern_cardinal_in_Central_Park_%2852612%29.jpg',
+      name: 'Northern Cardinal (Adult Male)',
+      parent_id: 647,
     },
-    food: {
-      id: '4',
-      name: 'Worms',
+    start_time: '2024-12-10T22:01:44.180914+00:00',
+    weather: {
+      clouds: 100,
+      temp: 10.38,
     },
   },
 ];
@@ -258,9 +313,10 @@ export const mockOverviewData: OverviewData = {
     uniqueSpecies: 20,
     totalDetections: 180,
     lastHourDetections: 12,
-    videoDetections: 744,
-    audioDetections: 1152,
+    audioDuration: 744,
+    videoDuration: 1152,
     busiestHour: 5,
+    avgVisitDuration: 113,
   },
   topSpecies: [
     {

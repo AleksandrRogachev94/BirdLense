@@ -2,17 +2,23 @@ import { Dayjs } from 'dayjs';
 import {
   mockBirdDirectory,
   mockBirdFood,
-  mockBirdSighting,
+  mockTimeline,
   mockOverviewData,
   mockSetttings,
   mockSpeciesSummary,
   mockVideo,
   mockWeather,
 } from './mocks';
-import { BirdFood, BirdSighting, Settings, SpeciesSummary } from '../types';
+import {
+  BirdFood,
+  SpeciesVisit,
+  Settings,
+  SpeciesSummary,
+  OverviewData,
+} from '../types';
 import axios from 'axios';
 
-const useMockData = false; // Set to false to use real API calls
+const useMockData = true; // Set to false to use real API calls
 export const BASE_URL = 'http://smartbirdfeeder.local';
 export const BASE_API_URL = `${BASE_URL}/api/ui`;
 
@@ -21,10 +27,10 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 export const fetchTimeline = async (
   startTime: Dayjs,
   endTime: Dayjs,
-): Promise<BirdSighting[]> => {
+): Promise<SpeciesVisit[]> => {
   if (useMockData) {
     await sleep(1000);
-    return mockBirdSighting;
+    return mockTimeline;
   } else {
     const response = await axios.get(`${BASE_API_URL}/timeline`, {
       params: {
@@ -149,7 +155,9 @@ export const fetchBirdDirectory = async () => {
   }
 };
 
-export const fetchOverviewData = async (date: string) => {
+export const fetchOverviewData = async (
+  date: string,
+): Promise<OverviewData> => {
   if (useMockData) {
     await sleep(1000);
     return mockOverviewData;
