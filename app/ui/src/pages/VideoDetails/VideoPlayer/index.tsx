@@ -49,7 +49,7 @@ const ActiveSpeciesDisplay: React.FC<ActiveSpeciesDisplayProps> = ({
       species.map((species, index) => (
         <Grid
           key={`${species.species_id}-${species.start_time}-${index}`}
-          size={{ md: 2 }}
+          size={{ xs: 6, md: 2 }}
         >
           <SmallSpeciesCard species={species} />
         </Grid>

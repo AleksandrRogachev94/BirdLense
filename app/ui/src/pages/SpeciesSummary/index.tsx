@@ -85,7 +85,7 @@ const SpeciesSummaryPage = () => {
   }));
 
   return (
-    <Box p={3}>
+    <Box pb={4}>
       {/* Show parent link if species is not active */}
       {!data.species.active && data.species.parent && (
         <Alert
@@ -134,7 +134,12 @@ const SpeciesSummaryPage = () => {
             <Typography variant="h4" gutterBottom color="primary">
               {data.species.name}
             </Typography>
-            <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+            <Typography
+              variant="body1"
+              color="text.secondary"
+              textAlign="justify"
+              sx={{ mb: 2 }}
+            >
               {data.species.description}
             </Typography>
           </Grid>
@@ -211,7 +216,7 @@ const SpeciesSummaryPage = () => {
             icon={<AccessTimeIcon fontSize="small" />}
             title="Daily Activity Pattern"
           >
-            <Box sx={{ width: '100%', height: 250 }}>
+            <Box sx={{ width: '100%', height: 300 }}>
               <LineChart
                 xAxis={[
                   {
@@ -237,7 +242,7 @@ const SpeciesSummaryPage = () => {
                     label: sub.name,
                   })),
                 ]}
-                height={250}
+                height={300}
               />
             </Box>
           </StatCard>
@@ -249,10 +254,9 @@ const SpeciesSummaryPage = () => {
             icon={<CloudIcon fontSize="small" />}
             title="Weather Preferences"
           >
-            <Box sx={{ width: '100%', height: 250 }}>
+            <Box sx={{ width: '100%', height: 300 }}>
               <ScatterChart
-                width={400}
-                height={250}
+                height={300}
                 series={[
                   {
                     data: data.stats.weather.map((stat, index) => ({

@@ -45,7 +45,7 @@ export function Navigation() {
   const handleSettingsMenuClose = () => setSettingsMenuAnchor(null);
 
   return (
-    <AppBar position="sticky" color="primary" sx={{ mb: 4 }}>
+    <AppBar position="sticky" color="primary" sx={{ mb: 3 }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           {/* Logo Section - Desktop */}

@@ -124,7 +124,7 @@ export const Timeline = ({ visits }: { visits: SpeciesVisit[] }) => {
     <MuiTimeline
       position={isMobile ? 'right' : 'alternate'}
       sx={{
-        p: isMobile ? 1.5 : 3,
+        p: isMobile ? 1 : 3,
         '& .MuiTimelineItem-root:before': isMobile ? { display: 'none' } : {},
       }}
     >
