@@ -7,6 +7,8 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
 import { Video, VideoSpecies } from '../../../types';
 import { BASE_URL } from '../../../api/api';
 import { SmallSpeciesCard } from './SmallSpeciesCard';
@@ -63,6 +65,8 @@ const ActiveSpeciesDisplay: React.FC<ActiveSpeciesDisplayProps> = ({
 );
 
 export const VideoPlayer: React.FC<{ video: Video }> = ({ video }) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const videoRef = useRef<HTMLVideoElement>(null);
   const [view, setView] = useState<'video' | 'audio'>('video');
   const [error, setError] = useState<string | null>(null);
@@ -78,7 +82,6 @@ export const VideoPlayer: React.FC<{ video: Video }> = ({ video }) => {
     [video.end_time, video.start_time],
   );
 
-  // Filter species based on view type
   const filteredDetections = useMemo(
     () =>
       video.species
@@ -108,7 +111,13 @@ export const VideoPlayer: React.FC<{ video: Video }> = ({ video }) => {
     <Box>
       <ViewToggle view={view} onChange={setView} />
 
-      <Box sx={{ height: 500, position: 'relative' }}>
+      <Box
+        sx={{
+          height: isMobile ? '240px' : '400px',
+          position: 'relative',
+          mt: 1,
+        }}
+      >
         <IconButton
           onClick={togglePlayPause}
           sx={{
@@ -135,7 +144,7 @@ export const VideoPlayer: React.FC<{ video: Video }> = ({ video }) => {
           sx={{
             height: '100%',
             bgcolor: 'background.paper',
-            display: view === 'video' ? 'default' : 'none',
+            display: view === 'video' ? 'block' : 'none',
           }}
         >
           <video
@@ -144,7 +153,9 @@ export const VideoPlayer: React.FC<{ video: Video }> = ({ video }) => {
             onTimeUpdate={(e) => handleProgress(e.currentTarget.currentTime)}
             onEnded={togglePlayPause}
             onError={() => setError('Failed to load video')}
-            style={{ height: '100%', width: '100%' }}
+            style={{ height: '100%', width: '100%', objectFit: 'contain' }}
+            playsInline
+            controls={false}
           />
         </Box>
 
@@ -152,7 +163,7 @@ export const VideoPlayer: React.FC<{ video: Video }> = ({ video }) => {
           sx={{
             height: '100%',
             bgcolor: 'background.paper',
-            display: view === 'audio' ? 'default' : 'none',
+            display: view === 'audio' ? 'block' : 'none',
           }}
         >
           <SpectrogramPlayer
