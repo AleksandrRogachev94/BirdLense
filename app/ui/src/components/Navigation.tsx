@@ -200,7 +200,7 @@ export function Navigation() {
               onClick={handleSettingsMenuClose}
               selected={currentPath === '/system'}
             >
-              System Info
+              System
             </MenuItem>
             <MenuItem onClick={handleSettingsMenuClose}>
               <MUILink
