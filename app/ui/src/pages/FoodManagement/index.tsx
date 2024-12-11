@@ -14,6 +14,8 @@ import Avatar from '@mui/material/Avatar';
 import Info from '@mui/icons-material/Info';
 import { BASE_URL, fetchBirdFood, toggleBirdFood } from '../../api/api';
 import { BirdFood } from '../../types';
+import { PageHelp } from '../../components/PageHelp';
+import { foodHelpConfig } from '../../page-help-config';
 
 export const FoodManagement = () => {
   const queryClient = useQueryClient();
@@ -54,9 +56,7 @@ export const FoodManagement = () => {
 
   return (
     <Box mb={4}>
-      <Typography variant="h5" sx={{ mb: 4 }}>
-        Bird Food Management
-      </Typography>
+      <PageHelp {...foodHelpConfig} />
       <TableContainer component={Paper}>
         <Table>
           <TableHead>

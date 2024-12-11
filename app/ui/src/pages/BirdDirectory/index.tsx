@@ -7,10 +7,11 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
-import Typography from '@mui/material/Typography';
 import { SelectChangeEvent } from '@mui/material/Select';
 import { BirdDirectoryTreeView } from './BirdDirectoryTreeView';
 import { Species } from '../../types';
+import { PageHelp } from '../../components/PageHelp';
+import { birdDirHelpConfig } from '../../page-help-config';
 
 type FilterType = 'all' | 'regional' | 'observed';
 
@@ -114,13 +115,7 @@ export const BirdDirectory = () => {
 
   return (
     <>
-      <Box>
-        <Box display="flex" justifyContent="center" alignItems="center">
-          <Typography variant="h4" mb={3}>
-            Bird Directory
-          </Typography>
-        </Box>
-      </Box>
+      <PageHelp {...birdDirHelpConfig} />
       <Box display="flex" justifyContent="center" alignItems="center" mb={2}>
         <FormControl>
           <InputLabel id="filter-label">Filter</InputLabel>

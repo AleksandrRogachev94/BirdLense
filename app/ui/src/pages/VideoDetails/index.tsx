@@ -6,6 +6,8 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { Video } from '../../types';
 import { VideoInfo } from './VideoInfo';
 import { VideoPlayer } from './VideoPlayer';
+import { PageHelp } from '../../components/PageHelp';
+import { videoDetailsHelpConfig } from '../../page-help-config';
 
 export const VideoDetails = () => {
   const params = useParams();
@@ -28,6 +30,7 @@ export const VideoDetails = () => {
 
   return (
     <>
+      <PageHelp {...videoDetailsHelpConfig} />
       <VideoPlayer video={video as Video} />
       <VideoInfo video={video as Video} />
     </>

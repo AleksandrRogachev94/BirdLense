@@ -10,7 +10,6 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
-import Typography from '@mui/material/Typography';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
@@ -20,6 +19,8 @@ import { fetchTimeline } from '../../api/api';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Checkbox from '@mui/material/Checkbox';
 import ListItemText from '@mui/material/ListItemText';
+import { PageHelp } from '../../components/PageHelp';
+import { timelineHelpConfig } from '../../page-help-config';
 
 function useSpeciesList(visits: SpeciesVisit[] | undefined) {
   return visits
@@ -113,11 +114,7 @@ export function TimelinePage() {
 
   return (
     <>
-      <Box display="flex" justifyContent="center" alignItems="center">
-        <Typography variant="h4" mb={3}>
-          Timeline
-        </Typography>
-      </Box>
+      <PageHelp {...timelineHelpConfig} />
       <Box
         display="flex"
         justifyContent="center"

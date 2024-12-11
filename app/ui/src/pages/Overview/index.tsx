@@ -18,6 +18,8 @@ import TrendingUp from '@mui/icons-material/TrendingUp';
 import Timer from '@mui/icons-material/Timer';
 import AccessTime from '@mui/icons-material/AccessTime';
 import VideoSettings from '@mui/icons-material/VideoSettings';
+import { PageHelp } from '../../components/PageHelp';
+import { overviewHelpConfig } from '../../page-help-config';
 
 const formatHour = (hour: number) => {
   const date = new Date();
@@ -56,7 +58,7 @@ export const Overview = () => {
     (overviewData?.stats.videoDuration || 1);
 
   return (
-    <Box sx={{ py: 4 }}>
+    <Box sx={{ pb: 4 }}>
       {/* Header */}
       <Box
         display="flex"
@@ -64,7 +66,7 @@ export const Overview = () => {
         alignItems="center"
         mb={4}
       >
-        <Typography variant="h4">Bird Activity Overview</Typography>
+        <PageHelp {...overviewHelpConfig} />
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DatePicker
             label="Date"
