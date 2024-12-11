@@ -39,7 +39,7 @@ services:
       - LD_LIBRARY_PATH=/opt/vc/lib
     # Command to test pulseaudio setup: "pactl list short sources"
     command: python src/main.py
-    privileged: true
+    privileged: true # unfortunately, it's required for picamera2 to access pi camera
     depends_on:
       - web
     logging: *default-logging

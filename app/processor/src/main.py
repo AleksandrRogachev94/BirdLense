@@ -7,6 +7,7 @@ import os
 import shutil
 from frame_processor import FrameProcessor
 from motion_detectors.pir import PIRMotionDetector
+from motion_detectors.fake import FakeMotionDetector
 from decision_maker import DecisionMaker
 from fps_tracker import FPSTracker
 from api import API
@@ -47,10 +48,16 @@ def main():
     parser = argparse.ArgumentParser(description="Smart bird feeder program")
     parser.add_argument('input', type=str, nargs='?',
                         help='Input source, camera/video file')
+    parser.add_argument('--fake-motion', type=str, choices=['true', 'false'],
+                        help='Use fake motion detector with motion or not')
     args = parser.parse_args()
 
     # Instantiate all helper classes
-    motion_detector = PIRMotionDetector()
+    if args.fake_motion:
+        motion = args.fake_motion.lower() == 'true'
+        motion_detector = FakeMotionDetector(motion=motion, wait=10)
+    else:
+        motion_detector = PIRMotionDetector()
     decision_maker = DecisionMaker(max_record_seconds=app_config.get(
         'processor.max_record_seconds'), max_inactive_seconds=app_config.get('processor.max_inactive_seconds'))
     main_size = (app_config.get('processor.video_width'),
@@ -92,12 +99,11 @@ def main():
                 with FPSTracker():
                     has_detections = frame_processor.run(frame)
 
+                # Decision making
                 decision_maker.update_has_detections(has_detections)
-
                 species = decision_maker.decide_species(frame_processor.tracks)
                 if species is not None:
                     api.notify_species(species)
-
                 if decision_maker.decide_stop_recording():
                     break
                 # give CPU some time to do something else
