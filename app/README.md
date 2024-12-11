@@ -46,17 +46,19 @@ flowchart TB
     MIC --> processor
 
     processor -- Video Stream --> NGINX
-    processor -- Detections --> API
+    processor -- Detections --> web
 
     API --> DB
     REACT -- HTTP --> NGINX
-    NGINX -- Proxy --> API
+    NGINX -- Proxy --> web
     NGINX -- Proxy --> processor
 
-    classDef container fill:#e1f5fe,stroke:#01579b
-    classDef hardware fill:#f1f8e9,stroke:#33691e
-    class processor,web,ui,NGINX,NTFY container
+    classDef container fill:#dbeafe,stroke:#2563eb,stroke-width:2px
+    classDef hardware fill:#dcfce7,stroke:#16a34a,stroke-width:2px
+    classDef subComponent fill:#1e293b,stroke:#94a3b8,color:#ffffff
+    class processor,web,ui container
     class CAM,MIC hardware
+    class YOLO,BIRDNET,MOTION,API,DB,REACT,NGINX,NTFY subComponent
 ```
 
 ## System Components
