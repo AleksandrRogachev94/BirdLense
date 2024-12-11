@@ -237,6 +237,7 @@ export const DailyPatternChart: React.FC<DailyPatternChartProps> = ({
           bgcolor: 'background.paper',
           p: 2,
           mr: 2,
+          mb: 2,
           borderRadius: 1,
           boxShadow: 1,
           maxWidth: isMobile ? '100%' : 'auto',
