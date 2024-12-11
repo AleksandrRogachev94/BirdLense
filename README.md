@@ -14,6 +14,14 @@ A Raspberry Pi-powered smart bird feeder that uses computer vision and audio rec
 - 🚫 No cloud dependencies, runs completely local
 - 🖨️ Custom-designed 3D printing models for the bird feeder
 
+## Prerequisites
+
+- Raspberry Pi 4B or greater with a minimum of 4GB RAM
+- High-capacity microSD card (at least 128 GB recommended for ample storage)
+- Raspberry Pi Camera Module
+- USB Microphone
+- [Optional] 3D printer to print the Raspberry Pi enclosure and bird feeder
+
 ## Sections
 
 - [Raspberry PI Application](./app)

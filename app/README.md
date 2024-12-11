@@ -1,10 +1,3 @@
-## Prerequisites
-
-- Raspberry Pi 4B or 5, minimum 4GB of RAM
-- Raspberry Pi Camera Module
-- USB Microphone
-- Raspberry Pi OS Lite (64-bit recommended)
-
 ## Quick Start
 
 1. **Clone the repository:**
