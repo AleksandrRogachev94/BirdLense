@@ -18,10 +18,11 @@
 
    ```bash
    # Production mode:
-   make build && make start
+   make start
+   make logs # optional, view logs to see if there are any errors
 
    # Development mode:
-   make build-dev && make start-dev
+   make start-dev
    ```
 
 The web interface will be available at `http://birdlense.local`. In production mode, the app starts up automatically after rebooting, so you are all set!
