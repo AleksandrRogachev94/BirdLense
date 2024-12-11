@@ -24,7 +24,25 @@
    make build-dev && make start-dev
    ```
 
-In production mode, the app starts up automatically after rebooting. The web interface will be available at `http://birdlense.local`.
+The web interface will be available at `http://birdlense.local`. In production mode, the app starts up automatically after rebooting, so you are all set!
+
+## Notifications Setup
+
+The app comes with local ntfy notification server in a docker container, nothing gets shared outside of local network. To receive notifications on your smartphone, follow these steps:
+
+1. **Install the ntfy app on your smartphone:**
+
+- [Android](https://play.google.com/store/apps/details?id=io.heckel.ntfy)
+- [iOS](https://apps.apple.com/app/ntfy/id1625396347)
+
+2. **Configure the ntfy app:**
+
+- Open the ntfy app on your smartphone.
+- Add a new server with the following details:
+  - **Host:** `http://birdlense.local`
+  - **Channel:** `birdlense`
+
+For more information, visit the [ntfy website](https://ntfy.sh).
 
 ## Development
 
