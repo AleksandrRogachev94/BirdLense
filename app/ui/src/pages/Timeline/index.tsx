@@ -10,14 +10,10 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import CloseIcon from '@mui/icons-material/Close';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { TimePicker } from '@mui/x-date-pickers/TimePicker';
-import { renderTimeViewClock } from '@mui/x-date-pickers/timeViewRenderers';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import dayjs, { Dayjs } from 'dayjs';
 import { useQuery } from '@tanstack/react-query';
 import { fetchTimeline } from '../../api/api';
@@ -54,11 +50,7 @@ function useFilteredVisits(
 export function TimelinePage() {
   const [searchParams] = useSearchParams();
   const [selectedSpeciesIds, setSelectedSpeciesIds] = useState<number[]>([]);
-  const [date, setDate] = useState<Dayjs | null>(() => {
-    const paramDateTime = searchParams.get('date');
-    return paramDateTime ? dayjs(paramDateTime) : dayjs();
-  });
-  const [time, setTime] = useState<Dayjs | null>(() => {
+  const [dateTime, setDateTime] = useState<Dayjs | null>(() => {
     const paramDateTime = searchParams.get('date');
     return paramDateTime ? dayjs(paramDateTime) : dayjs();
   });
@@ -68,25 +60,22 @@ export function TimelinePage() {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ['speciesVisits', date, time],
+    queryKey: ['speciesVisits', dateTime],
     queryFn: () => {
-      const finalDateTime = time
-        ? date?.set('hour', time.hour()).set('minute', time.minute())
-        : date?.startOf('day');
+      if (!dateTime) return [];
+      const isTimeSelected = dateTime.hour() !== 0 || dateTime.minute() !== 0;
       return fetchTimeline(
-        finalDateTime?.startOf(time ? 'hour' : 'date') || dayjs(),
-        finalDateTime?.endOf(time ? 'hour' : 'date') || dayjs(),
+        dateTime.startOf(isTimeSelected ? 'hour' : 'date'),
+        dateTime.endOf(isTimeSelected ? 'hour' : 'date'),
       );
     },
-    enabled: !!date,
+    enabled: !!dateTime,
   });
 
-  // Set initial species selection based on URL param
   useEffect(() => {
     if (visits) {
       const speciesId = searchParams.get('speciesId');
       if (speciesId) {
-        // Find all species in the visits that have the speciesId as their parent_id
         const childSpeciesIds = [
           ...new Set(
             visits
@@ -95,8 +84,6 @@ export function TimelinePage() {
               .map((species) => Number(species.id)),
           ),
         ];
-
-        // If we found any children, select them all
         if (childSpeciesIds.length > 0) {
           setSelectedSpeciesIds(childSpeciesIds);
         }
@@ -138,24 +125,13 @@ export function TimelinePage() {
         sx={{ '& > :not(style)': { m: 1, mb: 4, width: '25ch' } }}
       >
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DatePicker
-            label="Date"
-            value={date}
-            onAccept={(newValue) => setDate(newValue)}
-            maxDate={dayjs()}
+          <DateTimePicker
+            label="Select Date & Time"
+            value={dateTime}
+            onChange={(newValue) => setDateTime(newValue)}
+            maxDateTime={dayjs()}
+            views={['year', 'month', 'day', 'hours']}
           />
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <TimePicker
-              label="Hour"
-              value={time}
-              onAccept={(newValue) => setTime(newValue)}
-              views={['hours']}
-              viewRenderers={{ hours: renderTimeViewClock }}
-            />
-            <IconButton onClick={() => setTime(null)} size="small">
-              <CloseIcon />
-            </IconButton>
-          </Box>
         </LocalizationProvider>
         <FormControl>
           <InputLabel id="species-select-label">Species</InputLabel>
