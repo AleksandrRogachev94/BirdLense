@@ -69,6 +69,7 @@ def main():
     regional_species = audio_processor.get_regional_species()
     frame_processor = FrameProcessor(
         regional_species=regional_species, tracker=app_config.get('processor.tracker'), save_images=app_config.get('processor.save_images'))
+    fps_tracker = FPSTracker()
     api = API()
     api.set_active_species(regional_species)
 
@@ -92,11 +93,12 @@ def main():
         try:
             frame_processor.reset()
             decision_maker.reset()
+            fps_tracker.reset()
             while True:
                 frame = media_source.capture()
                 if frame is None:
                     break
-                with FPSTracker():
+                with fps_tracker:
                     has_detections = frame_processor.run(frame)
 
                 # Decision making
@@ -108,6 +110,7 @@ def main():
                     break
                 # give CPU some time to do something else
                 time.sleep(0.005)
+            fps_tracker.log_summary()
         finally:
             media_source.stop_recording()
             end_time = datetime.now(timezone.utc)
