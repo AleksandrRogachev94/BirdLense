@@ -251,25 +251,6 @@ export const SettingsForm = ({
             )}
           </form.Field>
         </Grid>
-        <Grid size={{ xs: 6 }}>
-          <form.Field name="processor.save_images">
-            {(field) => (
-              <>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      id={field.name}
-                      name={field.name}
-                      checked={field.state.value}
-                      onChange={(e) => field.handleChange(e.target.checked)}
-                    />
-                  }
-                  label="Save Images (test mode)"
-                />
-              </>
-            )}
-          </form.Field>
-        </Grid>
       </Grid>
 
       <Divider sx={{ my: 4 }} />
