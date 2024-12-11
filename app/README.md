@@ -39,7 +39,7 @@ The app comes with local ntfy notification server in a docker container, nothing
 
 - Open the ntfy app on your smartphone.
 - Add a new server with the following details:
-  - **Host:** `http://birdlense.local`
+  - **Host:** `http://birdlense.local:8081`
   - **Channel:** `birdlense`
 
 For more information, visit the [ntfy website](https://ntfy.sh).
