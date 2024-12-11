@@ -3,8 +3,8 @@ from util import notify
 from flask import Flask
 from flask_cors import CORS
 import logging
-from logging.handlers import RotatingFileHandler
 import routes.ui_routes
+import routes.ui_system_routes
 import routes.processor_routes
 from models import db
 from seed.seed import seed
@@ -29,6 +29,7 @@ def create_app():
         db.create_all()
         seed()
     routes.ui_routes.register_routes(app)
+    routes.ui_system_routes.register_routes(app)
     routes.processor_routes.register_routes(app)
     notify(f"App is UP!", tags="rocket")
     return app

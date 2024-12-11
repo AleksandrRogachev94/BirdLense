@@ -2,6 +2,7 @@ import React from 'react';
 import { SystemActivity } from './SystemActivity';
 import { SystemMonitor } from './SystemMonitor';
 import { Box, Divider } from '@mui/material';
+import { StorageManagement } from './StorageManagement';
 
 export const System: React.FC = () => {
   return (
@@ -14,6 +15,12 @@ export const System: React.FC = () => {
 
       <Box>
         <SystemActivity />
+      </Box>
+
+      <Divider sx={{ my: 3 }} />
+
+      <Box>
+        <StorageManagement />
       </Box>
     </Box>
   );

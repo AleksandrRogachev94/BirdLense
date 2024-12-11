@@ -2,11 +2,9 @@ from flask import request
 from sqlalchemy import func, case, distinct, or_
 from sqlalchemy.orm import aliased
 from datetime import datetime, timezone, timedelta
-from models import ActivityLog, db, BirdFood, Video, Species, VideoSpecies, SpeciesVisit, video_bird_food_association
+from models import db, BirdFood, Video, Species, VideoSpecies, SpeciesVisit, video_bird_food_association
 from util import weather_fetcher, update_species_info_from_wiki
 from app_config.app_config import app_config
-import re
-import psutil
 
 
 def register_routes(app):
@@ -547,79 +545,3 @@ def register_routes(app):
         }
 
         return response
-
-    @app.route('/api/ui/system/metrics', methods=['GET'])
-    def system_metrics():
-        try:
-            # CPU usage
-            cpu_percent = psutil.cpu_percent(interval=0.5)
-
-            # Try to read Raspberry Pi CPU temperature
-            try:
-                with open('/sys/class/thermal/thermal_zone0/temp', 'r') as f:
-                    temp = float(f.read().strip()) / 1000.0
-                cpu_temp = round(temp, 1)
-            except:
-                cpu_temp = None
-
-            # Memory information
-            memory = psutil.virtual_memory()
-            memory_total_gb = round(memory.total / (1024**3), 1)
-            memory_used_gb = round(memory.used / (1024**3), 1)
-            memory_percent = memory.percent
-
-            # Disk information for the root filesystem
-            disk = psutil.disk_usage('/')
-            disk_total_gb = round(disk.total / (1024**3), 1)
-            disk_used_gb = round(disk.used / (1024**3), 1)
-            disk_percent = disk.percent
-
-            metrics = {
-                'cpu': {
-                    'percent': cpu_percent,
-                    'temperature': cpu_temp
-                },
-                'memory': {
-                    'total': memory_total_gb,
-                    'used': memory_used_gb,
-                    'percent': memory_percent
-                },
-                'disk': {
-                    'total': disk_total_gb,
-                    'used': disk_used_gb,
-                    'percent': disk_percent
-                }
-            }
-
-            return metrics
-
-        except Exception as e:
-            app.logger.error(f"Error getting system metrics: {str(e)}")
-            return {'error': 'Failed to get system metrics'}, 500
-
-    @app.route('/api/ui/activity', methods=['GET'])
-    def get_activity():
-        month = request.args.get('month', datetime.now().strftime('%Y-%m'))
-        start_date = datetime.strptime(month, '%Y-%m')
-        end_date = (start_date.replace(day=1) +
-                    timedelta(days=32)).replace(day=1)
-
-        activities = db.session.query(
-            func.strftime('%Y-%m-%d', ActivityLog.created_at).label('date'),
-            func.sum(
-                func.strftime('%s', ActivityLog.updated_at) -
-                func.strftime('%s', ActivityLog.created_at)
-            ).label('total_uptime')  # in seconds
-        ).filter(
-            ActivityLog.type == 'heartbeat',
-            ActivityLog.created_at >= start_date,
-            ActivityLog.created_at < end_date
-        ).group_by(
-            func.strftime('%Y-%m-%d', ActivityLog.created_at)
-        ).all()
-
-        return [{
-            'date': day,
-            # convert to hours
-            'totalUptime': round(duration / 3600, 1) if duration else 0
-        } for day, duration in activities]

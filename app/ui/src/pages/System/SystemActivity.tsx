@@ -88,9 +88,12 @@ export const SystemActivity = () => {
   const { data: activityDays } = useQuery({
     queryKey: ['activity', dayjs().format('YYYY-MM')],
     queryFn: async () => {
-      const { data } = await axios.get<ActivityDay[]>('/api/ui/activity', {
-        params: { month: dayjs().format('YYYY-MM') },
-      });
+      const { data } = await axios.get<ActivityDay[]>(
+        '/api/ui/system/activity',
+        {
+          params: { month: dayjs().format('YYYY-MM') },
+        },
+      );
       return data;
     },
   });
