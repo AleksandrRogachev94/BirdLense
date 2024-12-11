@@ -2,27 +2,26 @@ import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
+import type { SvgIconComponent } from '@mui/icons-material';
 
-export const StatCard = ({
-  icon: Icon,
-  title,
-  value,
-}: {
-  icon: React.ElementType;
+interface StatCardProps {
+  icon: SvgIconComponent;
   title: string;
   value: string | number;
-}) => (
+}
+
+export const StatCard = ({ icon: Icon, title, value }: StatCardProps) => (
   <Card>
     <CardContent>
-      <Typography variant="h6" gutterBottom>
-        <Box display="flex" alignItems="center">
-          <Icon fontSize="large" sx={{ mr: 1 }} color="primary" />
-          <span>{title}</span>
+      <Box display="flex" alignItems="center" gap={2}>
+        <Icon color="primary" sx={{ fontSize: 40 }} />
+        <Box>
+          <Typography color="text.secondary" variant="subtitle2">
+            {title}
+          </Typography>
+          <Typography variant="h5">{value}</Typography>
         </Box>
-      </Typography>
-      <Typography variant="h5">
-        <strong>{value}</strong>
-      </Typography>
+      </Box>
     </CardContent>
   </Card>
 );

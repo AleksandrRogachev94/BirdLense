@@ -1,35 +1,9 @@
 import Grid from '@mui/material/Grid2';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import type { SvgIconComponent } from '@mui/icons-material';
 import AccessTime from '@mui/icons-material/AccessTime';
 import Pets from '@mui/icons-material/Pets';
 import Groups from '@mui/icons-material/Groups';
 import { SpeciesVisit } from '../../types';
-
-interface StatCardProps {
-  icon: SvgIconComponent;
-  title: string;
-  value: string | number;
-}
-
-const StatCard = ({ icon: Icon, title, value }: StatCardProps) => (
-  <Card>
-    <CardContent>
-      <Box display="flex" alignItems="center" gap={2}>
-        <Icon color="primary" sx={{ fontSize: 40 }} />
-        <Box>
-          <Typography color="text.secondary" variant="subtitle2">
-            {title}
-          </Typography>
-          <Typography variant="h4">{value}</Typography>
-        </Box>
-      </Box>
-    </CardContent>
-  </Card>
-);
+import { StatCard } from '../../components/StatCard';
 
 const calculateTotalDurationMin = (data: SpeciesVisit[]) => {
   return Math.round(
