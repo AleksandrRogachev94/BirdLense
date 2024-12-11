@@ -20,6 +20,7 @@ flowchart TB
     subgraph Hardware
         CAM[Pi Camera]
         MIC[USB Microphone]
+        PIR[PIR Motion Sensor]
     end
 
     subgraph Docker Containers
@@ -44,6 +45,7 @@ flowchart TB
 
     CAM --> processor
     MIC --> processor
+    PIR --> processor
 
     processor -- Video Stream --> NGINX
     processor -- Detections --> web
@@ -53,12 +55,12 @@ flowchart TB
     NGINX -- Proxy --> web
     NGINX -- Proxy --> processor
 
-    classDef container fill:#dbeafe,stroke:#2563eb,stroke-width:2px
+    classDef container fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e293b
     classDef hardware fill:#dcfce7,stroke:#16a34a,stroke-width:2px
     classDef subComponent fill:#1e293b,stroke:#94a3b8,color:#ffffff
-    class processor,web,ui container
-    class CAM,MIC hardware
-    class YOLO,BIRDNET,MOTION,API,DB,REACT,NGINX,NTFY subComponent
+    class processor,web,ui,NGINX,NTFY container
+    class CAM,MIC,PIR hardware,subComponent
+    class YOLO,BIRDNET,MOTION,API,DB,REACT subComponent
 ```
 
 ## System Components
