@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Timeline } from './Timeline';
 import { TimelineStats } from './TimelineStats';
-import { BirdSighting, Species } from '../../types';
+import { SpeciesVisit, Species } from '../../types';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Divider from '@mui/material/Divider';
@@ -25,29 +25,29 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import Checkbox from '@mui/material/Checkbox';
 import ListItemText from '@mui/material/ListItemText';
 
-function useSpeciesList(sightings: BirdSighting[] | undefined) {
-  return sightings
-    ? sightings.reduce((acc: Partial<Species>[], sighting) => {
+function useSpeciesList(visits: SpeciesVisit[] | undefined) {
+  return visits
+    ? visits.reduce((acc: Partial<Species>[], visit) => {
         if (
           !acc.some(
-            (existingSpecies) => existingSpecies.name === sighting.species.name,
+            (existingSpecies) => existingSpecies.name === visit.species.name,
           )
         ) {
-          acc.push(sighting.species);
+          acc.push(visit.species);
         }
         return acc;
       }, [])
     : [];
 }
 
-function useFilteredSightings(
-  sightings: BirdSighting[] | undefined,
+function useFilteredVisits(
+  visits: SpeciesVisit[] | undefined,
   selectedSpeciesIds: number[],
 ) {
-  return sightings?.filter(
-    (sighting) =>
+  return visits?.filter(
+    (visit) =>
       selectedSpeciesIds.length === 0 ||
-      selectedSpeciesIds.includes(sighting.species.id),
+      selectedSpeciesIds.includes(visit.species.id),
   );
 }
 
@@ -64,11 +64,11 @@ export function TimelinePage() {
   });
 
   const {
-    data: sightings,
+    data: visits,
     isLoading,
     error,
   } = useQuery({
-    queryKey: ['birdSightings', date, time],
+    queryKey: ['speciesVisits', date, time],
     queryFn: () => {
       const finalDateTime = time
         ? date?.set('hour', time.hour()).set('minute', time.minute())
@@ -83,14 +83,14 @@ export function TimelinePage() {
 
   // Set initial species selection based on URL param
   useEffect(() => {
-    if (sightings) {
+    if (visits) {
       const speciesId = searchParams.get('speciesId');
       if (speciesId) {
-        // Find all species in the sightings that have the speciesId as their parent_id
+        // Find all species in the visits that have the speciesId as their parent_id
         const childSpeciesIds = [
           ...new Set(
-            sightings
-              .map((sighting) => sighting.species)
+            visits
+              .map((visit) => visit.species)
               .filter((species) => species.parent_id === Number(speciesId))
               .map((species) => Number(species.id)),
           ),
@@ -102,10 +102,10 @@ export function TimelinePage() {
         }
       }
     }
-  }, [searchParams, sightings]);
+  }, [searchParams, visits]);
 
-  const speciesList = useSpeciesList(sightings);
-  const filteredSightings = useFilteredSightings(sightings, selectedSpeciesIds);
+  const speciesList = useSpeciesList(visits);
+  const filteredVisits = useFilteredVisits(visits, selectedSpeciesIds);
 
   const handleSpeciesChange = (event: { target: { value: any } }) => {
     const value = event.target.value;
@@ -186,9 +186,9 @@ export function TimelinePage() {
         </FormControl>
       </Box>
 
-      <TimelineStats sightings={filteredSightings as BirdSighting[]} />
+      <TimelineStats visits={filteredVisits as SpeciesVisit[]} />
       <Divider sx={{ marginBottom: 4 }} />
-      <Timeline sightings={filteredSightings as BirdSighting[]} />
+      <Timeline visits={filteredVisits as SpeciesVisit[]} />
     </>
   );
 }

@@ -1,13 +1,11 @@
-export interface BirdSighting {
+export interface SpeciesVisit {
   id: number;
-  video_id: string;
   start_time: string;
   end_time: string;
-  confidence: number;
-  source: string;
-  weather: {
-    temp: number;
-    clouds: number;
+  max_simultaneous: number;
+  weather?: {
+    temp?: number;
+    clouds?: number;
   };
   species: {
     id: number;
@@ -15,10 +13,13 @@ export interface BirdSighting {
     image_url?: string;
     parent_id?: number;
   };
-  food: {
-    id: string;
-    name: string;
-  };
+  detections: {
+    video_id: number;
+    start_time: string;
+    end_time: string;
+    confidence: number;
+    source: 'video' | 'audio';
+  }[];
 }
 
 export interface VideoSpecies {

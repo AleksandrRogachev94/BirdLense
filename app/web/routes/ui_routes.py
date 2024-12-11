@@ -270,50 +270,62 @@ def register_routes(app):
             start_time = datetime.fromtimestamp(int(start_time))
             end_time = datetime.fromtimestamp(int(end_time))
         except ValueError:
-            return {'error': 'Invalid datetime format. Use ISO 8601 format (e.g., YYYY-MM-DDTHH:MM:SS)'}, 400
+            return {'error': 'Invalid datetime format'}, 400
 
         # Ensure the interval is no more than 1 day
         if end_time - start_time > timedelta(days=1):
             return {'error': 'The interval between start_time and end_time must not exceed 1 day'}, 400
 
-        # Query VideoSpecies records within the interval and order by created_at desc
-        video_species_records = (
-            db.session.query(VideoSpecies)
-            .join(Video)
+        # Query SpeciesVisit records within the interval
+        visits = (
+            db.session.query(SpeciesVisit)
             .join(Species)
-            .outerjoin(BirdFood, Video.food)
-            .filter(VideoSpecies.created_at >= start_time, VideoSpecies.created_at <= end_time)
-            .order_by(VideoSpecies.created_at.desc())
+            .join(VideoSpecies)
+            .join(Video)
+            .filter(
+                SpeciesVisit.start_time >= start_time,
+                SpeciesVisit.end_time <= end_time
+            )
+            .order_by(SpeciesVisit.start_time.desc())
             .all()
         )
 
-        # Construct the desired response
+        # Construct the response
         response = []
-        for record in video_species_records:
-            video_start_time = record.video.start_time
+        for visit in visits:
+            # Get the first video for weather data (assuming similar conditions during visit)
+            video = visit.video_species[0].video if visit.video_species else None
+
+            # Prepare detections for this visit
+            detections = []
+            sorted_video_species = sorted(
+                visit.video_species, key=lambda x: x.created_at, reverse=True)
+            for video_species in sorted_video_species:
+                video_start_time = video_species.video.start_time
+                detections.append({
+                    'video_id': video_species.video_id,
+                    'start_time': (video_start_time + timedelta(seconds=video_species.start_time)).astimezone(timezone.utc).isoformat(),
+                    'end_time': (video_start_time + timedelta(seconds=video_species.end_time)).astimezone(timezone.utc).isoformat(),
+                    'confidence': video_species.confidence,
+                    'source': video_species.source
+                })
+
             response.append({
-                'id': record.id,
-                'video_id': record.video_id,
-                'start_time': (video_start_time + timedelta(seconds=record.start_time)).astimezone(timezone.utc).isoformat(),
-                'end_time': (video_start_time + timedelta(seconds=record.end_time)).astimezone(timezone.utc).isoformat(),
-                'confidence': record.confidence,
-                'source': record.source,
+                'id': visit.id,
+                'start_time': visit.start_time.astimezone(timezone.utc).isoformat(),
+                'end_time': visit.end_time.astimezone(timezone.utc).isoformat(),
+                'max_simultaneous': visit.max_simultaneous,
                 'weather': {
-                    'temp': record.video.weather_temp,
-                    'clouds': record.video.weather_clouds,
-                },
+                    'temp': video.weather_temp if video else None,
+                    'clouds': video.weather_clouds if video else None,
+                } if video else None,
                 'species': {
-                    'id': record.species.id,
-                    'name': record.species.name,
-                    'image_url': record.species.image_url,
-                    'parent_id': record.species.parent_id,
+                    'id': visit.species.id,
+                    'name': visit.species.name,
+                    'image_url': visit.species.image_url,
+                    'parent_id': visit.species.parent_id,
                 },
-                'food': [
-                    {
-                        'id': food.id,
-                        'name': food.name,
-                    } for food in record.video.food
-                ]
+                'detections': detections
             })
 
         return response
