@@ -132,7 +132,7 @@ export const Overview = () => {
 
         {/* Daily Pattern Chart */}
         <Grid size={{ xs: 12 }}>
-          <Paper sx={{ p: 3 }}>
+          <Paper>
             <Typography variant="h6" gutterBottom>
               Daily Activity Pattern
             </Typography>
