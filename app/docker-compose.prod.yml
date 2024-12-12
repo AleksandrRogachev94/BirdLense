@@ -2,23 +2,23 @@ services:
   nginx:
     build:
       context: ./nginx
-    # restart: unless-stopped
+    restart: unless-stopped
 
   processor:
     build:
       context: ./processor
-    # restart: unless-stopped
+    restart: unless-stopped
 
   web:
     build:
       context: ./web
     command: gunicorn -w 1 -b 0.0.0.0:8000 --access-logfile - --error-logfile - app:app
-    # restart: unless-stopped
+    restart: unless-stopped
 
   ui:
     build:
       context: ./ui
-    # restart: unless-stopped
+    restart: unless-stopped
 
-  # ntfy:
-  # restart: unless-stopped
+  ntfy:
+    restart: unless-stopped
