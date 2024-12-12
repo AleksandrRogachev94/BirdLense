@@ -44,6 +44,21 @@ rm get-docker.sh
 # Add current user to docker group
 sudo usermod -aG docker $USER
 
+# Configure Docker service delay to make sure all devices are ready
+echo "Configuring Docker service startup delay..."
+sudo mkdir -p /etc/systemd/system/docker.service.d/
+cat << EOF | sudo tee /etc/systemd/system/docker.service.d/override.conf
+[Unit]
+After=network-online.target firewalld.service containerd.service time-sync.target systemd-udev-settle.service
+Wants=network-online.target systemd-udev-settle.service
+RequiresMountsFor=%N
+[Service]
+ExecStartPre=/bin/sleep 10
+EOF
+
+# Reload systemd configurations
+sudo systemctl daemon-reload
+
 # Install PulseAudio
 echo "Installing PulseAudio..."
 sudo apt-get install -y pulseaudio
@@ -54,5 +69,5 @@ systemctl --user start pulseaudio
 
 echo "---------------------"
 echo "Installation completed!"
-cho "You need to log out and log back in, or restart your terminal, to complete Docker installation and apply the group changes."
-echo "After, un the following command to download and start the application: make start"
+echo "You need to log out and log back in, or restart your terminal, to complete Docker installation and apply the group changes."
+echo "After, run the following command to download and start the application: make start"
