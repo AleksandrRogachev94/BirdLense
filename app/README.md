@@ -3,7 +3,7 @@
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/AleksandrRogachev94/BirdLense
+   sudo apt install git && git clone https://github.com/AleksandrRogachev94/BirdLense
    cd BirdLense/app
    ```
 

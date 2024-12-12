@@ -43,7 +43,6 @@ rm get-docker.sh
 
 # Add current user to docker group
 sudo usermod -aG docker $USER
-sudo newgrp docker
 
 # Install PulseAudio
 echo "Installing PulseAudio..."
