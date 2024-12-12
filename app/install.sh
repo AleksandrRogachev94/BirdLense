@@ -3,7 +3,7 @@
 # Exit on error
 set -e
 
-echo "Starting Smart Bird Feeder installation..."
+echo "Starting BirdLense installation..."
 
 # Update package lists
 sudo apt-get update
@@ -16,6 +16,7 @@ rm get-docker.sh
 
 # Add current user to docker group
 sudo usermod -aG docker $USER
+sudo newgrp docker
 
 # Install PulseAudio
 echo "Installing PulseAudio..."

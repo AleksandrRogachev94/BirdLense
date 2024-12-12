@@ -32,6 +32,7 @@ services:
       - /dev/video0 # video
       - /dev/snd # audio
       - /dev/bus/usb # audio
+      - /dev/gpiochip0:/dev/gpiochip4 # To address a bug in lgpio described inhttps://github.com/gpiozero/gpiozero/issues/1166
     ipc: host
     environment:
       - API_URL_BASE=http://web:8000/api/processor
