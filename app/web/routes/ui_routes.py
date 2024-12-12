@@ -330,11 +330,12 @@ def register_routes(app):
 
     @app.route('/api/ui/species', methods=['GET'])
     def get_all_species():
-        # Build base query
+        # Build base query - get sum of max_simultaneous birds from SpeciesVisit
         query = db.session.query(
             Species,
-            func.count(VideoSpecies.id).label('count')
-        ).outerjoin(VideoSpecies)
+            func.coalesce(func.sum(SpeciesVisit.max_simultaneous),
+                          0).label('count')
+        ).outerjoin(SpeciesVisit)
 
         # Group by species and order by name
         species_list = query.group_by(
