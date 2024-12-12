@@ -158,6 +158,6 @@ def notify(message, link="live", tags=None):
                           'utf-8'),
                       headers={
                           "Title": "BirdLense",
-                          "Click": f"http://smartbirdfeeder.local/{link}",
+                          "Click": f"http://birdlense.local/{link}",
                           "Tags": tags
                       })

@@ -68,5 +68,5 @@ services:
       TZ: "America/New_York" # optional: set desired timezone
       NTFY_BEHIND_PROXY: "true"
       NTFY_UPSTREAM_BASE_URL: "https://ntfy.sh"
-      NTFY_BASE_URL: "http://smartbirdfeeder.local:8081"
+      NTFY_BASE_URL: "http://birdlense.local:8081"
     logging: *default-logging
