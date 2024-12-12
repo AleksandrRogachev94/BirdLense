@@ -17,9 +17,6 @@ rm get-docker.sh
 # Add current user to docker group
 sudo usermod -aG docker $USER
 
-# Install Docker Compose
-sudo pip3 install docker-compose
-
 # Install PulseAudio
 echo "Installing PulseAudio..."
 sudo apt-get install -y pulseaudio
@@ -27,10 +24,6 @@ sudo apt-get install -y pulseaudio
 # Enable PulseAudio service
 systemctl --user enable pulseaudio
 systemctl --user start pulseaudio
-
-# Enable camera interface
-echo "Enabling camera interface..."
-sudo raspi-config nonint do_camera 0
 
 echo "Installation completed!"
 echo "Please log out and log back in for group changes to take effect."
