@@ -52,6 +52,7 @@ sudo apt-get install -y pulseaudio
 systemctl --user enable pulseaudio
 systemctl --user start pulseaudio
 
+echo "---------------------"
 echo "Installation completed!"
-echo "Restart terminal session and run the following command to download and start the application: make start"
-echo "Once started, to view application logs, run: make logs"
+cho "You need to log out and log back in, or restart your terminal, to complete Docker installation and apply the group changes."
+echo "After, un the following command to download and start the application: make start"

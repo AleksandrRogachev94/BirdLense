@@ -26,6 +26,7 @@ start:
 	@echo "Starting Docker Compose services..."
 	@docker compose -f docker-compose.base.yml -f docker-compose.prod.yml up -d
 	@echo "Docker Compose services started."
+	@echo "To view application logs, run: make logs"
 
 logs:
 	@docker compose -f docker-compose.base.yml -f docker-compose.prod.yml logs -f
