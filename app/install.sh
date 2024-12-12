@@ -52,8 +52,6 @@ sudo apt-get install -y pulseaudio
 systemctl --user enable pulseaudio
 systemctl --user start pulseaudio
 
-echo "Downlading docker images and starting the application..."
-make start
-
-echo "Installation completed and application started!"
-echo "To view application logs, run: make logs"
+echo "Installation completed!"
+echo "Restart terminal session and run the following command to download and start the application: make start"
+echo "Once started, to view application logs, run: make logs"

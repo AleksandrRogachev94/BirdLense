@@ -14,7 +14,15 @@
    ./install.sh
    ```
 
-Once completed, the application automatically starts up and will keep running even after rebooting. The web interface will be available at `http://birdlense.local`.
+   Restart terminal session to apply permission changes before proceeding
+
+3. **Run startup command:**
+
+   ```bash
+   make start
+   ```
+
+   Once completed, the application automatically starts up and will keep running even after rebooting. Verify that there are no errors by viewing logs with `make logs`. The web interface will be available at `http://birdlense.local`.
 
 ## Notifications Setup
 
