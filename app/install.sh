@@ -3,6 +3,33 @@
 # Exit on error
 set -e
 
+# CHECH PI CAM
+echo -e "\nListing available cameras:"
+camera_list=$(libcamera-hello --list-cameras 2>&1)
+echo "$camera_list"
+if ! echo "$camera_list" | grep -q "Available cameras"; then
+    echo "ERROR: Could not list cameras"
+    exit 1
+fi
+if echo "$camera_list" | grep -q "No cameras available"; then
+    echo "ERROR: No cameras detected on the system"
+    exit 1
+fi
+echo -e "Success: cameras detected\n"
+
+# CHECK MICROPHONE
+echo "Checking microphone... "
+# First check if audio device exists
+microphone_list=$(arecord -l 2>&1)
+echo "$microphone_list"
+if ! echo "$microphone_list" | grep -q 'card'; then
+  echo "ERROR: No recording devices found"
+  echo "Check if microphone is properly connected and detected by system"
+  exit 1
+fi
+echo -e "Success: microphone detected\n"
+
+# START INSTALLATION
 echo "Starting BirdLense installation..."
 
 # Update package lists
@@ -26,6 +53,8 @@ sudo apt-get install -y pulseaudio
 systemctl --user enable pulseaudio
 systemctl --user start pulseaudio
 
-echo "Installation completed!"
-echo "Please log out and log back in for group changes to take effect."
-echo "To start the application, run: make start"
+echo "Downlading docker images and starting the application..."
+make start
+
+echo "Installation completed and application started!"
+echo "To view application logs, run: make logs"

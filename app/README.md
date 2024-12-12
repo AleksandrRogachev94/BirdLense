@@ -14,18 +14,7 @@
    ./install.sh
    ```
 
-3. **Start the application:**
-
-   ```bash
-   # Production mode:
-   make start
-   make logs # optional, view logs to see if there are any errors
-
-   # Development mode:
-   make start-dev
-   ```
-
-The web interface will be available at `http://birdlense.local`. In production mode, the app starts up automatically after rebooting, so you are all set!
+Once completed, the application automatically starts up and will keep running even after rebooting. The web interface will be available at `http://birdlense.local`.
 
 ## Notifications Setup
 
@@ -164,3 +153,9 @@ flowchart TB
 
 - Local notification service (ntfy)
 - Alerts for bird detections
+
+## FAQ
+
+**Q: The system is not recognizing my Raspberry Pi camera. What do I do?**
+
+**A:** Sometimes, Raspberry Pi can be finicky with third-party cameras. You may need to adjust `/boot/firmware/config.txt`. For example, to make a PiCam v2 (imx219) work on Raspberry Pi 5's cam0 slot, set `dtoverlay=imx219,cam0` and `camera_auto_detect=0`.
