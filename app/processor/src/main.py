@@ -66,7 +66,7 @@ def main():
         args.input, main_size=main_size)
     audio_processor = AudioProcessor(lat=app_config.get(
         'secrets.latitude'), lon=app_config.get('secrets.longitude'))
-    regional_species = audio_processor.get_regional_species()
+    regional_species = audio_processor.get_regional_species() +  + ["Squirrel"]
     frame_processor = FrameProcessor(
         regional_species=regional_species, tracker=app_config.get('processor.tracker'), save_images=app_config.get('processor.save_images'))
     fps_tracker = FPSTracker()
