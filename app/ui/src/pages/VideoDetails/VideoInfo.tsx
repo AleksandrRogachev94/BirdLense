@@ -38,7 +38,7 @@ export const VideoInfo = ({ video }: { video: Video }) => {
 
   const formatDate = (date: string | Date) => new Date(date).toLocaleString();
 
-  const groupedSpecies = species.reduce((groups: GroupedSpecies[], sp) => {
+  const groupedSpecies = species.filter(species => species.source === 'video').reduce((groups: GroupedSpecies[], sp) => {
     let group = groups.find(
       (g) => g.species_id === sp.species_id,
     ) as GroupedSpecies;
