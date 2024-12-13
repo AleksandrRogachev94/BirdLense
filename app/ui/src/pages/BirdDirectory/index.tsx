@@ -56,7 +56,7 @@ const convertToNested = (speciesList: Species[]): NestedSpecies[] => {
   // Calculate counts starting from root nodes
   result.forEach(calculateTotalCount);
 
-  return result;
+  return result[0].children;
 };
 
 const filterNestedSpecies = (
