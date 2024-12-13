@@ -29,7 +29,7 @@ start:
 	@echo "To view application logs, run: make logs"
 
 logs:
-	@docker compose -f docker-compose.base.yml -f docker-compose.prod.yml logs -f
+	@docker compose -f docker-compose.base.yml -f docker-compose.prod.yml logs -f --tail=200
 
 stop:
 	@echo "Stopping Docker Compose services..."
