@@ -6,6 +6,7 @@ x-logging: &default-logging
 
 services:
   nginx:
+    image: birdlense_nginx:latest
     container_name: birdlense_nginx
     depends_on:
       - web
@@ -20,6 +21,7 @@ services:
     logging: *default-logging
 
   processor:
+    image: birdlense_processor:latest
     container_name: birdlense_processor
     volumes:
       - /dev/shm:/dev/shm # used by audio recording
@@ -46,6 +48,7 @@ services:
     logging: *default-logging
 
   web:
+    image: birdlense_web:latest
     container_name: birdlense_web
     depends_on:
       - ntfy
@@ -57,6 +60,7 @@ services:
     logging: *default-logging
 
   ui:
+    image: birdlense_ui:latest
     container_name: birdlense_ui
     logging: *default-logging
 

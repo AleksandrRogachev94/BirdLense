@@ -1,4 +1,4 @@
-.PHONY: build-dev start-dev stop-dev build start stop
+.PHONY: build-dev start-dev stop-dev build start stop logs
 
 # DEV
 build-dev:
