@@ -68,7 +68,7 @@ make stop-dev
 ### Directory Structure
 
 ```
-smart-bird-feeder/
+BirdLense/
 ├── app_config/          # Configuration files
 ├── data/
 │   ├── recordings/     # Video recordings and supporting files
