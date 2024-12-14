@@ -2,7 +2,7 @@ import time
 import logging
 import numpy as np
 from ultralytics import YOLO
-import cv2
+from light_level_detector import LightLevelDetector
 
 
 class FrameProcessor:
@@ -10,6 +10,7 @@ class FrameProcessor:
         self.save_images = save_images
         self.tracker = tracker
         self.logger = logging.getLogger(__name__)
+        self.light_detector = LightLevelDetector()
         self.logger.info('Loading model...')
         self.model = YOLO(
             "models/detection/nabirds_yolov8n_ncnn_model", task="detect")
@@ -32,10 +33,14 @@ class FrameProcessor:
             raise Exception('Frame is missing')
         self.cnt += 1
 
+        # Check lighting condition first
+        if not self.light_detector.has_sufficient_light(img):
+            return False
+
         # Detect
         st = time.time()
         results = self.model.track(
-            img, persist=True, conf=0.1, classes=self.classes, tracker=self.tracker, verbose=False)
+            img, persist=True, conf=0.2, classes=self.classes, tracker=self.tracker, verbose=False)
         if self.save_images:
             results[0].save(f'data/test/frame{str(self.cnt)}.jpg')
         if results[0].boxes.id is None:

@@ -6,7 +6,6 @@ import logging
 import os
 import shutil
 from frame_processor import FrameProcessor
-from light_level_detector import LightLevelDetector
 from motion_detectors.pir import PIRMotionDetector
 from motion_detectors.fake import FakeMotionDetector
 from decision_maker import DecisionMaker
@@ -66,18 +65,17 @@ def main():
     media_source = MediaSource(main_size=main_size) if not args.input else VideoFileSource(
         args.input, main_size=main_size)
     audio_processor = AudioProcessor(lat=app_config.get(
-        'secrets.latitude'), lon=app_config.get('secrets.longitude'))
+        'secrets.latitude'), lon=app_config.get('secrets.longitude'), spectrogram_px_per_sec=app_config.get('processor.spectrogram_px_per_sec'))
     regional_species = audio_processor.get_regional_species() + ["Squirrel"]
     frame_processor = FrameProcessor(
         regional_species=regional_species, tracker=app_config.get('processor.tracker'), save_images=app_config.get('processor.save_images'))
-    light_detector = LightLevelDetector()
     fps_tracker = FPSTracker()
     api = API()
     api.set_active_species(regional_species)
 
     # Main motion detection loop
     while True:
-        if not motion_detector.detect() or not light_detector.has_sufficient_light():
+        if not motion_detector.detect():
             continue
         api.notify_motion()
 
@@ -118,23 +116,19 @@ def main():
             end_time = datetime.now(timezone.utc)
 
         try:
-            audio_detections, spectrogram_path = audio_processor.run(
-                video_output)
-        except Exception as e:
-            logging.error(e)
-            audio_detections = []
-
-        try:
             video_detections = decision_maker.get_results(
                 frame_processor.tracks)
+            audio_detections, spectrogram_path = [], None
+            if video_detections:
+                audio_detections, spectrogram_path = audio_processor.run(
+                    video_output)
             logging.info(
                 f'Processing stopped. Video Result: {video_detections}; Audio Result: {audio_detections}')
-            # if len(video_detections) + len(audio_detections) > 0:
             if len(video_detections) > 0:
                 api.create_video(video_detections, audio_detections, start_time,
                                  end_time, video_output, spectrogram_path)
             else:
-                # no detections, delete folder and do nothing
+                # no detections, delete folder
                 shutil.rmtree(output_path)
         except Exception as e:
             logging.error(e)

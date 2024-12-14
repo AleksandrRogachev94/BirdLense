@@ -9,6 +9,8 @@ processor:
   tracker: "bytetrack.yaml"
   max_record_seconds: 60 # maximum length of video/audio recording
   max_inactive_seconds: 10 # maximum number of seconds with no activity before stopping recording
+  spectrogram_px_per_sec: 200 # pixels per second in the spectrogram
+
   save_images: false # save frames with detectiond to disk. Testing only
 
 # Add your secrets and other configurations here

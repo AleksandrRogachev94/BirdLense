@@ -13,9 +13,10 @@ from birdnetlib.species import SpeciesList
 
 
 class AudioProcessor:
-    def __init__(self, lat, lon):
+    def __init__(self, lat, lon, spectrogram_px_per_sec=200):
         self.lat = lat
         self.lon = lon
+        self.spectrogram_px_per_sec = spectrogram_px_per_sec
         self.logger = logging.getLogger(__name__)
         self.analyzer = Analyzer()
         self.species_list = SpeciesList()
@@ -29,15 +30,15 @@ class AudioProcessor:
         return temp_path
 
     def generate_spectrogram(self, ndarray: np.ndarray, sr: int, output_path: str,
-                             px_per_second: int = 100, height_px: int = 256,
+                             height_px: int = 256,
                              dpi: int = 100) -> None:
         """Generate mel spectrogram from audio ndarray in 500-12000Hz range"""
         start_total = time.time()
         duration = len(ndarray) / sr
-        width_px = int(duration * px_per_second)
+        width_px = int(duration * self.spectrogram_px_per_sec)
 
         n_fft = 2048
-        hop_length = int(sr / px_per_second)
+        hop_length = int(sr / self.spectrogram_px_per_sec)
 
         mel_spec = librosa.feature.melspectrogram(
             y=ndarray,
@@ -67,7 +68,7 @@ class AudioProcessor:
         )
 
         plt.savefig(output_path, dpi=dpi, bbox_inches=None,
-                    pad_inches=0, pil_kwargs={'quality': 85, 'optimize': True})
+                    pad_inches=0, format='jpeg', pil_kwargs={'quality': 85, 'optimize': True})
         plt.close()
 
         self.logger.info(
@@ -129,15 +130,6 @@ class AudioProcessor:
             )
             recording.analyze()
 
-            # Generate spectrogram
-            spectrogram_path = os.path.join(
-                os.path.dirname(video_path), "spectrogram.jpg")
-            self.generate_spectrogram(
-                recording.ndarray, self.sample_rate, spectrogram_path)
-
-            self.logger.info(
-                f'Total Audio Processing Time: {(time.time() - st) * 1000:.0f} msec')
-
             # Convert detections and merge adjacent ones
             raw_detections = [{
                 'species_name': det['common_name'],
@@ -148,6 +140,17 @@ class AudioProcessor:
             } for det in recording.detections]
 
             merged_detections = self.merge_detections(raw_detections)
+
+            # Generate spectrogram if there are audio detections
+            spectrogram_path = None
+            if merged_detections:
+                spectrogram_path = os.path.join(
+                    os.path.dirname(video_path), f"spectrogram_{self.spectrogram_px_per_sec}.jpg")
+                self.generate_spectrogram(
+                    recording.ndarray, self.sample_rate, spectrogram_path)
+
+            self.logger.info(
+                f'Total Audio Processing Time: {(time.time() - st) * 1000:.0f} msec')
 
             # Cleanup temporary file
             os.remove(temp_audio_path)

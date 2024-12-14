@@ -251,6 +251,23 @@ export const SettingsForm = ({
             )}
           </form.Field>
         </Grid>
+        <Grid size={{ xs: 6 }}>
+          <form.Field name="processor.spectrogram_px_per_sec">
+            {(field) => (
+              <>
+                <TextField
+                  fullWidth
+                  id={field.name}
+                  name={field.name}
+                  value={field.state.value}
+                  type="string"
+                  onChange={(e) => field.handleChange(Number(e.target.value))}
+                  label="Spectrogram horizontal resolution (px/sec)"
+                />
+              </>
+            )}
+          </form.Field>
+        </Grid>
       </Grid>
 
       <Divider sx={{ my: 4 }} />

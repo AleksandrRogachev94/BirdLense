@@ -3,7 +3,12 @@ import Box from '@mui/material/Box';
 import { VideoSpecies } from '../../../types';
 import { labelToUniqueHexColor } from '../../../util';
 
-const pxPerSecond = 100; // comes from spectrogram generation code in processor
+const DEFAULT_PX_PER_SECOND = 200;
+
+const extractPxPerSecond = (imageUrl: string): number => {
+  const match = imageUrl.match(/spectrogram_(\d+)\.jpg$/);
+  return match ? parseInt(match[1], 10) : DEFAULT_PX_PER_SECOND;
+};
 
 interface SpectrogramPlayerProps {
   imageUrl: string;
@@ -22,6 +27,7 @@ export const SpectrogramPlayer: React.FC<SpectrogramPlayerProps> = ({
   const parentRef = useRef<HTMLCanvasElement | null>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
   const animationRef = useRef<number | null>(null);
+  const pxPerSecond = extractPxPerSecond(imageUrl);
 
   const drawSpectrogram = useCallback(() => {
     const canvas = canvasRef.current;
@@ -88,7 +94,7 @@ export const SpectrogramPlayer: React.FC<SpectrogramPlayerProps> = ({
     ctx.moveTo(halfWidth, 0);
     ctx.lineTo(halfWidth, canvas.height);
     ctx.stroke();
-  }, [pxPerSecond, detections, labelToUniqueHexColor]);
+  }, [pxPerSecond, detections, imageUrl]);
 
   const drawSpectrogramAnimate = useCallback(() => {
     drawSpectrogram();
