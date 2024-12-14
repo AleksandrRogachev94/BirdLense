@@ -6,6 +6,7 @@ import logging
 import os
 import shutil
 from frame_processor import FrameProcessor
+from light_level_detector import LightLevelDetector
 from motion_detectors.pir import PIRMotionDetector
 from motion_detectors.fake import FakeMotionDetector
 from decision_maker import DecisionMaker
@@ -69,13 +70,14 @@ def main():
     regional_species = audio_processor.get_regional_species() + ["Squirrel"]
     frame_processor = FrameProcessor(
         regional_species=regional_species, tracker=app_config.get('processor.tracker'), save_images=app_config.get('processor.save_images'))
+    light_detector = LightLevelDetector()
     fps_tracker = FPSTracker()
     api = API()
     api.set_active_species(regional_species)
 
     # Main motion detection loop
     while True:
-        if not motion_detector.detect():
+        if not motion_detector.detect() or not light_detector.has_sufficient_light():
             continue
         api.notify_motion()
 
