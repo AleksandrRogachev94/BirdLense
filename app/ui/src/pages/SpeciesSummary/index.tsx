@@ -316,7 +316,7 @@ const SpeciesSummaryPage = () => {
           <Stack spacing={2}>
             {data.recentVisits.map((visit) => (
               <Box key={visit.id}>
-                <VisitCard visit={visit} compact />
+                <VisitCard visit={visit} compact showDateTime />
               </Box>
             ))}
           </Stack>

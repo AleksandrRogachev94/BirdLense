@@ -13,6 +13,7 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import AccessTime from '@mui/icons-material/AccessTime';
 import Thermostat from '@mui/icons-material/Thermostat';
+import CalendarToday from '@mui/icons-material/CalendarToday';
 import Groups from '@mui/icons-material/Groups';
 import VideoCall from '@mui/icons-material/VideoCall';
 import Mic from '@mui/icons-material/Mic';
@@ -100,11 +101,34 @@ const groupDetectionsByVideo = (detections: SpeciesVisit['detections']) => {
 export interface VisitCardProps {
   visit: SpeciesVisit;
   compact?: boolean;
+  showDateTime?: boolean;
 }
 
-export const VisitCard = ({ visit, compact = false }: VisitCardProps) => {
+export const VisitCard = ({
+  visit,
+  compact = false,
+  showDateTime = false,
+}: VisitCardProps) => {
   const navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
+
+  const startDateTime = new Date(visit.start_time);
+  const isToday = new Date().toDateString() === startDateTime.toDateString();
+
+  const formatDateTime = () => {
+    if (isToday) {
+      return `Today at ${startDateTime.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      })}`;
+    }
+    return startDateTime.toLocaleString([], {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
 
   return (
     <Card>
@@ -119,17 +143,33 @@ export const VisitCard = ({ visit, compact = false }: VisitCardProps) => {
           />
           <Box flex={1} minWidth={0}>
             <Box display="flex" alignItems="center" gap={1}>
-              <Typography
-                variant={compact ? 'body1' : 'h6'}
-                component="div"
-                sx={{
-                  flex: 1,
-                  lineHeight: compact ? 1.4 : 1.5,
-                  wordBreak: 'break-word',
-                }}
-              >
-                {visit.species.name}
-              </Typography>
+              <Box flex={1}>
+                <Typography
+                  variant={compact ? 'body1' : 'h6'}
+                  component="div"
+                  sx={{
+                    lineHeight: compact ? 1.4 : 1.5,
+                    wordBreak: 'break-word',
+                  }}
+                >
+                  {visit.species.name}
+                </Typography>
+                {showDateTime && (
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 0.5,
+                      mt: 0.5,
+                    }}
+                  >
+                    <CalendarToday sx={{ fontSize: 14 }} />
+                    {formatDateTime()}
+                  </Typography>
+                )}
+              </Box>
               <IconButton
                 size="small"
                 onClick={() => setExpanded(!expanded)}
@@ -180,18 +220,20 @@ export const VisitCard = ({ visit, compact = false }: VisitCardProps) => {
         </Box>
         <Collapse in={expanded} timeout="auto">
           <Box mt={2}>
-            {groupDetectionsByVideo(visit.detections).map((group, groupIndex) => (
-              <Box key={`group-${groupIndex}`}>
-                {group.map((detection, index) => (
-                  <DetectionItem
-                    key={`${detection.video_id}-${index}`}
-                    detection={detection}
-                    onClick={() => navigate(`/videos/${detection.video_id}`)}
-                    isLastInGroup={index === group.length - 1}
-                  />
-                ))}
-              </Box>
-            ))}
+            {groupDetectionsByVideo(visit.detections).map(
+              (group, groupIndex) => (
+                <Box key={`group-${groupIndex}`}>
+                  {group.map((detection, index) => (
+                    <DetectionItem
+                      key={`${detection.video_id}-${index}`}
+                      detection={detection}
+                      onClick={() => navigate(`/videos/${detection.video_id}`)}
+                      isLastInGroup={index === group.length - 1}
+                    />
+                  ))}
+                </Box>
+              ),
+            )}
           </Box>
         </Collapse>
       </CardContent>

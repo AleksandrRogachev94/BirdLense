@@ -37,7 +37,11 @@ export const Timeline = ({ visits }: { visits: SpeciesVisit[] }) => {
             <TimelineConnector />
           </TimelineSeparator>
           <TimelineContent sx={{ py: '16px', px: 2 }}>
-            <VisitCard visit={visit} compact={isMobile} />
+            <VisitCard
+              visit={visit}
+              compact={isMobile}
+              showDateTime={isMobile}
+            />
           </TimelineContent>
         </TimelineItem>
       ))}
