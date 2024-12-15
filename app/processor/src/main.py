@@ -15,6 +15,7 @@ from sources.media_source import MediaSource
 from sources.video_file_source import VideoFileSource
 from audio_processor import AudioProcessor
 from app_config.app_config import app_config
+from util import filter_feeder_species
 
 # Set up logging
 logging.basicConfig(
@@ -66,7 +67,8 @@ def main():
         args.input, main_size=main_size)
     audio_processor = AudioProcessor(lat=app_config.get(
         'secrets.latitude'), lon=app_config.get('secrets.longitude'), spectrogram_px_per_sec=app_config.get('processor.spectrogram_px_per_sec'))
-    regional_species = audio_processor.get_regional_species() + ["Squirrel"]
+    regional_species = filter_feeder_species(
+        audio_processor.get_regional_species()) + ["Squirrel"]
     frame_processor = FrameProcessor(
         regional_species=regional_species, tracker=app_config.get('processor.tracker'), save_images=app_config.get('processor.save_images'))
     fps_tracker = FPSTracker()
