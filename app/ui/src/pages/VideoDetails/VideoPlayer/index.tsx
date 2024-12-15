@@ -21,11 +21,11 @@ interface ViewToggleProps {
   onChange: (view: 'video' | 'audio') => void;
 }
 
-const ViewToggle: React.FC<ViewToggleProps> = ({ view, onChange }) => (
+const ViewToggle: React.FC<ViewToggleProps> = ({ view, onChange, audioDisabled }) => (
   <Box sx={{ display: 'flex', justifyContent: 'center' }}>
     <Tabs value={view} onChange={(_, newView) => onChange(newView)}>
       <Tab label="Video" value="video" />
-      <Tab label="Audio" value="audio" />
+      <Tab label="Audio" value="audio" disabled={audioDisabled} />
     </Tabs>
   </Box>
 );
@@ -109,7 +109,7 @@ export const VideoPlayer: React.FC<{ video: Video }> = ({ video }) => {
 
   return (
     <Box>
-      <ViewToggle view={view} onChange={setView} />
+      <ViewToggle view={view} onChange={setView} audioDisabled={!video.species.some(det => det.source === 'audio')} />
 
       <Box
         sx={{

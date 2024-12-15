@@ -50,13 +50,14 @@ class DecisionMaker():
             pred_counts = Counter(track['preds'])
             species_name, count = pred_counts.most_common(1)[0]
             confidence = count / len(track['preds'])
-
-            result.append({
-                'species_name': species_name,
-                'start_time': track['start_time'],
-                'end_time': track['end_time'],
-                'confidence': confidence,
-                'source': 'video'
-            })
+            # Only consider species with at least 1 second of continuous detection
+            if track['end_time'] - track['start_time'] >= 1:
+                result.append({
+                    'species_name': species_name,
+                    'start_time': track['start_time'],
+                    'end_time': track['end_time'],
+                    'confidence': confidence,
+                    'source': 'video'
+                })
 
         return result

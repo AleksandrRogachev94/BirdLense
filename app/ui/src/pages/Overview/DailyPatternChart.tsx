@@ -171,7 +171,9 @@ export const DailyPatternChart: React.FC<DailyPatternChartProps> = ({
               const startAngle = (hour * 360) / 24;
               const endAngle = ((hour + 1) * 360) / 24;
               const detections = getOffsetValue(species.detections, hour);
-              const intensity = detections / maxDetections;
+              const intensity = detections === 0 
+                ? 0 
+                : 0.25 + (0.7 * detections / maxDetections); // Scale non-zero values from 0.25 to 1.0
 
               return (
                 <Tooltip

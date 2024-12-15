@@ -97,7 +97,7 @@ export const Overview = () => {
             <Grid size={{ xs: 12, sm: 6, md: 4 }}>
               <StatCard
                 icon={TrendingUp}
-                title="Total Detections"
+                title="Total Visits"
                 value={overviewData?.stats.totalDetections || 0}
               />
             </Grid>
@@ -117,9 +117,13 @@ export const Overview = () => {
             </Grid>
             <Grid size={{ xs: 12, sm: 6, md: 4 }}>
               <StatCard
-                icon={AccessTime}
-                title="Busiest Hour"
-                value={formatHour(overviewData?.stats.busiestHour || 0)}
+              icon={AccessTime}
+              title="Busiest Hour"
+              value={
+                overviewData?.stats.totalDetections > 0
+                ? formatHour(overviewData?.stats.busiestHour)
+                : 'N/A'
+              }
               />
             </Grid>
             <Grid size={{ xs: 12, sm: 6, md: 4 }}>
