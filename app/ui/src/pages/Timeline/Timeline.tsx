@@ -23,20 +23,38 @@ export const Timeline = ({ visits }: { visits: SpeciesVisit[] }) => {
         '& .MuiTimelineItem-root:before': isMobile ? { display: 'none' } : {},
       }}
     >
-      {visits.map((visit) => (
+      {visits.map((visit, index) => (
         <TimelineItem key={visit.id}>
           {!isMobile && (
-            <TimelineOppositeContent sx={{ flex: 0.5, py: 2 }}>
-              <Typography variant="body2" color="text.secondary">
+            <TimelineOppositeContent
+              sx={{
+                m: 'auto 0',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: index % 2 === 0 ? 'flex-end' : 'flex-start',
+              }}
+              variant="body2"
+              color="text.secondary"
+            >
+              <Typography variant="body2">
                 {new Date(visit.start_time).toLocaleTimeString()}
               </Typography>
             </TimelineOppositeContent>
           )}
+
           <TimelineSeparator>
-            <TimelineDot color="primary" sx={{ my: 1 }} />
+            <TimelineConnector />
+            <TimelineDot
+              color="primary"
+              sx={{
+                my: 0.5,
+                borderWidth: 2,
+              }}
+            />
             <TimelineConnector />
           </TimelineSeparator>
-          <TimelineContent sx={{ py: '16px', px: 2 }}>
+
+          <TimelineContent>
             <VisitCard
               visit={visit}
               compact={isMobile}
