@@ -64,13 +64,13 @@ class FrameProcessor:
     def update_track(self, track_id, class_name):
         if track_id not in self.tracks:
             self.tracks[track_id] = {
-                'start_time': round(time.time() - self.start_time),
+                'start_time': round(time.time() - self.start_time, 1),
                 'preds': []
             }
         self.tracks[track_id]['preds'].append(class_name)
         # keep updating end_time with each new frame
         self.tracks[track_id]['end_time'] = round(
-            time.time() - self.start_time)
+            time.time() - self.start_time, 1)
 
     def reset(self):
         self.tracks = {}
