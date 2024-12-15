@@ -405,8 +405,7 @@ def register_routes(app):
         def get_visit_stats(since_time):
             return db.session.query(
                 SpeciesVisit.species_id,
-                func.sum(SpeciesVisit.max_simultaneous).label(
-                    'count')  # Multiply by simultaneous count
+                func.sum(SpeciesVisit.max_simultaneous).label('count')
             ).filter(
                 SpeciesVisit.species_id.in_(all_species_ids),
                 SpeciesVisit.start_time >= since_time
@@ -431,8 +430,7 @@ def register_routes(app):
         hourly_activity = db.session.query(
             SpeciesVisit.species_id,
             func.strftime('%H', SpeciesVisit.start_time).label('hour'),
-            func.sum(SpeciesVisit.max_simultaneous).label(
-                'count')  # Multiply by simultaneous count
+            func.sum(SpeciesVisit.max_simultaneous).label('count')
         ).filter(
             SpeciesVisit.species_id.in_(all_species_ids),
             SpeciesVisit.start_time >= last_30d
@@ -453,8 +451,7 @@ def register_routes(app):
         weather_stats = db.session.query(
             func.round(Video.weather_temp).label('temp'),
             Video.weather_clouds,
-            func.sum(SpeciesVisit.max_simultaneous).label(
-                'count')  # Multiply by simultaneous count
+            func.sum(SpeciesVisit.max_simultaneous).label('count')
         ).join(
             VideoSpecies, Video.id == VideoSpecies.video_id
         ).join(
@@ -470,8 +467,7 @@ def register_routes(app):
         # Get food preferences with all species combined using visits
         food_stats = db.session.query(
             BirdFood.name,
-            func.sum(SpeciesVisit.max_simultaneous).label(
-                'count')  # Multiply by simultaneous count
+            func.sum(SpeciesVisit.max_simultaneous).label('count')
         ).join(
             video_bird_food_association,
             BirdFood.id == video_bird_food_association.c.birdfood_id
@@ -490,6 +486,53 @@ def register_routes(app):
             func.sum(SpeciesVisit.max_simultaneous).desc()
         ).limit(5).all()
 
+        # Get 10 most recent visits
+        recent_visits = (
+            db.session.query(SpeciesVisit)
+            .filter(SpeciesVisit.species_id.in_(all_species_ids))
+            .order_by(SpeciesVisit.start_time.desc())
+            .limit(10)
+            .all()
+        )
+
+        # Format recent visits to match timeline endpoint format
+        formatted_visits = []
+        for visit in recent_visits:
+            # Get the first video for weather data
+            video = visit.video_species[0].video if visit.video_species else None
+
+            # Prepare detections for this visit
+            detections = []
+            sorted_video_species = sorted(
+                visit.video_species, key=lambda x: x.created_at, reverse=True)
+            for video_species in sorted_video_species:
+                video_start_time = video_species.video.start_time
+                detections.append({
+                    'video_id': video_species.video_id,
+                    'start_time': (video_start_time + timedelta(seconds=video_species.start_time)).astimezone(timezone.utc).isoformat(),
+                    'end_time': (video_start_time + timedelta(seconds=video_species.end_time)).astimezone(timezone.utc).isoformat(),
+                    'confidence': video_species.confidence,
+                    'source': video_species.source
+                })
+
+            formatted_visits.append({
+                'id': visit.id,
+                'start_time': visit.start_time.astimezone(timezone.utc).isoformat(),
+                'end_time': visit.end_time.astimezone(timezone.utc).isoformat(),
+                'max_simultaneous': visit.max_simultaneous,
+                'weather': {
+                    'temp': video.weather_temp if video else None,
+                    'clouds': video.weather_clouds if video else None,
+                } if video else None,
+                'species': {
+                    'id': visit.species.id,
+                    'name': visit.species.name,
+                    'image_url': visit.species.image_url,
+                    'parent_id': visit.species.parent_id,
+                },
+                'detections': detections
+            })
+
         # Construct response
         response = {
             'species': {
@@ -504,7 +547,7 @@ def register_routes(app):
                 } if species.parent else None
             },
             'stats': {
-                'detections': {  # Kept original interface
+                'detections': {
                     'detections_24h': sum(stats_24h.values() or [0]),
                     'detections_7d': sum(stats_7d.values() or [0]),
                     'detections_30d': sum(stats_30d.values() or [0]),
@@ -542,7 +585,8 @@ def register_routes(app):
                     },
                     'hourlyActivity': activity_by_species[child.id]
                 }
-            } for child in children]
+            } for child in children],
+            'recentVisits': formatted_visits  # Add recent visits to the response
         }
 
         return response

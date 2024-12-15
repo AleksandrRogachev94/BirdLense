@@ -16,10 +16,12 @@ import InfoIcon from '@mui/icons-material/Info';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CloudIcon from '@mui/icons-material/Cloud';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
+import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled';
 import { CircularProgress } from '@mui/material';
 import { SpeciesSummary } from '../../types';
 import { fetchSpeciesSummary } from '../../api/api';
 import { labelToUniqueHexColor } from '../../util';
+import { VisitCard } from '../../components/VisitCard';
 
 const StatCard = ({
   icon,
@@ -151,7 +153,7 @@ const SpeciesSummaryPage = () => {
         {/* Detection Stats */}
         <Grid size={{ xs: 12, md: 4 }}>
           <StatCard
-            icon={<InfoIcon fontSize="small" />}
+            icon={<InfoIcon fontSize="small" color="primary" />}
             title="Total Detection Stats"
           >
             <Stack spacing={1.5}>
@@ -213,7 +215,7 @@ const SpeciesSummaryPage = () => {
         {/* Daily Activity Pattern */}
         <Grid size={{ xs: 12, md: 8 }}>
           <StatCard
-            icon={<AccessTimeIcon fontSize="small" />}
+            icon={<AccessTimeIcon fontSize="small" color="primary" />}
             title="Daily Activity Pattern"
           >
             <Box sx={{ width: '100%', height: 300 }}>
@@ -251,7 +253,7 @@ const SpeciesSummaryPage = () => {
         {/* Weather Preferences */}
         <Grid size={{ xs: 12, md: 6 }}>
           <StatCard
-            icon={<CloudIcon fontSize="small" />}
+            icon={<CloudIcon fontSize="small" color="primary" />}
             title="Weather Preferences"
           >
             <Box sx={{ width: '100%', height: 300 }}>
@@ -278,7 +280,7 @@ const SpeciesSummaryPage = () => {
         {/* Food Preferences */}
         <Grid size={{ xs: 12, md: 6 }}>
           <StatCard
-            icon={<RestaurantIcon fontSize="small" />}
+            icon={<RestaurantIcon fontSize="small" color="primary" />}
             title="Common Food During Sightings"
           >
             <Stack spacing={2}>
@@ -301,6 +303,25 @@ const SpeciesSummaryPage = () => {
           </StatCard>
         </Grid>
       </Grid>
+
+      <Box mt={4}>
+        <Stack>
+          <Stack direction="row" spacing={1} alignItems="center">
+            <AccessTimeFilledIcon fontSize="small" color="primary" />
+            <Typography variant="h6" color="primary">
+              Recent Visits
+            </Typography>
+          </Stack>
+          <Divider sx={{ my: 2 }} />
+          <Stack spacing={2}>
+            {data.recentVisits.map((visit) => (
+              <Box key={visit.id}>
+                <VisitCard visit={visit} compact />
+              </Box>
+            ))}
+          </Stack>
+        </Stack>
+      </Box>
     </Box>
   );
 };

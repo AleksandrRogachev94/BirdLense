@@ -172,4 +172,6 @@ export interface SpeciesSummary {
       hourlyActivity: number[];
     };
   }>;
+
+  recentVisits: SpeciesVisit[]
 }
