@@ -15,7 +15,7 @@ def filter_feeder_species(species_names):
         'heron', 'egret', 'pelican', 'cormorant', 'gull', 'tern',
         'sandpiper', 'plover', 'rail', 'crane', 'stork',
         'penguin', 'albatross', 'shearwater', 'petrel',
-        'loon', 'grebe', 'coot', 'osprey', 'kite'
+        'loon', 'grebe', 'coot', 'osprey', 'kite', 'merlin'
     }
 
     def contains_excluded_word(name):
