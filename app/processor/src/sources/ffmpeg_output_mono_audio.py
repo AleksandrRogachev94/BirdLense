@@ -71,6 +71,7 @@ class FfmpegOutputMonoAudio(Output):
             except subprocess.TimeoutExpired:
                 try:
                     self.ffmpeg.terminate()
+                    self.ffmpeg.wait()  # Added this line - ensure process cleanup
                 except Exception:
                     pass
             self.ffmpeg = None
