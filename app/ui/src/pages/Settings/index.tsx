@@ -7,7 +7,11 @@ import Container from '@mui/material/Container';
 import Snackbar from '@mui/material/Snackbar';
 import Typography from '@mui/material/Typography';
 import { SettingsForm } from './SettingsForm';
-import { fetchSettings, updateSettings } from '../../api/api';
+import {
+  fetchBirdFamilies,
+  fetchSettings,
+  updateSettings,
+} from '../../api/api';
 import { Settings as SettingsType } from '../../types';
 
 export const Settings: React.FC = () => {
@@ -19,6 +23,12 @@ export const Settings: React.FC = () => {
     queryFn: fetchSettings,
   });
 
+  const { data: birdFamilies = [], isLoading: isLoadingBirdFamilies } =
+    useQuery({
+      queryKey: ['birdFamilies'],
+      queryFn: fetchBirdFamilies,
+    });
+
   const updateMutation = useMutation({
     mutationFn: updateSettings,
     onSuccess: () => {
@@ -27,7 +37,7 @@ export const Settings: React.FC = () => {
     },
   });
 
-  if (isLoading)
+  if (isLoading || isLoadingBirdFamilies)
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center' }}>
         <CircularProgress />
@@ -45,6 +55,7 @@ export const Settings: React.FC = () => {
       </Alert>
       <SettingsForm
         currentSettings={settings as SettingsType}
+        birdFamilies={birdFamilies}
         onSubmit={updateMutation.mutate}
       />
       <Snackbar

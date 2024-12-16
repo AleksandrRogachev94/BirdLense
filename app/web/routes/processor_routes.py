@@ -2,7 +2,7 @@ import json
 from flask import request
 from datetime import datetime, timezone
 from models import ActivityLog, db, BirdFood, Video, Species, VideoSpecies, SpeciesVisit
-from util import weather_fetcher, notify
+from util import weather_fetcher, notify, filter_feeder_species
 from services.visit_processor import VisitProcessor
 
 
@@ -55,12 +55,13 @@ def register_routes(app):
     def set_active_species():
         """Set which species are active based on audio detector's capabilities."""
         active_names = request.json
+        active_feeder_names = filter_feeder_species(active_names)
 
         # Reset all to inactive
         db.session.query(Species).update({'active': False})
 
         # Set provided species as active
-        for name in active_names:
+        for name in active_feeder_names:
             species = db.session.query(Species).filter_by(name=name).first()
             if species:
                 species.active = True
@@ -68,7 +69,7 @@ def register_routes(app):
                 app.logger.warn(f'Unknown active species "{name}"')
 
         db.session.commit()
-        return {"message": "success"}, 200
+        return {"message": "success", "active_feeder_names": active_feeder_names}, 200
 
     @app.route('/api/processor/notify/detections', methods=['POST'])
     def notify_detections_route():

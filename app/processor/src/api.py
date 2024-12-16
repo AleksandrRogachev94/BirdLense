@@ -49,7 +49,9 @@ class API():
         return response.json()  # Assuming the response contains useful data
 
     def set_active_species(self, active_names):
-        self._send_request('PUT', 'species/active', active_names)
+        response = self._send_request('PUT', 'species/active', active_names)
+        response_data = response.json()
+        return response_data.get('active_feeder_names')
 
     def activity_log(self, type, data, id=None):
         log_data = {'type': type, 'data': data, 'id': id}

@@ -8,6 +8,7 @@ import {
   mockSpeciesSummary,
   mockVideo,
   mockWeather,
+  mockBirdFamilies,
 } from './mocks';
 import {
   BirdFood,
@@ -15,6 +16,7 @@ import {
   Settings,
   SpeciesSummary,
   OverviewData,
+  Species,
 } from '../types';
 import axios from 'axios';
 
@@ -101,6 +103,16 @@ export const fetchSettings = async () => {
     return mockSetttings;
   } else {
     const response = await axios.get(`${BASE_API_URL}/settings`);
+    return response.data;
+  }
+};
+
+export const fetchBirdFamilies = async (): Promise<Partial<Species>[]> => {
+  if (useMockData) {
+    await sleep(1000);
+    return mockBirdFamilies;
+  } else {
+    const response = await axios.get(`${BASE_API_URL}/bird_families`);
     return response.data;
   }
 };

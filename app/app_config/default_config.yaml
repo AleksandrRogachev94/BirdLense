@@ -10,6 +10,11 @@ processor:
   max_record_seconds: 60 # maximum length of video/audio recording
   max_inactive_seconds: 10 # maximum number of seconds with no activity before stopping recording
   spectrogram_px_per_sec: 200 # pixels per second in the spectrogram
+  included_bird_families: # List of bird families to use in detections
+    - "Perching Birds" # Main feeder visitors: finches, cardinals, chickadees, etc.
+    - "Pigeons and Doves" # Common ground and platform feeder visitors
+    - "Woodpeckers" # Regular visitors to suet and seed feeders
+    - "Squirrel" # Important to detect for feeder management
 
   save_images: false # save frames with detectiond to disk. Testing only
 

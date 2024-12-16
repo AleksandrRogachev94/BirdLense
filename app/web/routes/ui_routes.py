@@ -356,6 +356,25 @@ def register_routes(app):
             for species in species_list
         ]
 
+    @app.route('/api/ui/bird_families', methods=['GET'])
+    def get_bird_families():
+        """Get all bird families (categories one level below 'Birds')"""
+        try:
+            birds_category = Species.query.filter_by(name="Birds").first()
+            if not birds_category:
+                return {'error': 'Birds category not found'}, 404
+
+            families = Species.query.filter_by(
+                parent_id=birds_category.id).all()
+            return [{
+                'id': family.id,
+                'name': family.name,
+            } for family in families]
+
+        except Exception as e:
+            app.logger.error(f"Error fetching bird families: {str(e)}")
+            return {"error": "Failed to fetch bird families"}, 500
+
     @app.route('/api/ui/settings', methods=['GET'])
     def get_settings():
         return app_config.config, 200

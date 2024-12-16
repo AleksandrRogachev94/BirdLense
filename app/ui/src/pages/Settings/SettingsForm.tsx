@@ -6,15 +6,23 @@ import Grid from '@mui/material/Grid2';
 import Switch from '@mui/material/Switch';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { Settings } from '../../types';
+import Checkbox from '@mui/material/Checkbox';
+import { Settings, Species } from '../../types';
 import { fetchCoordinatesByZip } from '../../api/api';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import ListItemText from '@mui/material/ListItemText';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 
 export const SettingsForm = ({
   currentSettings,
+  birdFamilies,
   onSubmit,
 }: {
   currentSettings: Settings;
+  birdFamilies: Partial<Species>[];
   onSubmit: (settings: Settings) => void;
 }) => {
   const form = useForm<Settings>({
@@ -265,6 +273,36 @@ export const SettingsForm = ({
                   label="Spectrogram horizontal resolution (px/sec)"
                 />
               </>
+            )}
+          </form.Field>
+        </Grid>
+
+        <Grid size={{ xs: 12 }}>
+          <form.Field name="processor.included_bird_families">
+            {(field) => (
+              <FormControl fullWidth>
+                <InputLabel>Included Bird Families</InputLabel>
+                <Select
+                  multiple
+                  value={field.state.value || []}
+                  onChange={(e) =>
+                    field.handleChange(e.target.value as string[])
+                  }
+                  label="Included Bird Families"
+                  renderValue={(selected) => selected.join(', ')}
+                >
+                  {birdFamilies.map((family) => (
+                    <MenuItem key={family.id} value={family.name}>
+                      <Checkbox
+                        checked={(field.state.value || []).includes(
+                          family.name as string,
+                        )}
+                      />
+                      <ListItemText primary={family.name} />
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             )}
           </form.Field>
         </Grid>

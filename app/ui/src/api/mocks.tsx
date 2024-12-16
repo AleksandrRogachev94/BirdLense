@@ -236,7 +236,8 @@ export const mockSetttings: Settings = {
     tracker: 'bytetrack.yaml',
     max_record_seconds: 60,
     max_inactive_seconds: 10,
-    save_images: false,
+    spectrogram_px_per_sec: 200,
+    included_bird_families: ['Squirrel'],
   },
   secrets: {
     openweather_api_key: 'YOUR_API_KEY_HERE',
@@ -244,6 +245,11 @@ export const mockSetttings: Settings = {
     longitude: 'YOUR_LONGITUDE_HERE',
   },
 };
+
+export const mockBirdFamilies: Partial<Species>[] = [
+  { id: 1, name: 'Perching Birds' },
+  { id: 2, name: 'Squirrel' },
+];
 
 export const mockBirdDirectory: Species[] = [
   {
@@ -410,6 +416,7 @@ export const mockSpeciesSummary: SpeciesSummary = {
     name: 'House Finch',
     active: true,
   },
+  recentVisits: [],
   stats: {
     detections: {
       detections_24h: 0,

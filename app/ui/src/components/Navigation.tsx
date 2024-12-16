@@ -54,7 +54,7 @@ export function Navigation() {
           >
             <EmojiNatureIcon sx={{ mr: 1 }} />
             <Typography variant="h6" sx={{ mr: 4 }}>
-              Smart Bird Feeder
+              Bird Lense
             </Typography>
           </Box>
 

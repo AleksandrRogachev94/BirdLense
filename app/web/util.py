@@ -1,9 +1,10 @@
+import logging
 from datetime import timedelta, datetime
 import requests
 import re
 import time
 from app_config.app_config import app_config
-import logging
+from models import Species, db
 
 
 class WeatherFetcher:
@@ -161,3 +162,53 @@ def notify(message, link="live", tags=None):
                           "Click": f"http://birdlense.local/{link}",
                           "Tags": tags
                       })
+
+
+def filter_feeder_species(species_names):
+    """
+    Filter out species that are unlikely to visit bird feeders based on their family categories.
+    Uses configuration to determine which bird families to include.
+    """
+    # Get included families from config
+    included_families = app_config.get('processor.included_bird_families', [])
+
+    # Early return if no inclusion
+    if not included_families:
+        return species_names
+
+    # Fetch all species in one query
+    all_species = Species.query.all()
+
+    # Build parent-child relationships map
+    children_by_parent = {}
+    name_to_species = {}
+    for species in all_species:
+        children_by_parent.setdefault(
+            species.parent_id, set()).add(species.name)
+        name_to_species[species.name] = species
+
+    # Find the Birds category
+    birds_category = name_to_species.get('Birds')
+    if not birds_category:
+        return species_names
+
+    # Get all descendants of included families
+    included_species = set()
+
+    def add_descendants(parent_name):
+        species = name_to_species.get(parent_name)
+        if not species:
+            return
+        children = children_by_parent.get(species.id, set())
+        included_species.update(children)
+        for child in children:
+            add_descendants(child)
+
+    # Process each included family
+    for family in included_families:
+        if family in children_by_parent.get(birds_category.id, set()):
+            add_descendants(family)
+            included_species.add(family)
+
+    # Filter out included species
+    return [name for name in species_names if name in included_species]

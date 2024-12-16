@@ -15,7 +15,6 @@ from sources.media_source import MediaSource
 from sources.video_file_source import VideoFileSource
 from audio_processor import AudioProcessor
 from app_config.app_config import app_config
-from util import filter_feeder_species
 
 # Set up logging
 logging.basicConfig(
@@ -54,6 +53,7 @@ def main():
     args = parser.parse_args()
 
     # Instantiate all helper classes
+    api = API()
     if args.fake_motion:
         motion = args.fake_motion.lower() == 'true'
         motion_detector = FakeMotionDetector(motion=motion, wait=10)
@@ -67,13 +67,11 @@ def main():
         args.input, main_size=main_size)
     audio_processor = AudioProcessor(lat=app_config.get(
         'secrets.latitude'), lon=app_config.get('secrets.longitude'), spectrogram_px_per_sec=app_config.get('processor.spectrogram_px_per_sec'))
-    regional_species = filter_feeder_species(
-        audio_processor.get_regional_species()) + ["Squirrel"]
+    regional_species = audio_processor.get_regional_species() + ["Squirrel"]
+    regional_species = api.set_active_species(regional_species)
     frame_processor = FrameProcessor(
         regional_species=regional_species, tracker=app_config.get('processor.tracker'), save_images=app_config.get('processor.save_images'))
     fps_tracker = FPSTracker()
-    api = API()
-    api.set_active_species(regional_species)
 
     # Main motion detection loop
     while True:

@@ -88,7 +88,8 @@ export interface Settings {
     tracker: string; // Path to tracker config, e.g., "bytetrack.yaml"
     max_record_seconds: number; // Max recording duration in seconds
     max_inactive_seconds: number; // Max inactivity before stopping recording
-    save_images: boolean; // Whether to save images or not
+    spectrogram_px_per_sec: number; // Spectrogram pixels per second
+    included_bird_families: string[]; // List of bird families to use in detections
   };
   secrets: {
     openweather_api_key: string; // API key for OpenWeather
@@ -173,5 +174,5 @@ export interface SpeciesSummary {
     };
   }>;
 
-  recentVisits: SpeciesVisit[]
+  recentVisits: SpeciesVisit[];
 }
