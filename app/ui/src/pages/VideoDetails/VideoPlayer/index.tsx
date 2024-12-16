@@ -1,4 +1,10 @@
-import React, { useRef, useState, useMemo } from 'react';
+import React, {
+  useRef,
+  useState,
+  useMemo,
+  useCallback,
+  useEffect,
+} from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid2';
@@ -19,13 +25,18 @@ import { useVideoControl } from './useVideoControl';
 interface ViewToggleProps {
   view: 'video' | 'audio';
   onChange: (view: 'video' | 'audio') => void;
+  audioDisabled: boolean;
 }
 
-const ViewToggle: React.FC<ViewToggleProps> = ({ view, onChange, audioDisabled }) => (
+const ViewToggle: React.FC<ViewToggleProps> = ({
+  view,
+  onChange,
+  audioDisabled,
+}) => (
   <Box sx={{ display: 'flex', justifyContent: 'center' }}>
     <Tabs value={view} onChange={(_, newView) => onChange(newView)}>
       <Tab label="Video" value="video" />
-      <Tab label="Audio" value="audio" disabled={audioDisabled} />
+      <Tab label="Spectrogram" value="audio" disabled={audioDisabled} />
     </Tabs>
   </Box>
 );
@@ -68,8 +79,10 @@ export const VideoPlayer: React.FC<{ video: Video }> = ({ video }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const videoRef = useRef<HTMLVideoElement>(null);
+  const timeoutRef = useRef<number>();
   const [view, setView] = useState<'video' | 'audio'>('video');
   const [error, setError] = useState<string | null>(null);
+  const [showControls, setShowControls] = useState(true);
 
   const { playing, progress, handleProgress, handleSeek, togglePlayPause } =
     useVideoControl(videoRef);
@@ -99,6 +112,45 @@ export const VideoPlayer: React.FC<{ video: Video }> = ({ video }) => {
     [progress, filteredDetections],
   );
 
+  const startHideTimer = useCallback(() => {
+    if (timeoutRef.current) {
+      window.clearTimeout(timeoutRef.current);
+    }
+    if (playing) {
+      timeoutRef.current = window.setTimeout(() => {
+        setShowControls(false);
+      }, 1000);
+    }
+  }, [playing]);
+
+  const handleMouseMove = useCallback(() => {
+    setShowControls(true);
+    startHideTimer();
+  }, [startHideTimer]);
+
+  const handleTouch = useCallback(() => {
+    setShowControls(true);
+    startHideTimer();
+  }, [startHideTimer]);
+
+  // Show controls when video is paused
+  useEffect(() => {
+    if (!playing) {
+      setShowControls(true);
+      if (timeoutRef.current) {
+        window.clearTimeout(timeoutRef.current);
+      }
+    } else {
+      startHideTimer();
+    }
+    // Clean up timeout on unmount
+    return () => {
+      if (timeoutRef.current) {
+        window.clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [playing, startHideTimer]);
+
   if (error) {
     return (
       <Typography color="error" align="center">
@@ -109,7 +161,11 @@ export const VideoPlayer: React.FC<{ video: Video }> = ({ video }) => {
 
   return (
     <Box>
-      <ViewToggle view={view} onChange={setView} audioDisabled={!video.species.some(det => det.source === 'audio')} />
+      <ViewToggle
+        view={view}
+        onChange={setView}
+        audioDisabled={!video.species.some((det) => det.source === 'audio')}
+      />
 
       <Box
         sx={{
@@ -117,35 +173,46 @@ export const VideoPlayer: React.FC<{ video: Video }> = ({ video }) => {
           position: 'relative',
           mt: 1,
         }}
+        onMouseMove={handleMouseMove}
+        onTouchStart={handleTouch}
       >
-        <IconButton
-          onClick={togglePlayPause}
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            backgroundColor: 'rgba(0,0,0,0.5)',
-            color: 'white',
-            '&:hover': {
-              backgroundColor: 'rgba(0,0,0,0.7)',
-            },
-            zIndex: 1,
-          }}
-        >
-          {playing ? (
-            <PauseIcon fontSize="large" />
-          ) : (
-            <PlayArrowIcon fontSize="large" />
-          )}
-        </IconButton>
+        {(!playing || showControls) && (
+          <IconButton
+            onClick={(e) => {
+              e.stopPropagation();
+              togglePlayPause();
+            }}
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              backgroundColor: 'rgba(0,0,0,0.3)',
+              color: 'white',
+              transition: 'all 0.2s ease-in-out',
+              '&:hover': {
+                backgroundColor: 'rgba(0,0,0,0.5)',
+                transform: 'translate(-50%, -50%) scale(1.1)',
+              },
+              zIndex: 1,
+            }}
+          >
+            {playing ? (
+              <PauseIcon fontSize="medium" />
+            ) : (
+              <PlayArrowIcon fontSize="medium" />
+            )}
+          </IconButton>
+        )}
 
         <Box
           sx={{
             height: '100%',
             bgcolor: 'background.paper',
             display: view === 'video' ? 'block' : 'none',
+            cursor: 'pointer',
           }}
+          onClick={togglePlayPause}
         >
           <video
             ref={videoRef}
