@@ -75,14 +75,17 @@ export function TimelinePage() {
 
   useEffect(() => {
     if (visits) {
-      const speciesId = searchParams.get('speciesId');
+      const speciesId = Number(searchParams.get('speciesId'));
       if (speciesId) {
         const childSpeciesIds = [
           ...new Set(
             visits
               .map((visit) => visit.species)
-              .filter((species) => species.parent_id === Number(speciesId))
-              .map((species) => Number(species.id)),
+              .filter(
+                (species) =>
+                  species.id === speciesId || species.parent_id === speciesId,
+              )
+              .map((species) => species.id),
           ),
         ];
         if (childSpeciesIds.length > 0) {
