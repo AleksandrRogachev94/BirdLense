@@ -38,27 +38,29 @@ export const VideoInfo = ({ video }: { video: Video }) => {
 
   const formatDate = (date: string | Date) => new Date(date).toLocaleString();
 
-  const groupedSpecies = species.filter(species => species.source === 'video').reduce((groups: GroupedSpecies[], sp) => {
-    let group = groups.find(
-      (g) => g.species_id === sp.species_id,
-    ) as GroupedSpecies;
-    if (!group) {
-      group = {
-        ...sp,
-        detections: [],
-        confidenceRange: '',
-        totalDuration: 0, // Initialize total duration
-      };
-      groups.push(group);
-    }
-    // Add detection to the group
-    group.detections.push(sp);
-    // Calculate the duration for this detection (in seconds)
-    const detectionDuration = sp.end_time - sp.start_time;
-    // Add the detection duration to the total duration
-    group.totalDuration += detectionDuration;
-    return groups;
-  }, []);
+  const groupedSpecies = species
+    .filter((species) => species.source === 'video')
+    .reduce((groups: GroupedSpecies[], sp) => {
+      let group = groups.find(
+        (g) => g.species_id === sp.species_id,
+      ) as GroupedSpecies;
+      if (!group) {
+        group = {
+          ...sp,
+          detections: [],
+          confidenceRange: '',
+          totalDuration: 0, // Initialize total duration
+        };
+        groups.push(group);
+      }
+      // Add detection to the group
+      group.detections.push(sp);
+      // Calculate the duration for this detection (in seconds)
+      const detectionDuration = sp.end_time - sp.start_time;
+      // Add the detection duration to the total duration
+      group.totalDuration += detectionDuration;
+      return groups;
+    }, []);
 
   // Calculate confidence range
   groupedSpecies.forEach((group) => {
@@ -120,7 +122,8 @@ export const VideoInfo = ({ video }: { video: Video }) => {
                       variant="body2"
                       sx={{ color: 'text.secondary' }}
                     >
-                      Total Duration: {group.totalDuration}s
+                      Total Duration:{' '}
+                      {Math.round(group.totalDuration * 10) / 10}s
                     </Typography>
                   </CardContent>
                   <CardActions>
