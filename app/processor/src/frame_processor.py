@@ -35,6 +35,7 @@ class FrameProcessor:
 
         # Check lighting condition first
         if not self.light_detector.has_sufficient_light(img):
+            time.sleep(1)  # rate limiting when light is low
             return False
 
         # Detect
