@@ -35,10 +35,10 @@ def register_routes(app):
 
         video_json = {
             'id': video.id,
-            'created_at': video.created_at.isoformat(),
+            'created_at': video.created_at.astimezone(timezone.utc).isoformat(),
             'processor_version': video.processor_version,
-            'start_time': video.start_time.isoformat(),
-            'end_time': video.end_time.isoformat(),
+            'start_time': video.start_time.astimezone(timezone.utc).isoformat(),
+            'end_time': video.end_time.astimezone(timezone.utc).isoformat(),
             'video_path': video.video_path,
             'spectrogram_path': video.spectrogram_path,
             'favorite': video.favorite,
@@ -65,7 +65,8 @@ def register_routes(app):
             'food': [
                 {
                     'id': bf.id,
-                    'name': bf.name
+                    'name': bf.name,
+                    'image_url': bf.image_url,
                 } for bf in video.food
             ]
         }

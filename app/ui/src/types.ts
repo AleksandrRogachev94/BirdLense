@@ -55,6 +55,7 @@ export interface Video {
   food: {
     id: string;
     name: string;
+    image_url: string;
   }[];
 }
 

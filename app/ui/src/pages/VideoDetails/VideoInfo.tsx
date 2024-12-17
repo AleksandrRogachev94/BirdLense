@@ -4,8 +4,8 @@ import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import Divider from '@mui/material/Divider';
 import Chip from '@mui/material/Chip';
+import Avatar from '@mui/material/Avatar';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import FoodIcon from '@mui/icons-material/Fastfood';
 import { Video, VideoSpecies } from '../../types';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
@@ -15,6 +15,7 @@ import CardMedia from '@mui/material/CardMedia';
 import { WeatherCard } from '../../components/WeatherCard';
 import { labelToUniqueHexColor } from '../../util';
 import { Link } from 'react-router-dom';
+import { BASE_URL } from '../../api/api';
 
 interface GroupedSpecies {
   species_id: number;
@@ -175,10 +176,14 @@ export const VideoInfo = ({ video }: { video: Video }) => {
                 {food.map((f) => (
                   <Chip
                     key={f.id}
-                    icon={<FoodIcon />}
+                    avatar={
+                      <Avatar alt={f.name} src={`${BASE_URL}/${f.image_url}`}>
+                        {/* Fallback to first letter if image fails to load */}
+                        {f.name[0]}
+                      </Avatar>
+                    }
                     label={f.name}
                     variant="outlined"
-                    color="success"
                   />
                 ))}
               </Box>
