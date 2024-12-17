@@ -16,6 +16,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import EmojiNatureIcon from '@mui/icons-material/EmojiNature';
 import SettingsIcon from '@mui/icons-material/Settings';
 import LiveTvIcon from '@mui/icons-material/LiveTv';
+import Divider from '@mui/material/Divider';
 
 const NAVIGATION_ITEMS = [
   { label: 'Overview', path: '/' },
@@ -28,7 +29,6 @@ export function Navigation() {
   const location = useLocation();
   const currentPath = location.pathname.split('?')[0];
 
-  // Only set the tab value if we're on a known route
   const currentTabValue = React.useMemo(() => {
     const index = NAVIGATION_ITEMS.findIndex(
       (item) => item.path === currentPath,
@@ -76,6 +76,7 @@ export function Navigation() {
               anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
               transformOrigin={{ vertical: 'top', horizontal: 'left' }}
             >
+              {/* Main Navigation Items */}
               {NAVIGATION_ITEMS.map((item) => (
                 <MenuItem
                   key={item.path}
@@ -87,6 +88,8 @@ export function Navigation() {
                   {item.label}
                 </MenuItem>
               ))}
+
+              {/* Live View */}
               <MenuItem
                 onClick={handleMobileMenuClose}
                 component={Link}
@@ -95,6 +98,38 @@ export function Navigation() {
               >
                 <LiveTvIcon sx={{ mr: 1 }} />
                 Live View
+              </MenuItem>
+
+              {/* Settings Section */}
+              <Divider />
+              <MenuItem
+                onClick={handleMobileMenuClose}
+                component={Link}
+                to="/settings"
+                selected={currentPath === '/settings'}
+              >
+                <SettingsIcon sx={{ mr: 1 }} />
+                Settings
+              </MenuItem>
+              <MenuItem
+                onClick={handleMobileMenuClose}
+                component={Link}
+                to="/system"
+                selected={currentPath === '/system'}
+              >
+                System
+              </MenuItem>
+              <MenuItem onClick={handleMobileMenuClose}>
+                <MUILink
+                  href="/data/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  color="inherit"
+                  underline="none"
+                  sx={{ display: 'block', width: '100%' }}
+                >
+                  Data Viewer
+                </MUILink>
               </MenuItem>
             </Menu>
           </Box>
@@ -141,7 +176,7 @@ export function Navigation() {
             </Tabs>
           </Box>
 
-          {/* Action Buttons */}
+          {/* Action Buttons - Desktop */}
           <Box
             sx={{
               display: { xs: 'none', md: 'flex' },
@@ -177,7 +212,7 @@ export function Navigation() {
             </IconButton>
           </Box>
 
-          {/* Settings Menu */}
+          {/* Settings Menu - Desktop */}
           <Menu
             id="settings-menu"
             anchorEl={settingsMenuAnchor}
