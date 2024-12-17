@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from models import ActivityLog, db, BirdFood, Video, Species, VideoSpecies, SpeciesVisit
 from util import weather_fetcher, notify, filter_feeder_species
 from services.visit_processor import VisitProcessor
+from app_config.app_config import app_config
 
 
 def register_routes(app):
@@ -74,7 +75,10 @@ def register_routes(app):
     @app.route('/api/processor/notify/detections', methods=['POST'])
     def notify_detections_route():
         detection = request.json.get('detection')
-        notify(f"{detection} Detected", tags="bird")
+        excluded_species = app_config.get(
+            'general.notification_excluded_species', [])
+        if detection not in excluded_species:
+            notify(f"{detection} Detected", tags="bird")
         return {'message': f'Successfully received notification of {detection}'}, 200
 
     @app.route('/api/processor/notify/motion', methods=['POST'])

@@ -8,11 +8,19 @@ import Snackbar from '@mui/material/Snackbar';
 import Typography from '@mui/material/Typography';
 import { SettingsForm } from './SettingsForm';
 import {
-  fetchBirdFamilies,
+  fetchBirdDirectory,
   fetchSettings,
   updateSettings,
 } from '../../api/api';
-import { Settings as SettingsType } from '../../types';
+import { Settings as SettingsType, Species } from '../../types';
+
+const useAllBirdsQuery = (select?: (species: Species[]) => any) => {
+  return useQuery({
+    queryKey: ['bird-directory'],
+    queryFn: fetchBirdDirectory,
+    select: select,
+  });
+};
 
 export const Settings: React.FC = () => {
   const queryClient = useQueryClient();
@@ -23,11 +31,17 @@ export const Settings: React.FC = () => {
     queryFn: fetchSettings,
   });
 
-  const { data: birdFamilies = [], isLoading: isLoadingBirdFamilies } =
-    useQuery({
-      queryKey: ['birdFamilies'],
-      queryFn: fetchBirdFamilies,
-    });
+  const { isLoading: isLoadingAllSpecies } = useAllBirdsQuery();
+  const { data: observedSpecies } = useAllBirdsQuery((allSpecies) =>
+    allSpecies.filter((species) => (species.count as number) > 0),
+  );
+  const { data: birdFamilies } = useAllBirdsQuery((allSpecies) => {
+    const birdSpecies = allSpecies.find((s) => s.name === 'Birds');
+    console.log({ birdSpecies });
+    return allSpecies.filter(
+      (species) => species.parent_id === birdSpecies?.id,
+    );
+  });
 
   const updateMutation = useMutation({
     mutationFn: updateSettings,
@@ -37,7 +51,7 @@ export const Settings: React.FC = () => {
     },
   });
 
-  if (isLoading || isLoadingBirdFamilies)
+  if (isLoading || isLoadingAllSpecies)
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center' }}>
         <CircularProgress />
@@ -55,6 +69,7 @@ export const Settings: React.FC = () => {
       </Alert>
       <SettingsForm
         currentSettings={settings as SettingsType}
+        observedSpecies={observedSpecies}
         birdFamilies={birdFamilies}
         onSubmit={updateMutation.mutate}
       />

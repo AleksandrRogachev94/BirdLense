@@ -1,5 +1,6 @@
 general:
   enable_notifications: false
+  notification_excluded_species: []
 
 # Video/Audio processor settings
 processor:

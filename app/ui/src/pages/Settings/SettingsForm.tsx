@@ -19,10 +19,12 @@ import Select from '@mui/material/Select';
 export const SettingsForm = ({
   currentSettings,
   birdFamilies,
+  observedSpecies,
   onSubmit,
 }: {
   currentSettings: Settings;
   birdFamilies: Partial<Species>[];
+  observedSpecies: Species[];
   onSubmit: (settings: Settings) => void;
 }) => {
   const form = useForm<Settings>({
@@ -59,25 +61,60 @@ export const SettingsForm = ({
       <Typography variant="h5" gutterBottom>
         General
       </Typography>
-      <Grid container spacing={2}>
-        <Grid size={{ xs: 12 }}>
+      <Grid container spacing={2} alignItems="center">
+        <Grid size={{ xs: 12, sm: 4 }}>
           <form.Field name="general.enable_notifications">
             {(field) => (
-              <>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      id={field.name}
-                      name={field.name}
-                      checked={field.state.value}
-                      onChange={(e) => field.handleChange(e.target.checked)}
-                    />
-                  }
-                  label="Enable Notifications"
-                />
-              </>
+              <FormControlLabel
+                control={
+                  <Switch
+                    id={field.name}
+                    name={field.name}
+                    checked={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.checked)}
+                  />
+                }
+                label="Enable Notifications"
+              />
             )}
           </form.Field>
+        </Grid>
+        <Grid size={{ xs: 12, sm: 8 }}>
+          <form.Subscribe
+            selector={(state) => [state.values.general.enable_notifications]}
+            children={([notificationsEnabled]) => (
+              <form.Field name="general.notification_excluded_species">
+                {(field) => (
+                  <FormControl fullWidth disabled={!notificationsEnabled}>
+                    <InputLabel>Exclude from Notifications</InputLabel>
+                    <Select
+                      multiple
+                      value={field.state.value || []}
+                      onChange={(e) =>
+                        field.handleChange(e.target.value as string[])
+                      }
+                      label="Exclude from Notifications"
+                      renderValue={(selected) => selected.join(', ')}
+                    >
+                      {observedSpecies.map((species) => (
+                        <MenuItem key={species.id} value={species.name}>
+                          <Checkbox
+                            checked={(field.state.value || []).includes(
+                              species.name,
+                            )}
+                          />
+                          <ListItemText
+                            primary={species.name}
+                            secondary={`Detected ${species.count} times`}
+                          />
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                )}
+              </form.Field>
+            )}
+          />
         </Grid>
       </Grid>
       <Divider sx={{ my: 4 }} />

@@ -8,7 +8,6 @@ import {
   mockSpeciesSummary,
   mockVideo,
   mockWeather,
-  mockBirdFamilies,
 } from './mocks';
 import {
   BirdFood,
@@ -107,16 +106,6 @@ export const fetchSettings = async () => {
   }
 };
 
-export const fetchBirdFamilies = async (): Promise<Partial<Species>[]> => {
-  if (useMockData) {
-    await sleep(1000);
-    return mockBirdFamilies;
-  } else {
-    const response = await axios.get(`${BASE_API_URL}/bird_families`);
-    return response.data;
-  }
-};
-
 export const updateSettings = async (settings: Settings) => {
   if (useMockData) {
     await sleep(1000);
@@ -157,7 +146,7 @@ export const fetchCoordinatesByZip = async (
   }
 };
 
-export const fetchBirdDirectory = async () => {
+export const fetchBirdDirectory = async (): Promise<Species[]> => {
   if (useMockData) {
     await sleep(1000);
     return mockBirdDirectory;

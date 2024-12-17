@@ -81,6 +81,7 @@ export interface BirdTaxonomy {
 export interface Settings {
   general: {
     enable_notifications: boolean; // Whether to enable notifications or not
+    notification_excluded_species: string[]; // list of species to exclude from notifications
   };
   processor: {
     video_width: number; // Video width in pixels, e.g., 1280

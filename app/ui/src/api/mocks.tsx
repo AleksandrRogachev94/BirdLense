@@ -229,6 +229,7 @@ export const mockBirdFood: BirdFood[] = [
 export const mockSetttings: Settings = {
   general: {
     enable_notifications: true,
+    notification_excluded_species: [],
   },
   processor: {
     video_width: 1280,
@@ -245,11 +246,6 @@ export const mockSetttings: Settings = {
     longitude: 'YOUR_LONGITUDE_HERE',
   },
 };
-
-export const mockBirdFamilies: Partial<Species>[] = [
-  { id: 1, name: 'Perching Birds' },
-  { id: 2, name: 'Squirrel' },
-];
 
 export const mockBirdDirectory: Species[] = [
   {
