@@ -3,9 +3,10 @@ from collections import Counter
 
 
 class DecisionMaker():
-    def __init__(self,  max_record_seconds=60, max_inactive_seconds=10):
+    def __init__(self,  max_record_seconds=60, max_inactive_seconds=10, min_track_duration=2):
         self.max_record_seconds = max_record_seconds
         self.max_inactive_seconds = max_inactive_seconds
+        self.min_track_duration = min_track_duration
         self.reset()
 
     def reset(self):
@@ -51,7 +52,7 @@ class DecisionMaker():
             species_name, count = pred_counts.most_common(1)[0]
             confidence = count / len(track['preds'])
             # Only consider species with at least 1 second of continuous detection
-            if track['end_time'] - track['start_time'] >= 1:
+            if track['end_time'] - track['start_time'] >= self.min_track_duration:
                 result.append({
                     'species_name': species_name,
                     'start_time': track['start_time'],

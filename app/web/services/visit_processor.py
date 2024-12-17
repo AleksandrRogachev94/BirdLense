@@ -5,7 +5,7 @@ from util import update_species_info_from_wiki
 
 
 class VisitProcessor:
-    def __init__(self, db, logger, visit_timeout: int = 30):
+    def __init__(self, db, logger, visit_timeout: int = 60):
         self.db = db
         self.logger = logger
         self.visit_timeout = visit_timeout
