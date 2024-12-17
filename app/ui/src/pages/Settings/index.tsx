@@ -37,7 +37,6 @@ export const Settings: React.FC = () => {
   );
   const { data: birdFamilies } = useAllBirdsQuery((allSpecies) => {
     const birdSpecies = allSpecies.find((s) => s.name === 'Birds');
-    console.log({ birdSpecies });
     return allSpecies.filter(
       (species) => species.parent_id === birdSpecies?.id,
     );
