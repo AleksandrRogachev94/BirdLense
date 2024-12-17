@@ -1,5 +1,7 @@
 # Bird Lense
 
+![IMG_4768](https://github.com/user-attachments/assets/1b166d35-d42d-44de-bc27-63c8b1483c1b)
+
 A Raspberry Pi-powered smart bird feeder that uses computer vision and audio recognition to detect, identify, record, and analyze birds. Built with Python, React, and runs entirely on local network using Docker.
 
 ## Features
