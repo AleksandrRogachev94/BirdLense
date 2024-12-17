@@ -116,7 +116,7 @@ def register_routes(app):
 
     @app.route('/api/ui/overview', methods=['GET'])
     def get_overview():
-        # Parse the date from query parameters
+        # Parse query parameters
         date_param = request.args.get('date', None)
         try:
             # If a date is provided, parse it; otherwise, use the current date
@@ -178,6 +178,19 @@ def register_routes(app):
             func.sum(SpeciesVisit.max_simultaneous).desc()
         ).limit(10)
 
+        # Query to get the busiest hour
+        busiest_hour_query = db.session.query(
+            func.strftime('%H', SpeciesVisit.start_time).label('hour'),
+            func.sum(SpeciesVisit.max_simultaneous).label('visit_count')
+        ).filter(
+            SpeciesVisit.start_time >= start_of_day,
+            SpeciesVisit.start_time <= end_of_day
+        ).group_by(
+            'hour'
+        ).order_by(
+            func.sum(SpeciesVisit.max_simultaneous).desc()
+        ).first()
+
         # Format the top species data
         top_species = []
         for species in top_species_query:
@@ -203,9 +216,7 @@ def register_routes(app):
             func.avg(
                 func.strftime('%s', SpeciesVisit.end_time) -
                 func.strftime('%s', SpeciesVisit.start_time)
-            ).label('avgVisitDuration'),
-            func.strftime('%H', func.max(SpeciesVisit.start_time)
-                          ).label('busiestHour')
+            ).label('avgVisitDuration')
         ).join(
             active_species_subq, SpeciesVisit.species_id == active_species_subq.c.id
         ).filter(
@@ -241,7 +252,7 @@ def register_routes(app):
             'uniqueSpecies': stats_query.uniqueSpecies if stats_query.uniqueSpecies else 0,
             'totalDetections': stats_query.totalDetections if stats_query.totalDetections else 0,
             'lastHourDetections': stats_query.lastHourDetections if stats_query.lastHourDetections else 0,
-            'busiestHour': int(stats_query.busiestHour) if stats_query.busiestHour else 0,
+            'busiestHour': int(busiest_hour_query.hour) if busiest_hour_query else 0,
             # in seconds
             'avgVisitDuration': round(stats_query.avgVisitDuration or 0),
             # in seconds
