@@ -6,7 +6,7 @@ from light_level_detector import LightLevelDetector
 
 
 class FrameProcessor:
-    def __init__(self, regional_species=None, save_images=False, min_confidence=0.1, min_center_dist=0.2, tracker='bytetrack.yaml'):
+    def __init__(self, regional_species=None, save_images=False, min_confidence=0.1, min_center_dist=0.15, tracker='bytetrack.yaml'):
         self.save_images = save_images
         self.tracker = tracker
         self.min_confidence = min_confidence
@@ -67,7 +67,7 @@ class FrameProcessor:
         st = time.time()
         results = self.model.track(
             img, persist=True, conf=self.min_confidence,
-            classes=self.classes, tracker=self.tracker, verbose=True)
+            classes=self.classes, tracker=self.tracker, verbose=False)
         if self.save_images:
             results[0].save(f'data/test/frame{str(self.cnt)}.jpg')
         if results[0].boxes.id is None:
