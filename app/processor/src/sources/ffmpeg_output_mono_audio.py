@@ -1,4 +1,3 @@
-
 import gc
 import signal
 import subprocess
@@ -8,15 +7,12 @@ from picamera2.outputs import Output
 
 class FfmpegOutputMonoAudio(Output):
     """
-    Picamera2-specific class to handle FFmpeg output with mono audio.
+    Picamera2-specific class to handle FFmpeg output with mono audio using ALSA.
     This class is a modified version of the FfmpegOutput class from the Picamera2 library.
     It has been adapted to force mono audio output instead of the default stereo.
-    Note:
-      This is a copy-paste of https://github.com/raspberrypi/picamera2/blob/main/picamera2/outputs/ffmpegoutput.py
-      with mono audio change since it was defaulting to stereo.
     """
 
-    def __init__(self, output_filename, audio=False, audio_device="default", audio_sync=-0.3,
+    def __init__(self, output_filename, audio=False, audio_device="hw:1,0", audio_sync=-0.3,
                  audio_samplerate=48000, audio_codec="aac", audio_bitrate=128000, pts=None):
         super().__init__(pts=pts)
         self.ffmpeg = None
@@ -43,7 +39,7 @@ class FfmpegOutputMonoAudio(Output):
         if self.audio:
             audio_input = [
                 '-itsoffset', str(self.audio_sync),
-                '-f', 'pulse',
+                '-f', 'alsa',
                 '-sample_rate', str(self.audio_samplerate),
                 '-channels', '1',  # Explicitly set mono
                 '-thread_queue_size', '1024',
@@ -71,7 +67,7 @@ class FfmpegOutputMonoAudio(Output):
             except subprocess.TimeoutExpired:
                 try:
                     self.ffmpeg.terminate()
-                    self.ffmpeg.wait()  # Added this line - ensure process cleanup
+                    self.ffmpeg.wait()  # Ensure process cleanup
                 except Exception:
                     pass
             self.ffmpeg = None

@@ -6,7 +6,7 @@ RUN echo "deb http://archive.raspberrypi.org/debian/ bookworm main" > /etc/apt/s
 
 # Install ffmpeg, pulseaudio, and picamera2 for media recording
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
-  ffmpeg pulseaudio-utils python3-picamera2 \
+  alsa-utils ffmpeg pulseaudio-utils python3-picamera2 \
   && apt-get clean \
   && apt-get autoremove \
   && rm -rf /var/cache/apt/archives/* \

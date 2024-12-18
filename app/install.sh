@@ -45,27 +45,19 @@ rm get-docker.sh
 sudo usermod -aG docker $USER
 
 # Configure Docker service delay to make sure all devices are ready
-echo "Configuring Docker service startup delay..."
-sudo mkdir -p /etc/systemd/system/docker.service.d/
-cat << EOF | sudo tee /etc/systemd/system/docker.service.d/override.conf
-[Unit]
-After=network-online.target firewalld.service containerd.service time-sync.target systemd-udev-settle.service
-Wants=network-online.target systemd-udev-settle.service
-RequiresMountsFor=%N
-[Service]
-ExecStartPre=/bin/sleep 15
-EOF
+# echo "Configuring Docker service startup delay..."
+# sudo mkdir -p /etc/systemd/system/docker.service.d/
+# cat << EOF | sudo tee /etc/systemd/system/docker.service.d/override.conf
+# [Unit]
+# After=network-online.target firewalld.service containerd.service time-sync.target systemd-udev-settle.service
+# Wants=network-online.target systemd-udev-settle.service
+# RequiresMountsFor=%N
+# [Service]
+# ExecStartPre=/bin/sleep 15
+# EOF
 
 # Reload systemd configurations
-sudo systemctl daemon-reload
-
-# Install PulseAudio
-echo "Installing PulseAudio..."
-sudo apt-get install -y pulseaudio
-
-# Enable PulseAudio service
-systemctl --user enable pulseaudio
-systemctl --user start pulseaudio
+# sudo systemctl daemon-reload
 
 echo "---------------------"
 echo "Installation completed!"
