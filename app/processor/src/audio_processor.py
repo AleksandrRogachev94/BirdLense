@@ -52,24 +52,28 @@ class AudioProcessor:
         )
         S_db = librosa.power_to_db(mel_spec, ref=np.max)
 
-        fig = plt.figure(figsize=(width_px/dpi, height_px/dpi))
-        ax = plt.Axes(fig, [0., 0., 1., 1.])
-        ax.set_axis_off()
-        fig.add_axes(ax)
+        # Use plt.figure in a try-finally block to ensure cleanup
+        try:
+            fig = plt.figure(figsize=(width_px/dpi, height_px/dpi))
+            ax = plt.Axes(fig, [0., 0., 1., 1.])
+            ax.set_axis_off()
+            fig.add_axes(ax)
 
-        librosa.display.specshow(
-            S_db, sr=sr, ax=ax,
-            cmap='magma',
-            x_axis='time',
-            y_axis='mel',
-            hop_length=hop_length,
-            vmin=-60,
-            vmax=0
-        )
+            librosa.display.specshow(
+                S_db, sr=sr, ax=ax,
+                cmap='magma',
+                x_axis='time',
+                y_axis='mel',
+                hop_length=hop_length,
+                vmin=-60,
+                vmax=0
+            )
 
-        plt.savefig(output_path, dpi=dpi, bbox_inches=None,
-                    pad_inches=0, format='jpeg', pil_kwargs={'quality': 85, 'optimize': True})
-        plt.close()
+            plt.savefig(output_path, dpi=dpi, bbox_inches=None,
+                        pad_inches=0, format='jpeg', pil_kwargs={'quality': 85, 'optimize': True})
+        finally:
+            # Ensure proper cleanup of matplotlib resources
+            plt.close('all')  # Close all figures to prevent memory leaks
 
         self.logger.info(
             f"Total spectrogram generation time: {time.time() - start_total:.2f}s")

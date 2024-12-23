@@ -6,7 +6,7 @@ from light_level_detector import LightLevelDetector
 
 
 class FrameProcessor:
-    def __init__(self, regional_species=None, save_images=False, min_confidence=0.1, min_center_dist=0.15, tracker='bytetrack.yaml'):
+    def __init__(self, regional_species=None, save_images=False, min_confidence=0.1, min_center_dist=0.2, tracker='bytetrack.yaml'):
         self.save_images = save_images
         self.tracker = tracker
         self.min_confidence = min_confidence
