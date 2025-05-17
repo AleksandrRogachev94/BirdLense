@@ -1,9 +1,11 @@
 ## Quick Start
 
 1. **SSH into Raspberry PI**
+
    ```bash
    ssh user@birdlense.local
    ```
+
    where user is what you set up in Raspberry PI Imager
 
 2. **Clone the repository:**
@@ -167,6 +169,18 @@ flowchart TB
 
 - Local notification service (ntfy)
 - Alerts for bird detections
+
+## Model Context Protocol (MCP) Reference
+
+BirdLense supports the Model Context Protocol (MCP) for advanced integrations with AI agents and automation tools.
+
+**Note:** Using MCP is optional. If you want to use BirdLense with a chatbot like Claude Desktop, you only need to:
+
+1. Download the `birdlense_mcp.py` file from the `web` folder of this repository.
+2. Reference the downloaded `birdlense_mcp.py` in your `claude_desktop_config.json`.
+3. Follow the official MCP server registration guide: https://modelcontextprotocol.io/quickstart/server
+
+For more info, visit the [Model Context Protocol documentation](https://modelcontextprotocol.io/introduction).
 
 ## FAQ
 
