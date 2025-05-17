@@ -18,7 +18,7 @@ info:
 
     For LLMs: You can use this API to answer questions about bird activity, system status, and configuration, or to automate system management tasks.
 servers:
-  - url: /api/ui
+  - url: http://birdlense.local/api/ui
 paths:
   /health:
     get:
