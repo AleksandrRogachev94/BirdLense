@@ -1,0 +1,806 @@
+openapi: 3.0.3
+info:
+  title: BirdLense UI API
+  version: 1.0.0
+  description: |
+    BirdLense is an automated bird feeder monitoring and analytics system. It uses video and audio processing to detect, identify, and log bird (and other animal) visits, providing rich statistics, visualizations, and configuration options via a REST API. This API is designed for both human users and LLM agents to:
+      - Query real-time and historical bird visit data
+      - Retrieve and manage video, species, and food information
+      - Access system health, metrics, and storage usage
+      - Configure system settings (e.g., detection parameters, notification preferences)
+
+    The API is organized into several groups:
+      - UI routes: Endpoints for retrieving and managing bird, video, food, and visit data, as well as system configuration.
+      - System routes: Endpoints for system health, metrics, activity logs, and storage management.
+      - Settings: Endpoints for reading and updating the system configuration.
+
+    All endpoints return JSON. PATCH/POST endpoints may update system state. No authentication is required by default, but this can be enabled in deployment.
+
+    For LLMs: You can use this API to answer questions about bird activity, system status, and configuration, or to automate system management tasks.
+servers:
+  - url: /api/ui
+paths:
+  /health:
+    get:
+      summary: Health check
+      description: |
+        Returns a simple status object indicating if the BirdLense API is running. Use this to verify connectivity and service health.
+      responses:
+        "200":
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+  /weather:
+    get:
+      summary: Get current weather
+      description: |
+        Returns the current weather conditions at the configured location. Weather data is fetched from OpenWeatherMap and cached for efficiency. Useful for correlating bird activity with weather.
+      responses:
+        "200":
+          description: Weather data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  main:
+                    type: string
+                  description:
+                    type: string
+                  temp:
+                    type: number
+                  humidity:
+                    type: number
+                  pressure:
+                    type: number
+                  clouds:
+                    type: number
+                  wind_speed:
+                    type: number
+  /videos/{video_id}:
+    get:
+      summary: Get video details
+      description: |
+        Retrieve detailed information about a specific video recording, including detected species, food present, and weather at the time. Use this to analyze or display individual bird visit events.
+      parameters:
+        - in: path
+          name: video_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Video details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VideoDetails"
+        "404":
+          description: Video not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /birdfood:
+    get:
+      summary: List all bird food
+      description: |
+        Retrieve a list of all bird food items configured in the system. This includes details like name, active status, and description. Useful for managing and displaying available bird food options.
+      responses:
+        "200":
+          description: List of bird food
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BirdFood"
+    post:
+      summary: Add new bird food
+      description: |
+        Add a new bird food item to the system. Provide the name and active status. Optionally, include a description. The new item will be available in the bird food list.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                active:
+                  type: boolean
+      responses:
+        "201":
+          description: Bird food added
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "400":
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /birdfood/{birdfood_id}/toggle:
+    patch:
+      summary: Toggle bird food active status
+      description: |
+        Toggle the active status of a bird food item. This can be used to enable or disable a food item without deleting it. The item will still appear in the list but will be marked as inactive if toggled off.
+      parameters:
+        - in: path
+          name: birdfood_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Status toggled
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /overview:
+    get:
+      summary: Get overview statistics
+      description: |
+        Retrieve key statistics and top species information for a given date. This provides a high-level view of bird activity and system detections. Useful for quick checks and monitoring trends.
+      parameters:
+        - in: query
+          name: date
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: Overview data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  topSpecies:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/TopSpecies"
+                  stats:
+                    $ref: "#/components/schemas/OverviewStats"
+        "400":
+          description: Invalid date format
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /timeline:
+    get:
+      summary: Get timeline of species visits
+      description: |
+        Retrieve a timeline of species visits, including start and end times, weather conditions, and detected species. This data is useful for analyzing visit patterns and correlating with environmental factors.
+      parameters:
+        - in: query
+          name: start_time
+          required: true
+          schema:
+            type: integer
+            description: Unix timestamp
+        - in: query
+          name: end_time
+          required: true
+          schema:
+            type: integer
+            description: Unix timestamp
+      responses:
+        "200":
+          description: Timeline data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TimelineVisit"
+        "400":
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /species:
+    get:
+      summary: List all species
+      description: |
+        Retrieve a list of all bird species that have been detected by the system. This includes summary information like name, parent species, and detection count. Useful for managing species data and monitoring diversity.
+      responses:
+        "200":
+          description: List of species
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SpeciesSummary"
+  /bird_families:
+    get:
+      summary: Get all bird families
+      description: |
+        Retrieve a list of all bird families in the system. This groups species into their respective families, providing a higher-level view of bird diversity and relationships. Useful for educational purposes and detailed analysis.
+      responses:
+        "200":
+          description: List of bird families
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BirdFamily"
+        "404":
+          description: Birds category not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /settings:
+    get:
+      summary: Get app settings
+      description: |
+        Retrieve the current application settings, including notification preferences, processor settings, and secret keys. This is useful for understanding the current configuration and for debugging purposes.
+      responses:
+        "200":
+          description: App settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Settings"
+    patch:
+      summary: Update app settings
+      description: |
+        Update the application settings. Provide a JSON object with the new settings values. This can be used to change notification preferences, processor settings, and other configuration options.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Settings"
+      responses:
+        "200":
+          description: Updated settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Settings"
+        "400":
+          description: No data provided
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /species/{species_id}/summary:
+    get:
+      summary: Get summary for a species
+      description: |
+        Retrieve the detailed summary for a specific species, including detection statistics, recent visits, and environmental correlations. This is useful for in-depth analysis of a species' behavior and trends.
+      parameters:
+        - in: path
+          name: species_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Species summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SpeciesSummaryDetails"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /system/metrics:
+    get:
+      summary: Get system metrics
+      description: |
+        Retrieve system metrics, including CPU, memory, and disk usage. This is useful for monitoring the health and performance of the BirdLense system.
+      responses:
+        "200":
+          description: System metrics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SystemMetrics"
+        "500":
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /system/activity:
+    get:
+      summary: Get system activity log
+      description: |
+        Retrieve the system activity log, showing the history of detections, uploads, and other significant events. This is useful for auditing and debugging purposes.
+      parameters:
+        - in: query
+          name: month
+          required: false
+          schema:
+            type: string
+            pattern: '^\\d{4}-\\d{2}$'
+      responses:
+        "200":
+          description: Activity log
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityLogEntry"
+  /storage/stats:
+    get:
+      summary: Get storage stats
+      description: |
+        Retrieve statistics about the storage usage, including file count and total size. This is useful for monitoring storage consumption and planning for capacity.
+      responses:
+        "200":
+          description: Storage stats
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/StorageStats"
+  /storage/purge:
+    post:
+      summary: Purge storage by date
+      description: |
+        Purge (delete) storage data older than a specified date. This is useful for managing storage capacity and removing outdated data.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                date:
+                  type: string
+                  format: date
+      responses:
+        "200":
+          description: Purge result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  deletedCount:
+                    type: integer
+                  deletedSize:
+                    type: integer
+        "400":
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+    BirdFood:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        active:
+          type: boolean
+        description:
+          type: string
+        image_url:
+          type: string
+    VideoDetails:
+      type: object
+      properties:
+        id:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        processor_version:
+          type: string
+        start_time:
+          type: string
+          format: date-time
+        end_time:
+          type: string
+          format: date-time
+        video_path:
+          type: string
+        spectrogram_path:
+          type: string
+        favorite:
+          type: boolean
+        weather:
+          type: object
+          properties:
+            main:
+              type: string
+            description:
+              type: string
+            temp:
+              type: number
+            humidity:
+              type: number
+            pressure:
+              type: number
+            clouds:
+              type: number
+            wind_speed:
+              type: number
+        species:
+          type: array
+          items:
+            type: object
+            properties:
+              species_id:
+                type: integer
+              species_name:
+                type: string
+              start_time:
+                type: number
+              end_time:
+                type: number
+              confidence:
+                type: number
+              source:
+                type: string
+              image_url:
+                type: string
+        food:
+          type: array
+          items:
+            $ref: "#/components/schemas/BirdFood"
+    TopSpecies:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        detections:
+          type: array
+          items:
+            type: integer
+    OverviewStats:
+      type: object
+      properties:
+        uniqueSpecies:
+          type: integer
+        totalDetections:
+          type: integer
+        lastHourDetections:
+          type: integer
+        busiestHour:
+          type: integer
+        avgVisitDuration:
+          type: integer
+        videoDuration:
+          type: integer
+        audioDuration:
+          type: integer
+    TimelineVisit:
+      type: object
+      properties:
+        id:
+          type: integer
+        start_time:
+          type: string
+          format: date-time
+        end_time:
+          type: string
+          format: date-time
+        max_simultaneous:
+          type: integer
+        weather:
+          type: object
+          nullable: true
+          properties:
+            temp:
+              type: number
+              nullable: true
+            clouds:
+              type: number
+              nullable: true
+        species:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            image_url:
+              type: string
+            parent_id:
+              type: integer
+        detections:
+          type: array
+          items:
+            type: object
+            properties:
+              video_id:
+                type: integer
+              start_time:
+                type: string
+                format: date-time
+              end_time:
+                type: string
+                format: date-time
+              confidence:
+                type: number
+              source:
+                type: string
+    SpeciesSummary:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        parent_id:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        image_url:
+          type: string
+        description:
+          type: string
+        active:
+          type: boolean
+        count:
+          type: integer
+    BirdFamily:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    SpeciesSummaryDetails:
+      type: object
+      properties:
+        species:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            image_url:
+              type: string
+            description:
+              type: string
+            active:
+              type: boolean
+            parent:
+              type: object
+              nullable: true
+              properties:
+                id:
+                  type: integer
+                name:
+                  type: string
+        stats:
+          type: object
+          properties:
+            detections:
+              type: object
+              properties:
+                detections_24h:
+                  type: integer
+                detections_7d:
+                  type: integer
+                detections_30d:
+                  type: integer
+            timeRange:
+              type: object
+              properties:
+                first_sighting:
+                  type: string
+                  format: date-time
+                  nullable: true
+                last_sighting:
+                  type: string
+                  format: date-time
+                  nullable: true
+            hourlyActivity:
+              type: array
+              items:
+                type: integer
+            weather:
+              type: array
+              items:
+                type: object
+                properties:
+                  temp:
+                    type: number
+                  clouds:
+                    type: number
+                  count:
+                    type: integer
+            food:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  count:
+                    type: integer
+        subspecies:
+          type: array
+          items:
+            type: object
+            properties:
+              species:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  image_url:
+                    type: string
+              stats:
+                type: object
+                properties:
+                  detections:
+                    type: object
+                    properties:
+                      detections_24h:
+                        type: integer
+                      detections_7d:
+                        type: integer
+                      detections_30d:
+                        type: integer
+                  hourlyActivity:
+                    type: array
+                    items:
+                      type: integer
+        recentVisits:
+          type: array
+          items:
+            $ref: "#/components/schemas/TimelineVisit"
+    SystemMetrics:
+      type: object
+      properties:
+        cpu:
+          type: object
+          properties:
+            percent:
+              type: number
+            temperature:
+              type: number
+              nullable: true
+        memory:
+          type: object
+          properties:
+            total:
+              type: number
+            used:
+              type: number
+            percent:
+              type: number
+        disk:
+          type: object
+          properties:
+            total:
+              type: number
+            used:
+              type: number
+            percent:
+              type: number
+    ActivityLogEntry:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        totalUptime:
+          type: number
+    StorageStats:
+      type: object
+      properties:
+        date:
+          type: string
+        fileCount:
+          type: integer
+        totalSize:
+          type: integer
+    Settings:
+      type: object
+      properties:
+        general:
+          type: object
+          properties:
+            enable_notifications:
+              type: boolean
+            notification_excluded_species:
+              type: array
+              items:
+                type: string
+        processor:
+          type: object
+          properties:
+            video_width:
+              type: integer
+            video_height:
+              type: integer
+            tracker:
+              type: string
+            max_record_seconds:
+              type: integer
+            max_inactive_seconds:
+              type: integer
+            spectrogram_px_per_sec:
+              type: integer
+            included_bird_families:
+              type: array
+              items:
+                type: string
+            save_images:
+              type: boolean
+        secrets:
+          type: object
+          properties:
+            openweather_api_key:
+              type: string
+            latitude:
+              type: string
+            longitude:
+              type: string
