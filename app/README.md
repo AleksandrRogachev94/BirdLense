@@ -1,24 +1,30 @@
 ## Quick Start
 
-1. **Clone the repository:**
+0. ** SSH into Raspberry PI
+   ```bash
+   ssh user@birdlense.local
+   ```
+   where user is what you set up in Raspberry PI Imager
+
+2. **Clone the repository:**
 
    ```bash
    sudo apt install git && git clone https://github.com/AleksandrRogachev94/BirdLense
    cd BirdLense/app
    ```
 
-2. **Run the installation script:**
+3. **Run the installation script:**
 
    ```bash
-   chmod +x install.sh
-   ./install.sh
+   chmod +x install.sh && ./install.sh
    ```
 
    Restart terminal session to apply permission changes before proceeding
 
-3. **Run startup command:**
+4. **Run startup command:**
 
    ```bash
+   cd BirdLense/app
    make start
    ```
 
@@ -166,4 +172,4 @@ flowchart TB
 
 **Q: The system is not recognizing my Raspberry Pi camera. What do I do?**
 
-**A:** Sometimes, Raspberry Pi can be finicky with third-party cameras. You may need to adjust `/boot/firmware/config.txt`. For example, to make a PiCam v2 (imx219) work on Raspberry Pi 5's cam0 slot, set `dtoverlay=imx219,cam0` and `camera_auto_detect=0`.
+**A:** Sometimes, Raspberry Pi can be finicky with third-party cameras. You may need to adjust `/boot/firmware/config.txt` (using `nano`, for example). For example, to make a PiCam v2 (imx219) work on Raspberry Pi 5's cam0 slot, set `dtoverlay=imx219,cam0` and `camera_auto_detect=0` and reboot.
