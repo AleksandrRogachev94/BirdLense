@@ -1,6 +1,6 @@
 ## Quick Start
 
-0. ** SSH into Raspberry PI
+1. **SSH into Raspberry PI**
    ```bash
    ssh user@birdlense.local
    ```
