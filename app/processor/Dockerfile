@@ -5,10 +5,11 @@ RUN echo "deb http://archive.raspberrypi.org/debian/ bookworm main" > /etc/apt/s
   && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 82B129927FA3303E
 
 # Install ffmpeg, pulseaudio, and picamera2 for media recording
-RUN apt-get update && apt-get upgrade -y && apt-get install -y \
+RUN apt-get update && apt-get upgrade -y
+RUN apt-get install -y \
   alsa-utils ffmpeg pulseaudio-utils python3-picamera2 \
   && apt-get clean \
-  && apt-get autoremove \
+  && apt-get autoremove -y \
   && rm -rf /var/cache/apt/archives/* \
   && rm -rf /var/lib/apt/lists/*
 
