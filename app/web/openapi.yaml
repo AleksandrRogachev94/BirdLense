@@ -164,6 +164,8 @@ paths:
       summary: Get overview statistics
       description: |
         Retrieve key statistics and top species information for a given date. This provides a high-level view of bird activity and system detections. Useful for quick checks and monitoring trends.
+
+        Note: `busiestHour` and each index in `topSpecies.detections` represent integer hours in UTC.
       parameters:
         - in: query
           name: date
@@ -195,7 +197,7 @@ paths:
     get:
       summary: Get timeline of species visits
       description: |
-        Retrieve a timeline of species visits, including start and end times, weather conditions, and detected species. All timestamps (including start_time and end_time) are in UTC. The maximum allowed date range between start_time and end_time is 1 day (24 hours). This data is useful for analyzing visit patterns and correlating with environmental factors.
+        Retrieve a timeline of species visits, including start and end times, weather conditions, and detected species. All timestamps (including start_time and end_time) are in UTC. The maximum allowed date range between start_time and end_time is 1 day (24 hours). All returned dates are also in UTC.
       parameters:
         - in: query
           name: start_time
