@@ -195,20 +195,20 @@ paths:
     get:
       summary: Get timeline of species visits
       description: |
-        Retrieve a timeline of species visits, including start and end times, weather conditions, and detected species. This data is useful for analyzing visit patterns and correlating with environmental factors.
+        Retrieve a timeline of species visits, including start and end times, weather conditions, and detected species. All timestamps (including start_time and end_time) are in UTC. The maximum allowed date range between start_time and end_time is 1 day (24 hours). This data is useful for analyzing visit patterns and correlating with environmental factors.
       parameters:
         - in: query
           name: start_time
           required: true
           schema:
             type: integer
-            description: Unix timestamp
+            description: Unix timestamp (UTC)
         - in: query
           name: end_time
           required: true
           schema:
             type: integer
-            description: Unix timestamp
+            description: Unix timestamp (UTC)
       responses:
         "200":
           description: Timeline data
