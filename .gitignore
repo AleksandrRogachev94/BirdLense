@@ -1,7 +1,9 @@
 __pycache__
+.ipynb_checkpoints
 .env
 *.db
 app/data/recordings
 app.log
 .DS_Store
 user_config.yaml
+datasets
