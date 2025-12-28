@@ -6,12 +6,12 @@ from tqdm import tqdm
 
 # 1. Load Models
 # base_model = YOLO("yolo11n.pt") 
-base_model = YOLO("/Users/alexrogachev/Downloads/best.pt") 
+base_model = YOLO("../../app/processor/models/detection/nabirds_yolo11n_binary_results/weights/best.pt") 
 custom_cls_model = YOLO("../../app/processor/models/classification/nabirds_yolo11n_cls/weights/best.pt")
 custom_det_model = YOLO("../../app/processor/models/detection/nabirds_yolov8_runs/detect/train7/weights/best.pt") 
 
 # 2. Configuration
-input_path = "./bird_videos/06-02-101939-video.mp4"
+input_path = "./bird_videos/05-31-170950-video.mp4"
 output_folder = "./processed_comparisons"
 os.makedirs(output_folder, exist_ok=True)
 
@@ -20,10 +20,10 @@ os.makedirs(output_folder, exist_ok=True)
 USE_CUSTOM_TRACKER_FOR_A = False 
 
 # Params
-SKIP_FRAMES = 1
+SKIP_FRAMES = 0
 IMGSZ_TRACK = 320
 IMGSZ_DET = 416
-CONF = 0.2
+CONF = 0.1
 
 # Visual Settings
 FONT_SCALE = 1.0      # Increased from 0.6
@@ -55,10 +55,10 @@ while cap.isOpened():
         # --- Approach A: Two-Stage ---
         # Binary Choice for tracking
         if USE_CUSTOM_TRACKER_FOR_A:
-            res_a = custom_det_model.track(view_a, persist=True, imgsz=IMGSZ_TRACK, conf=CONF, verbose=False)
+            res_a = custom_det_model.track(view_a, persist=True, imgsz=IMGSZ_TRACK, conf=CONF, verbose=False, tracker='bytetrack.yaml')
         else:
             # classes=[14]
-            res_a = base_model.track(view_a, persist=True, imgsz=IMGSZ_TRACK, conf=CONF, verbose=False)
+            res_a = base_model.track(view_a, persist=True, imgsz=IMGSZ_TRACK, conf=CONF, verbose=False, tracker='bytetrack.yaml')
 
         if res_a[0].boxes.id is not None:
             boxes = res_a[0].boxes.xyxy.cpu().numpy()
@@ -98,7 +98,7 @@ while cap.isOpened():
                     cv2.putText(view_a, text_label, (x1, y1 + text_h + 5), cv2.FONT_HERSHEY_SIMPLEX, FONT_SCALE, TEXT_COLOR, FONT_THICKNESS)
 
         # --- Approach B: Single-Stage ---
-        res_b = custom_det_model.track(view_b, persist=True, imgsz=IMGSZ_DET, conf=CONF, verbose=False)
+        res_b = custom_det_model.track(view_b, persist=True, imgsz=IMGSZ_DET, conf=CONF, verbose=False, tracker='bytetrack.yaml')
         if res_b[0].boxes.id is not None:
             for box, tid, cls_idx in zip(res_b[0].boxes.xyxy, res_b[0].boxes.id, res_b[0].boxes.cls):
                 label = custom_det_model.names[int(cls_idx)]
