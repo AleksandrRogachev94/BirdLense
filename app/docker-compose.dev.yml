@@ -10,7 +10,7 @@ services:
       dockerfile: Dockerfile.dev
     volumes:
       - ./processor:/app
-    # command: python src/main.py --fake-motion=true data/samples/videos/cardinal.mp4
+    command: python src/main.py --fake-motion=true data/samples/videos/cardinal.mp4
 
   web:
     build:
