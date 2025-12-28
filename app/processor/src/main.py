@@ -6,6 +6,7 @@ import logging
 import os
 import shutil
 from frame_processor import FrameProcessor
+from detection_strategy import SingleStageStrategy, TwoStageStrategy
 from motion_detectors.pir import PIRMotionDetector
 from motion_detectors.fake import FakeMotionDetector
 from decision_maker import DecisionMaker
@@ -69,8 +70,26 @@ def main():
         'secrets.latitude'), lon=app_config.get('secrets.longitude'), spectrogram_px_per_sec=app_config.get('processor.spectrogram_px_per_sec'))
     regional_species = audio_processor.get_regional_species() + ["Squirrel"]
     regional_species = api.set_active_species(regional_species)
+
+    # Configure Detection Strategy
+    strategy_type = app_config.get('processor.detection_strategy', 'single_stage')
+    if strategy_type == 'two_stage':
+        detection_strategy = TwoStageStrategy(
+            binary_model_path=app_config.get('processor.models.binary'),
+            classifier_model_path=app_config.get('processor.models.classifier'),
+            regional_species=regional_species
+        )
+    else:
+        detection_strategy = SingleStageStrategy(
+            model_path=app_config.get('processor.models.single_stage'),
+            regional_species=regional_species
+        )
+
     frame_processor = FrameProcessor(
-        regional_species=regional_species, tracker=app_config.get('processor.tracker'), save_images=app_config.get('processor.save_images'))
+        detection_strategy=detection_strategy,
+        tracker=app_config.get('processor.tracker'), 
+        save_images=app_config.get('processor.save_images')
+    )
     fps_tracker = FPSTracker()
 
     # Main motion detection loop

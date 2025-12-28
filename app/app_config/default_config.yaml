@@ -19,6 +19,12 @@ processor:
 
   save_images: false # save frames with detectiond to disk. Testing only
 
+  detection_strategy: "two_stage" # Options: "single_stage", "two_stage"
+  models:
+    single_stage: "models/detection/nabirds_yolov8n_ncnn_model" 
+    binary: "models/detection/nabirds_yolo11n_binary/weights/best_ncnn_model"
+    classifier: "models/classification/nabirds_yolo11n_cls/weights/best_ncnn_model"
+
 # Add your secrets and other configurations here
 secrets:
   openweather_api_key: ""

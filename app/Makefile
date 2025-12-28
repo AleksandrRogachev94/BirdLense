@@ -16,6 +16,9 @@ stop-dev:
 	@docker compose -f docker-compose.base.yml -f docker-compose.dev.yml down
 	@echo "Docker Compose services stopped."
 
+test:
+	python -m unittest discover processor/tests
+
 # PROD
 build:
 	@echo "Building Docker Compose services..."
