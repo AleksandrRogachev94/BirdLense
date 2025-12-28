@@ -147,7 +147,7 @@ class TwoStageStrategy(DetectionStrategy):
     def detect(self, frame: np.ndarray, tracker_config: str, min_confidence: float) -> List[DetectionResult]:
         # 1. Binary Detection
         results = self.binary_model.track(
-            frame, persist=True, conf=min_confidence, verbose=False, imgsz=320, tracker=tracker_config)
+            frame, persist=True, conf=min_confidence, verbose=True, imgsz=320, tracker=tracker_config)
             
         if not results or results[0].boxes.id is None:
             return []
@@ -178,7 +178,7 @@ class TwoStageStrategy(DetectionStrategy):
              crop = frame[y1:y2, x1:x2]
              
              # Classification with regional filtering
-             result_cls = self.classifier_model(crop, classes=self.classes, verbose=False)
+             result_cls = self.classifier_model(crop, classes=self.classes, verbose=True)
              
              # Get top 1 class
              top1_idx = result_cls[0].probs.top1

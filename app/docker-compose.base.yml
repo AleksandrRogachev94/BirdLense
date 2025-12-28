@@ -29,7 +29,13 @@ services:
       - ./app_config:/app/src/app_config
       - ./data:/app/data
     devices:
-      - /dev/video0 # video
+      - /dev/video0 # camera
+      - /dev/video10 # V4L2 H264 encoder (hardware)
+      - /dev/video11 # V4L2 H264 encoder (hardware) 
+      - /dev/video12 # V4L2 H264 encoder (hardware)
+      - /dev/video18 # V4L2 H264 stateless decoder
+      - /dev/video19 # V4L2 H264 stateless decoder
+      - /dev/video31 # ISP
       - /dev/snd # audio
       - /dev/bus/usb # audio
       - /dev/gpiochip0:/dev/gpiochip4 # To address a bug in lgpio described inhttps://github.com/gpiozero/gpiozero/issues/1166
