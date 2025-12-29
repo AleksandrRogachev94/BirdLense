@@ -162,8 +162,9 @@ class MediaSource:
     def capture(self):
         self.control_queue.put(("capture", None))
         image = self.frame_queue.get()
-        # Convert YUV420 from lores stream to BGR for OpenCV
-        return cv2.cvtColor(image, cv2.COLOR_YUV420p2BGR)
+        # Convert YUV420 (I420 format) from lores stream to BGR for OpenCV
+        # Picamera2 uses I420 (Y-U-V planar), not YV12 (Y-V-U), so use COLOR_YUV2BGR_I420
+        return cv2.cvtColor(image, cv2.COLOR_YUV2BGR_I420)
 
     def close(self):
         self.control_queue.put(("exit", None))
