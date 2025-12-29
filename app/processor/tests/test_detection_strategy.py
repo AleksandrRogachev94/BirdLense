@@ -104,5 +104,26 @@ class TestDetectionStrategy(unittest.TestCase):
             blue_jay_detected = any("Blue Jay" in res.class_name for res in results)
             self.assertTrue(blue_jay_detected, f"Should detect Blue Jay. Got: {[r.class_name for r in results]}")
 
+    def test_blur_detection_logic(self):
+        self.logger.info("--- Testing Blur Detection Logic ---")
+        strategy = TwoStageStrategy(
+            self.binary_model_path, 
+            self.classifier_model_path,
+            blur_threshold=100.0
+        )
+        
+        # 1. Create a sharp image (random noise often has high variance, or use a drawing)
+        sharp_img = np.zeros((100, 100, 3), dtype=np.uint8)
+        cv2.rectangle(sharp_img, (10, 10), (90, 90), (255, 255, 255), -1) # High contrast
+        cv2.circle(sharp_img, (50, 50), 20, (0, 0, 0), -1)
+        
+        is_blurry = strategy.is_blurry(sharp_img)
+        self.assertFalse(is_blurry, "Sharp image should not be detected as blurry")
+        
+        # 2. Create a blurry image
+        blur_img = cv2.GaussianBlur(sharp_img, (21, 21), 0)
+        is_blurry = strategy.is_blurry(blur_img)
+        self.assertTrue(is_blurry, "Blurred image should be detected as blurry")
+
 if __name__ == '__main__':
     unittest.main()

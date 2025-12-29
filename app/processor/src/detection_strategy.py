@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 import logging
-import os
-from typing import List, Tuple, Optional
+from typing import List, Optional
 from dataclasses import dataclass
 import numpy as np
 from ultralytics import YOLO
@@ -26,8 +25,32 @@ class DetectionResult:
     bbox: List[float]
 
 class DetectionStrategy(ABC):
-    def __init__(self, min_center_dist: float = 0.2):
+    def __init__(self, min_center_dist: float = 0.1, min_box_size_px: int = 50, blur_threshold: float = 100.0, max_blur_checks: int = 3):
         self.min_center_dist = min_center_dist
+        self.min_box_size_px = min_box_size_px
+        self.blur_threshold = blur_threshold
+        self.max_blur_checks = max_blur_checks
+
+    def is_blurry(self, image: np.ndarray) -> bool:
+        """
+        Check if the image is blurry using the variance of the Laplacian.
+        
+        Args:
+            image: BGR image crop
+            
+        Returns:
+            True if variance < threshold, indicating blur.
+        """
+        if image is None or image.size == 0:
+            return True
+        
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        variance = cv2.Laplacian(gray, cv2.CV_64F).var()
+        
+        if variance < self.blur_threshold:
+            logger.info(f"Blur detected: variance={variance:.1f} < threshold={self.blur_threshold}")
+            return True
+        return False
 
     @abstractmethod
     def detect(self, frame: np.ndarray, tracker_config: str, min_confidence: float) -> List[DetectionResult]:
@@ -67,7 +90,7 @@ class DetectionStrategy(ABC):
         return True
 
 class SingleStageStrategy(DetectionStrategy):
-    def __init__(self, model_path: str, regional_species: Optional[List[str]] = None, min_center_dist: float = 0.2):
+    def __init__(self, model_path: str, regional_species: Optional[List[str]] = None, min_center_dist: float = 0.1):
         super().__init__(min_center_dist)
         self.logger = logging.getLogger(self.__class__.__name__)
         self.model = YOLO(model_path, task="detect")
@@ -101,16 +124,25 @@ class SingleStageStrategy(DetectionStrategy):
         confidences = boxes.conf.cpu().tolist()
         xyxyn = boxes.xyxyn.cpu().numpy()
 
+        h, w, _ = frame.shape
+
         detection_results = []
         for track_id, class_idx, conf, bbox in zip(track_ids, class_indexes, confidences, xyxyn):
             # Internal filtering primarily done by YOLO conf/classes, but check validity (center dist) here
-            if self.is_valid_detection(bbox, conf, min_confidence):
-                detection_results.append(DetectionResult(
-                    track_id=track_id, 
-                    class_name=self.model.names[class_idx], 
-                    confidence=conf, 
-                    bbox=bbox
-                ))
+            if not self.is_valid_detection(bbox, conf, min_confidence):
+                continue
+            
+            # Check min size
+            x1n, y1n, x2n, y2n = bbox
+            if (x2n - x1n) * w < self.min_box_size_px or (y2n - y1n) * h < self.min_box_size_px:
+                continue
+
+            detection_results.append(DetectionResult(
+                track_id=track_id, 
+                class_name=self.model.names[class_idx], 
+                confidence=conf, 
+                bbox=bbox
+            ))
             
         return detection_results
 
@@ -120,8 +152,8 @@ class SingleStageStrategy(DetectionStrategy):
 
 
 class TwoStageStrategy(DetectionStrategy):
-    def __init__(self, binary_model_path: str, classifier_model_path: str, regional_species: Optional[List[str]] = None, min_center_dist: float = 0.2):
-        super().__init__(min_center_dist)
+    def __init__(self, binary_model_path: str, classifier_model_path: str, regional_species: Optional[List[str]] = None, min_center_dist: float = 0.1, min_box_size_px: int = 50, blur_threshold: float = 100.0):
+        super().__init__(min_center_dist, min_box_size_px, blur_threshold)
         self.logger = logging.getLogger(self.__class__.__name__)
         self.regional_species = regional_species
         
@@ -164,9 +196,23 @@ class TwoStageStrategy(DetectionStrategy):
         return name.replace('_OR_', '/').replace('_', ' ')
 
     def detect(self, frame: np.ndarray, tracker_config: str, min_confidence: float) -> List[DetectionResult]:
+        """
+        Two-stage detection: binary detection followed by species classification.
+        
+        Flow:
+        1. Binary Detection: Detect "bird" vs "not bird" using fast model.
+        2. Validity Filter (cheap): Drop detections that are too close to edges,
+           too small, or low confidence. These are likely noise or partial birds.
+        3. Round-Robin Classification (one per frame): To limit compute, we classify
+           only ONE bird per frame, rotating through valid detections.
+        4. Blur Check (before classification): Skip classification if the selected
+           crop is blurry (motion blur, out of focus). Try up to 3 candidates.
+        5. Build Results: Return all valid detections. Only the classified one
+           has a species name; others have class_name=None (tracked but not yet classified).
+        """
         # 1. Binary Detection
         results = self.binary_model.track(
-            frame, persist=True, conf=min_confidence, verbose=True, imgsz=320, tracker=tracker_config)
+            frame, persist=True, conf=min_confidence, verbose=False, imgsz=320, tracker=tracker_config)
             
         if not results or results[0].boxes.id is None:
             return []
@@ -194,6 +240,12 @@ class TwoStageStrategy(DetectionStrategy):
             if x2 <= x1 or y2 <= y1:
                 continue
             
+            # Check minimum size
+            box_w = x2 - x1
+            box_h = y2 - y1
+            if box_w < self.min_box_size_px or box_h < self.min_box_size_px:
+                continue
+            
             valid_boxes.append({
                 'track_id': track_id,
                 'conf': conf,
@@ -207,24 +259,37 @@ class TwoStageStrategy(DetectionStrategy):
         # Sort by track_id for consistent ordering (Ultralytics returns by confidence)
         valid_boxes.sort(key=lambda b: b['track_id'])
         
-        # 3. Round-robin: select ONE box to classify this frame
-        self._classification_index = self._classification_index % len(valid_boxes)
-        selected_idx = self._classification_index
+        # 3. Round-robin with Blur Check
+        # Always rotate the base index to ensure fairness (starvation prevention)
+        start_idx = self._classification_index % len(valid_boxes)
         self._classification_index += 1
+
+        selected_box = None
         
-        # 4. Build results - classify only the selected box
+        # Try up to max_blur_checks candidates starting from start_idx
+        for i in range(min(len(valid_boxes), self.max_blur_checks)):
+            idx = (start_idx + i) % len(valid_boxes)
+            candidate = valid_boxes[idx]
+            
+            x1, y1, x2, y2 = candidate['crop_coords']
+            crop = frame[y1:y2, x1:x2]
+            
+            if not self.is_blurry(crop):
+                selected_box = candidate
+                break
+
+        # 4. Build results
         detection_results = []
-        for i, box in enumerate(valid_boxes):
-            if i == selected_idx:
+        for box in valid_boxes:
+            species_name = None
+            if selected_box and box['track_id'] == selected_box['track_id']:
                 # Classify this one
                 x1, y1, x2, y2 = box['crop_coords']
                 crop = frame[y1:y2, x1:x2]
-                result_cls = self.classifier_model(crop, classes=self.classes, verbose=True)
-                top1_idx = result_cls[0].probs.top1
-                species_name = self._normalize_class_name(result_cls[0].names[top1_idx])
-            else:
-                # Not scheduled for classification this frame
-                species_name = None
+                result_cls = self.classifier_model(crop, classes=self.classes, verbose=False)
+                if result_cls and result_cls[0].probs:
+                    top1_idx = result_cls[0].probs.top1
+                    species_name = self._normalize_class_name(result_cls[0].names[top1_idx])
             
             detection_results.append(DetectionResult(
                 track_id=box['track_id'],
