@@ -17,7 +17,7 @@ processor:
     - "Woodpeckers" # Regular visitors to suet and seed feeders
     - "Squirrel" # Important to detect for feeder management
 
-  save_images: true # save frames with detectiond to disk. Testing only
+  save_images: false # save frames with detectiond to disk. Testing only
 
   detection_strategy: "two_stage" # Options: "single_stage", "two_stage"
   models:
