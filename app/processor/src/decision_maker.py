@@ -46,6 +46,7 @@ class DecisionMaker():
 
     def get_results(self, tracks):
         result = []
+        print(tracks)
         for track in tracks.values():
             # Skip tracks with no predictions yet (e.g., not classified yet due to round-robin)
             if not track['preds']:

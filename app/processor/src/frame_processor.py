@@ -50,6 +50,8 @@ class FrameProcessor:
             self.logger.debug('No detections')
             return False
 
+        print(results)
+
         # No further filtering needed here, Strategy does it all.
         valid_detections = [(res.track_id, res.class_name) for res in results]
 
