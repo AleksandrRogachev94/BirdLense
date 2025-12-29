@@ -74,8 +74,12 @@ def recording_worker(control_queue: multiprocessing.Queue, frame_queue: multipro
     """Handles video processing and streaming."""
     logging.info("Recording worker started")
     picam2 = Picamera2()
-    picam2.configure(picam2.create_video_configuration(
-        {"size": main_size}, encode="main"))
+    config = picam2.create_video_configuration(
+        main={"size": main_size, "format": "RGB888"},
+        lores={"size": lores_size, "format": "YUV420"},
+        encode="main"
+    )
+    picam2.configure(config)
     stream_output = StreamingOutput()
     start_streaming_server(stream_output, control_queue)
 
@@ -102,7 +106,7 @@ def recording_worker(control_queue: multiprocessing.Queue, frame_queue: multipro
                 picam2.start()
                 recording = True
             # push first frame to signal that recording has started
-            frame_queue.put(picam2.capture_array("main"))
+            frame_queue.put(picam2.capture_array("lores"))
         elif command == "stop":
             processor_active = False
             picam2.stop_encoder(encoder)
@@ -112,7 +116,7 @@ def recording_worker(control_queue: multiprocessing.Queue, frame_queue: multipro
             # put empty frame to signal that recording has stopped
             frame_queue.put(None)
         elif command == "capture":
-            frame_queue.put(picam2.capture_array("main"))
+            frame_queue.put(picam2.capture_array("lores"))
         elif command == "client_connect":
             active_clients += 1
             if active_clients == 1:
@@ -136,7 +140,7 @@ def recording_worker(control_queue: multiprocessing.Queue, frame_queue: multipro
 class MediaSource:
     """Manages camera recording and streaming."""
 
-    def __init__(self, main_size: tuple = (1280, 720), lores_size: tuple = (640, 640)):
+    def __init__(self, main_size: tuple = (1280, 720), lores_size: tuple = (640, 480)):
         self.frame_queue = multiprocessing.Queue(maxsize=1)
         self.control_queue = multiprocessing.Queue()
         self.process = multiprocessing.Process(
@@ -157,10 +161,9 @@ class MediaSource:
 
     def capture(self):
         self.control_queue.put(("capture", None))
-        # it's RGB in reality, no need to convert cv2.COLOR_YUV420p2RGB, some weird picamera2 behavior
         image = self.frame_queue.get()
-        # return BGR
-        return cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+        # Convert YUV420 from lores stream to BGR for OpenCV
+        return cv2.cvtColor(image, cv2.COLOR_YUV420p2BGR)
 
     def close(self):
         self.control_queue.put(("exit", None))
