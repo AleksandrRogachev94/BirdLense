@@ -16,6 +16,9 @@ try:
 except ImportError:
     pass
 
+# Sample regional species list in Philadelphia area.
+regional_species = ['Northern Cardinal', 'Dark-eyed Junco', 'Tufted Titmouse', 'American Crow', 'Mourning Dove', 'Blue Jay', 'Carolina Wren', 'White-breasted Nuthatch', 'White-throated Sparrow', 'Downy Woodpecker', 'Red-bellied Woodpecker', 'Song Sparrow', 'European Starling', 'American Goldfinch', 'House Finch', 'Carolina Chickadee', 'House Sparrow', 'American Robin', 'Northern Mockingbird', 'Black-capped Chickadee', 'Eastern Bluebird', 'Northern Flicker', 'Hairy Woodpecker', 'Rock Pigeon', 'Golden-crowned Kinglet', 'Yellow-rumped Warbler', 'Pileated Woodpecker', 'American Tree Sparrow', 'Red-winged Blackbird', 'Red-breasted Nuthatch', 'Brown Creeper', 'Common Raven', 'Cedar Waxwing', 'Yellow-bellied Sapsucker', 'Common Grackle', 'Purple Finch', 'Pine Siskin', 'Horned Lark', 'Hermit Thrush', 'Swamp Sparrow', 'Ruby-crowned Kinglet', 'Eastern Towhee', 'Winter Wren', 'Fox Sparrow', 'Brown-headed Cowbird', 'Field Sparrow', 'Squirrel']
+
 class TestDetectionStrategy(unittest.TestCase):
 
     def setUp(self):
@@ -56,7 +59,7 @@ class TestDetectionStrategy(unittest.TestCase):
         strategy = TwoStageStrategy(
             self.binary_model_path, 
             self.classifier_model_path, 
-            regional_species=["Cardinal", "Jay"]
+            regional_species=regional_species
         )
         
         # Detect
@@ -69,8 +72,8 @@ class TestDetectionStrategy(unittest.TestCase):
             # We expect a Blue Jay in the sample image
             self.assertGreater(len(results), 0, "Should detect at least one bird in sample image")
             
-            blue_jay_detected = any("Blue_Jay" in res.class_name for res in results)
-            self.assertTrue(blue_jay_detected, "Should detect Blue_Jay")
+            blue_jay_detected = any("Blue Jay" in res.class_name for res in results)
+            self.assertTrue(blue_jay_detected, f"Should detect Blue Jay. Got: {[r.class_name for r in results]}")
             
             # Check properties
             first = results[0]
@@ -86,7 +89,7 @@ class TestDetectionStrategy(unittest.TestCase):
         # Initialize
         strategy = SingleStageStrategy(
             self.single_model_path,
-            regional_species=["Cardinal", "Jay"]
+            regional_species=regional_species
         )
 
         # Detect
@@ -98,9 +101,7 @@ class TestDetectionStrategy(unittest.TestCase):
         if self.img_exists:
             self.assertGreater(len(results), 0, "Should detect at least one bird in sample image")
             
-            # Single stage might label it differently (e.g. "Blue Jay" space instead of underscore)
-            # Checking looseness
-            blue_jay_detected = any("Blue Jay" in res.class_name or "Blue_Jay" in res.class_name for res in results)
+            blue_jay_detected = any("Blue Jay" in res.class_name for res in results)
             self.assertTrue(blue_jay_detected, f"Should detect Blue Jay. Got: {[r.class_name for r in results]}")
 
 if __name__ == '__main__':

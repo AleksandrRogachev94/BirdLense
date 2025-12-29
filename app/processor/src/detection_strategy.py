@@ -37,6 +37,7 @@ class DetectionStrategy(ABC):
     def reset(self):
         pass
 
+
     def is_valid_detection(self, bbox: List[float], conf: float, min_confidence: float) -> bool:
         """
         Check if detection center is not too close to edges and confidence is sufficient.
@@ -133,16 +134,31 @@ class TwoStageStrategy(DetectionStrategy):
             self.logger.info(f'Initializing with regional species filters: {self.regional_species}')
             self.classes = [
                 id for id, label in self.classifier_model.names.items() 
-                if any(reg_species in label for reg_species in self.regional_species)
+                if any(reg_species in self._normalize_class_name(label) for reg_species in self.regional_species)
             ]
             # Log the actual class names that are enabled
-            enabled_classes = [self.classifier_model.names[id] for id in self.classes]
+            enabled_classes = [self._normalize_class_name(self.classifier_model.names[id]) for id in self.classes]
             self.logger.info(f'Regional species filters active: {len(self.classes)} classes enabled.')
             self.logger.info(f'Enabled classes: {enabled_classes}')
 
         # Warmup
         self.binary_model.track(np.zeros((320, 320, 3), dtype=np.uint8), tracker="bytetrack.yaml", verbose=False)
         self.classifier_model(np.zeros((224, 224, 3), dtype=np.uint8), verbose=False)
+
+    def _normalize_class_name(self, name: str) -> str:
+        """
+        Normalize a classifier model class name to standard display format.
+        
+        Converts model-specific formatting (underscores, _OR_) to 
+        human-readable format (spaces, /).
+        
+        Args:
+            name: Raw class name from the model (e.g., "Blue_Jay", "Winter_OR_juvenile")
+            
+        Returns:
+            Normalized name (e.g., "Blue Jay", "Winter/juvenile")
+        """
+        return name.replace('_OR_', '/').replace('_', ' ')
 
     def detect(self, frame: np.ndarray, tracker_config: str, min_confidence: float) -> List[DetectionResult]:
         # 1. Binary Detection
@@ -182,7 +198,7 @@ class TwoStageStrategy(DetectionStrategy):
              
              # Get top 1 class
              top1_idx = result_cls[0].probs.top1
-             species_name = result_cls[0].names[top1_idx]
+             species_name = self._normalize_class_name(result_cls[0].names[top1_idx])
              
              detection_results.append(DetectionResult(
                  track_id=track_id,
