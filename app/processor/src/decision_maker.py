@@ -47,6 +47,9 @@ class DecisionMaker():
     def get_results(self, tracks):
         result = []
         for track in tracks.values():
+            # Skip tracks with no predictions yet (e.g., not classified yet due to round-robin)
+            if not track['preds']:
+                continue
             # Find most common prediction for each track
             pred_counts = Counter(track['preds'])
             species_name, count = pred_counts.most_common(1)[0]

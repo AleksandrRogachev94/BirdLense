@@ -128,6 +128,9 @@ class TwoStageStrategy(DetectionStrategy):
         self.binary_model = YOLO(binary_model_path, task="detect")
         self.classifier_model = YOLO(classifier_model_path, task="classify")
         
+        # Round-robin index for classification scheduling
+        self._classification_index = 0
+        
         # Pre-calculate allowed class IDs for regional species
         self.classes = None
         if self.regional_species:
@@ -174,41 +177,65 @@ class TwoStageStrategy(DetectionStrategy):
         xyxyn = boxes.xyxyn.cpu().numpy() # normalized for output
         xyxy = boxes.xyxy.cpu().numpy()   # absolute for cropping
 
-        detection_results = []
         h, w, _ = frame.shape
 
-        for i, (track_id, conf, bbox_norm, bbox_abs) in enumerate(zip(track_ids, confidences, xyxyn, xyxy)):
-             
-             # Check validity BEFORE classification to save compute
-             if not self.is_valid_detection(bbox_norm, conf, min_confidence):
-                 continue
+        # 2. Collect all valid boxes first
+        valid_boxes = []
+        for track_id, conf, bbox_norm, bbox_abs in zip(track_ids, confidences, xyxyn, xyxy):
+            # Check validity BEFORE classification to save compute
+            if not self.is_valid_detection(bbox_norm, conf, min_confidence):
+                continue
 
-             x1, y1, x2, y2 = map(int, bbox_abs)
-             # Clamp
-             x1, y1 = max(0, x1), max(0, y1)
-             x2, y2 = min(w, x2), min(h, y2)
+            x1, y1, x2, y2 = map(int, bbox_abs)
+            # Clamp
+            x1, y1 = max(0, x1), max(0, y1)
+            x2, y2 = min(w, x2), min(h, y2)
              
-             if x2 <= x1 or y2 <= y1:
-                 continue
-                 
-             crop = frame[y1:y2, x1:x2]
-             
-             # Classification with regional filtering
-             result_cls = self.classifier_model(crop, classes=self.classes, verbose=True)
-             
-             # Get top 1 class
-             top1_idx = result_cls[0].probs.top1
-             species_name = self._normalize_class_name(result_cls[0].names[top1_idx])
-             
-             detection_results.append(DetectionResult(
-                 track_id=track_id,
-                 class_name=species_name,
-                 confidence=conf, 
-                 bbox=bbox_norm
-             ))
+            if x2 <= x1 or y2 <= y1:
+                continue
+            
+            valid_boxes.append({
+                'track_id': track_id,
+                'conf': conf,
+                'bbox_norm': bbox_norm,
+                'crop_coords': (x1, y1, x2, y2)
+            })
+        
+        if not valid_boxes:
+            return []
+        
+        # Sort by track_id for consistent ordering (Ultralytics returns by confidence)
+        valid_boxes.sort(key=lambda b: b['track_id'])
+        
+        # 3. Round-robin: select ONE box to classify this frame
+        self._classification_index = self._classification_index % len(valid_boxes)
+        selected_idx = self._classification_index
+        self._classification_index += 1
+        
+        # 4. Build results - classify only the selected box
+        detection_results = []
+        for i, box in enumerate(valid_boxes):
+            if i == selected_idx:
+                # Classify this one
+                x1, y1, x2, y2 = box['crop_coords']
+                crop = frame[y1:y2, x1:x2]
+                result_cls = self.classifier_model(crop, classes=self.classes, verbose=True)
+                top1_idx = result_cls[0].probs.top1
+                species_name = self._normalize_class_name(result_cls[0].names[top1_idx])
+            else:
+                # Not scheduled for classification this frame
+                species_name = None
+            
+            detection_results.append(DetectionResult(
+                track_id=box['track_id'],
+                class_name=species_name,
+                confidence=box['conf'], 
+                bbox=box['bbox_norm']
+            ))
              
         return detection_results
 
     def reset(self):
-         if hasattr(self.binary_model.predictor, 'trackers'):
-             self.binary_model.predictor.trackers[0].reset()
+        self._classification_index = 0
+        if hasattr(self.binary_model.predictor, 'trackers'):
+            self.binary_model.predictor.trackers[0].reset()

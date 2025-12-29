@@ -70,7 +70,9 @@ class FrameProcessor:
                 'start_time': round(time.time() - self.start_time, 1),
                 'preds': []
             }
-        self.tracks[track_id]['preds'].append(class_name)
+        # Only append real predictions (None means not classified this frame)
+        if class_name is not None:
+            self.tracks[track_id]['preds'].append(class_name)
         self.tracks[track_id]['end_time'] = round(
             time.time() - self.start_time, 1)
 
