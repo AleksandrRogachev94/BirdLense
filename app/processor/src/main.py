@@ -15,6 +15,7 @@ from api import API
 from sources.media_source import MediaSource
 from sources.video_file_source import VideoFileSource
 from audio_processor import AudioProcessor
+from llm_verifier import LLMVerifier
 from app_config.app_config import app_config
 
 # Set up logging
@@ -70,6 +71,11 @@ def main():
         'secrets.latitude'), lon=app_config.get('secrets.longitude'), spectrogram_px_per_sec=app_config.get('processor.spectrogram_px_per_sec'))
     regional_species = audio_processor.get_regional_species() + ["Squirrel"]
     regional_species = api.set_active_species(regional_species)
+
+    # Initialize LLM verifier if API key is configured
+    gemini_api_key = app_config.get('secrets.gemini_api_key')
+    llm_log_dir = os.path.join('data', 'llm_verification_logs')
+    llm_verifier = LLMVerifier(gemini_api_key, llm_log_dir) if gemini_api_key else None
 
     # Configure Detection Strategy
     strategy_type = app_config.get('processor.detection_strategy', 'single_stage')
@@ -141,6 +147,11 @@ def main():
             if video_detections:
                 audio_detections, spectrogram_path = audio_processor.run(
                     video_output)
+                
+                # LLM validation (if enabled)
+                if llm_verifier:
+                    video_detections = llm_verifier.validate_detections(video_detections)
+                    
             logging.info(
                 f'Processing stopped. Video Result: {video_detections}; Audio Result: {audio_detections}')
             if len(video_detections) > 0:

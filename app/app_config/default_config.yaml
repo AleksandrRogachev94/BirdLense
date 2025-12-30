@@ -28,6 +28,7 @@ processor:
 # Add your secrets and other configurations here
 secrets:
   openweather_api_key: ""
+  gemini_api_key: ""  # Optional: enables LLM verification when set
   # Default location. This is near the geographic center of the contiguous United States.
   latitude: "39.8283"
   longitude: "-98.5795"

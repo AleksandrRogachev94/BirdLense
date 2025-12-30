@@ -52,31 +52,36 @@ class FrameProcessor:
 
         print(results)
 
-        # No further filtering needed here, Strategy does it all.
-        valid_detections = [(res.track_id, res.class_name) for res in results]
-
         # Update tracks with valid detections
-        for track_id, class_name in valid_detections:
-            self.update_track(track_id, class_name)
+        for res in results:
+            self.update_track(res.track_id, res.class_name, res.crop, res.blur_variance)
 
         self.logger.debug(
             f'Detection Time: {(time.time() - st) * 1000:.0f} msec | '
-            f'Valid: {len(valid_detections)}'
+            f'Valid: {len(results)}'
         )
 
-        return len(valid_detections) > 0
+        return len(results) > 0
 
-    def update_track(self, track_id, class_name):
+    def update_track(self, track_id, class_name, crop=None, blur_variance=None):
         if track_id not in self.tracks:
             self.tracks[track_id] = {
                 'start_time': round(time.time() - self.start_time, 1),
-                'preds': []
+                'preds': [],
+                'best_frame': None,
+                'best_frame_score': 0.0
             }
         # Only append real predictions (None means not classified this frame)
         if class_name is not None:
             self.tracks[track_id]['preds'].append(class_name)
         self.tracks[track_id]['end_time'] = round(
             time.time() - self.start_time, 1)
+        
+        # Update best frame if this crop is sharper
+        if crop is not None and blur_variance is not None:
+            if blur_variance > self.tracks[track_id]['best_frame_score']:
+                self.tracks[track_id]['best_frame'] = crop
+                self.tracks[track_id]['best_frame_score'] = blur_variance
 
     def reset(self):
         self.tracks = {}

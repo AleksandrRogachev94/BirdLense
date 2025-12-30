@@ -37,16 +37,22 @@ class API():
         self._send_request('POST', 'notify/detections', {'detection': species})
 
     def create_video(self, species_video, species_audio, start_time, end_time, video_path, spectrogram_path):
+        # Fields to exclude from API payload (non-serializable or internal)
+        exclude_fields = {'best_frame', 'track_id'}
+        
+        def clean_detection(d):
+            return {k: v for k, v in d.items() if k not in exclude_fields}
+        
         video_data = {
             'processor_version': '1',
-            'species': [{**sp, 'source': 'video'} for sp in species_video] + [{**sp, 'source': 'audio'} for sp in species_audio],
+            'species': [clean_detection(sp) for sp in species_video] + [{**sp, 'source': 'audio'} for sp in species_audio],
             'start_time': start_time.isoformat(),
             'end_time': end_time.isoformat(),
             'video_path': video_path,
             'spectrogram_path': spectrogram_path
         }
         response = self._send_request('POST', 'videos', video_data)
-        return response.json()  # Assuming the response contains useful data
+        return response.json()
 
     def set_active_species(self, active_names):
         response = self._send_request('PUT', 'species/active', active_names)

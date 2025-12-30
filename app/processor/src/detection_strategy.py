@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import logging
-from typing import List, Optional
+from typing import List, Optional, Tuple
 from dataclasses import dataclass
 import numpy as np
 from ultralytics import YOLO
@@ -17,12 +17,16 @@ class DetectionResult:
         track_id: Unique integer ID for the tracked object.
         class_name: The detected class name (species).
         confidence: Confidence score of the detection (0.0 to 1.0).
-        bbox: Normalized bounding box coordinates [x1, y1, x2, y2], where x and y are relative to image dimensions (0.0 to 1.0).
+        bbox: Normalized bounding box coordinates [x1, y1, x2, y2].
+        blur_variance: Laplacian variance of the crop (higher = sharper).
+        crop: BGR image crop of the detected object.
     """
     track_id: int
     class_name: str
     confidence: float
     bbox: List[float]
+    blur_variance: Optional[float] = None
+    crop: Optional[np.ndarray] = None
 
 class DetectionStrategy(ABC):
     def __init__(self, min_center_dist: float = 0.1, min_box_size_px: int = 50, blur_threshold: float = 100.0, max_blur_checks: int = 3):
@@ -31,7 +35,7 @@ class DetectionStrategy(ABC):
         self.blur_threshold = blur_threshold
         self.max_blur_checks = max_blur_checks
 
-    def is_blurry(self, image: np.ndarray) -> bool:
+    def is_blurry(self, image: np.ndarray) -> Tuple[bool, float]:
         """
         Check if the image is blurry using the variance of the Laplacian.
         
@@ -39,18 +43,19 @@ class DetectionStrategy(ABC):
             image: BGR image crop
             
         Returns:
-            True if variance < threshold, indicating blur.
+            Tuple of (is_blurry: bool, variance: float).
+            Higher variance means sharper image.
         """
         if image is None or image.size == 0:
-            return True
+            return True, 0.0
         
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         variance = cv2.Laplacian(gray, cv2.CV_64F).var()
         
-        if variance < self.blur_threshold:
+        is_blur = variance < self.blur_threshold
+        if is_blur:
             logger.info(f"Blur detected: variance={variance:.1f} < threshold={self.blur_threshold}")
-            return True
-        return False
+        return is_blur, variance
 
     @abstractmethod
     def detect(self, frame: np.ndarray, tracker_config: str, min_confidence: float) -> List[DetectionResult]:
@@ -123,25 +128,42 @@ class SingleStageStrategy(DetectionStrategy):
         class_indexes = boxes.cls.int().cpu().tolist()
         confidences = boxes.conf.cpu().tolist()
         xyxyn = boxes.xyxyn.cpu().numpy()
+        xyxy = boxes.xyxy.cpu().numpy()
 
         h, w, _ = frame.shape
 
         detection_results = []
-        for track_id, class_idx, conf, bbox in zip(track_ids, class_indexes, confidences, xyxyn):
-            # Internal filtering primarily done by YOLO conf/classes, but check validity (center dist) here
-            if not self.is_valid_detection(bbox, conf, min_confidence):
+        for track_id, class_idx, conf, bbox_norm, bbox_abs in zip(track_ids, class_indexes, confidences, xyxyn, xyxy):
+            if not self.is_valid_detection(bbox_norm, conf, min_confidence):
                 continue
             
             # Check min size
-            x1n, y1n, x2n, y2n = bbox
+            x1n, y1n, x2n, y2n = bbox_norm
             if (x2n - x1n) * w < self.min_box_size_px or (y2n - y1n) * h < self.min_box_size_px:
+                continue
+            
+            # Extract crop and compute blur
+            x1, y1, x2, y2 = map(int, bbox_abs)
+            x1, y1 = max(0, x1), max(0, y1)
+            x2, y2 = min(w, x2), min(h, y2)
+            
+            if x2 <= x1 or y2 <= y1:
+                continue
+                
+            crop = frame[y1:y2, x1:x2].copy()
+            is_blur, blur_variance = self.is_blurry(crop)
+            
+            # Skip blurry detections (same as TwoStageStrategy)
+            if is_blur:
                 continue
 
             detection_results.append(DetectionResult(
                 track_id=track_id, 
                 class_name=self.model.names[class_idx], 
                 confidence=conf, 
-                bbox=bbox
+                bbox=bbox_norm,
+                blur_variance=blur_variance,
+                crop=crop
             ))
             
         return detection_results
@@ -256,46 +278,50 @@ class TwoStageStrategy(DetectionStrategy):
         if not valid_boxes:
             return []
         
-        # Sort by track_id for consistent ordering (Ultralytics returns by confidence)
+        # Sort by track_id for consistent ordering
         valid_boxes.sort(key=lambda b: b['track_id'])
         
-        # 3. Round-robin with Blur Check
-        # Always rotate the base index to ensure fairness (starvation prevention)
+        # 3. Round-robin selection - find first non-blurry box to classify
         start_idx = self._classification_index % len(valid_boxes)
         self._classification_index += 1
-
-        selected_box = None
         
-        # Try up to max_blur_checks candidates starting from start_idx
+        classified = None  # {track_id, crop, blur_variance}
         for i in range(min(len(valid_boxes), self.max_blur_checks)):
             idx = (start_idx + i) % len(valid_boxes)
-            candidate = valid_boxes[idx]
-            
-            x1, y1, x2, y2 = candidate['crop_coords']
+            box = valid_boxes[idx]
+            x1, y1, x2, y2 = box['crop_coords']
             crop = frame[y1:y2, x1:x2]
-            
-            if not self.is_blurry(crop):
-                selected_box = candidate
+            is_blur, variance = self.is_blurry(crop)
+            if not is_blur:
+                classified = {
+                    'track_id': box['track_id'],
+                    'crop': crop.copy(),
+                    'blur_variance': variance
+                }
                 break
-
-        # 4. Build results
+        
+        # 4. Build results - only classified box has species_name and crop
         detection_results = []
         for box in valid_boxes:
             species_name = None
-            if selected_box and box['track_id'] == selected_box['track_id']:
-                # Classify this one
-                x1, y1, x2, y2 = box['crop_coords']
-                crop = frame[y1:y2, x1:x2]
-                result_cls = self.classifier_model(crop, classes=self.classes, verbose=False)
+            crop = None
+            blur_variance = None
+            
+            if classified and box['track_id'] == classified['track_id']:
+                result_cls = self.classifier_model(classified['crop'], classes=self.classes, verbose=False)
                 if result_cls and result_cls[0].probs:
                     top1_idx = result_cls[0].probs.top1
                     species_name = self._normalize_class_name(result_cls[0].names[top1_idx])
+                crop = classified['crop']
+                blur_variance = classified['blur_variance']
             
             detection_results.append(DetectionResult(
                 track_id=box['track_id'],
                 class_name=species_name,
                 confidence=box['conf'], 
-                bbox=box['bbox_norm']
+                bbox=box['bbox_norm'],
+                blur_variance=blur_variance,
+                crop=crop
             ))
              
         return detection_results

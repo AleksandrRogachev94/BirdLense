@@ -11,3 +11,4 @@ resampy==0.4.3
 tflite-runtime==2.14.0
 numpy==1.26.4
 birdnetlib==0.17.2
+google-genai==1.56.0

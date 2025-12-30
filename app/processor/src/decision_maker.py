@@ -46,22 +46,23 @@ class DecisionMaker():
 
     def get_results(self, tracks):
         result = []
-        print(tracks)
-        for track in tracks.values():
-            # Skip tracks with no predictions yet (e.g., not classified yet due to round-robin)
+        for track_id, track in tracks.items():
+            # Skip tracks with no predictions yet
             if not track['preds']:
                 continue
             # Find most common prediction for each track
             pred_counts = Counter(track['preds'])
             species_name, count = pred_counts.most_common(1)[0]
             confidence = count / len(track['preds'])
-            # Only consider species with at least 1 second of continuous detection
+            # Only consider species with at least min_track_duration
             if track['end_time'] - track['start_time'] >= self.min_track_duration:
                 result.append({
+                    'track_id': track_id,
                     'species_name': species_name,
                     'start_time': track['start_time'],
                     'end_time': track['end_time'],
                     'confidence': confidence,
+                    'best_frame': track.get('best_frame'),
                     'source': 'video'
                 })
 
