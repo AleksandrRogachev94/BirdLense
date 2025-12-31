@@ -50,8 +50,6 @@ class FrameProcessor:
             self.logger.debug('No detections')
             return False
 
-        print(results)
-
         # Update tracks with valid detections
         for res in results:
             self.update_track(res.track_id, res.class_name, res.crop, res.blur_variance)

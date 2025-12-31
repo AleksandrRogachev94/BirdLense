@@ -117,12 +117,14 @@ class TestDetectionStrategy(unittest.TestCase):
         cv2.rectangle(sharp_img, (10, 10), (90, 90), (255, 255, 255), -1) # High contrast
         cv2.circle(sharp_img, (50, 50), 20, (0, 0, 0), -1)
         
-        is_blurry = strategy.is_blurry(sharp_img)
+        is_blurry, variance = strategy.is_blurry(sharp_img)
+        self.logger.info(f"Sharp image variance: {variance}")
         self.assertFalse(is_blurry, "Sharp image should not be detected as blurry")
         
         # 2. Create a blurry image
         blur_img = cv2.GaussianBlur(sharp_img, (21, 21), 0)
-        is_blurry = strategy.is_blurry(blur_img)
+        is_blurry, variance = strategy.is_blurry(blur_img)
+        self.logger.info(f"Blurred image variance: {variance}")
         self.assertTrue(is_blurry, "Blurred image should be detected as blurry")
 
 if __name__ == '__main__':
