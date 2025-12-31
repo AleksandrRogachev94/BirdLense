@@ -95,6 +95,7 @@ export interface Settings {
   };
   secrets: {
     openweather_api_key: string; // API key for OpenWeather
+    gemini_api_key?: string; // API key for Google Gemini (optional)
     latitude: string; // Latitude as a string, e.g., "YOUR_LATITUDE_HERE"
     longitude: string; // Longitude as a string, e.g., "YOUR_LONGITUDE_HERE"
     zip?: string;

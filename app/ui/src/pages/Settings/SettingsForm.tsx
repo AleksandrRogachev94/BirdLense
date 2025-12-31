@@ -140,6 +140,23 @@ export const SettingsForm = ({
             )}
           </form.Field>
         </Grid>
+        <Grid size={{ xs: 12 }}>
+          <form.Field name="secrets.gemini_api_key">
+            {(field) => (
+              <>
+                <TextField
+                  fullWidth
+                  id={field.name}
+                  name={field.name}
+                  value={field.state.value}
+                  type="password"
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  label="Gemini API Key"
+                />
+              </>
+            )}
+          </form.Field>
+        </Grid>
         <Grid size={{ xs: 6 }}>
           <form.Field name="secrets.zip">
             {(field) => (
