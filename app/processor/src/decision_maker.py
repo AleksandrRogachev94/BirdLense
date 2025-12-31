@@ -51,9 +51,20 @@ class DecisionMaker():
             if not track['preds']:
                 continue
             # Find most common prediction for each track
-            pred_counts = Counter(track['preds'])
+            # preds is a list of (species_name, confidence)
+            species_only = [p[0] for p in track['preds']]
+            pred_counts = Counter(species_only)
             species_name, count = pred_counts.most_common(1)[0]
-            confidence = count / len(track['preds'])
+            
+            voting_confidence = count / len(track['preds'])
+            
+            # Calculate average classifier confidence for the winning species
+            relevant_confs = [p[1] for p in track['preds'] if p[0] == species_name]
+            avg_classifier_conf = sum(relevant_confs) / len(relevant_confs)
+            
+            # Combine confidences
+            confidence = voting_confidence * avg_classifier_conf
+            
             # Only consider species with at least min_track_duration
             if track['end_time'] - track['start_time'] >= self.min_track_duration:
                 result.append({

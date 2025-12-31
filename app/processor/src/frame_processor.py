@@ -52,7 +52,7 @@ class FrameProcessor:
 
         # Update tracks with valid detections
         for res in results:
-            self.update_track(res.track_id, res.class_name, res.crop, res.blur_variance)
+            self.update_track(res.track_id, res.class_name, res.confidence, res.crop, res.blur_variance)
 
         self.logger.debug(
             f'Detection Time: {(time.time() - st) * 1000:.0f} msec | '
@@ -61,7 +61,7 @@ class FrameProcessor:
 
         return len(results) > 0
 
-    def update_track(self, track_id, class_name, crop=None, blur_variance=None):
+    def update_track(self, track_id, class_name, confidence, crop=None, blur_variance=None):
         if track_id not in self.tracks:
             self.tracks[track_id] = {
                 'start_time': round(time.time() - self.start_time, 1),
@@ -71,7 +71,7 @@ class FrameProcessor:
             }
         # Only append real predictions (None means not classified this frame)
         if class_name is not None:
-            self.tracks[track_id]['preds'].append(class_name)
+            self.tracks[track_id]['preds'].append((class_name, confidence))
         self.tracks[track_id]['end_time'] = round(
             time.time() - self.start_time, 1)
         

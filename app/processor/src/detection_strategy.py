@@ -217,6 +217,31 @@ class TwoStageStrategy(DetectionStrategy):
         """
         return name.replace('_OR_', '/').replace('_', ' ')
 
+    def _classify_crop(self, crop: np.ndarray) -> Tuple[Optional[str], float]:
+        """
+        Run classification on a crop, manually filtering for regional species if configured since ultralytics classifier ignores 'classes' arg.
+        Returns: (species_name, confidence)
+        """
+        result_cls = self.classifier_model(crop, verbose=False)
+        
+        if not result_cls or not result_cls[0].probs:
+            return None, 0.0
+            
+        probs = result_cls[0].probs
+        
+        if self.classes:
+            # Filter for best regional species
+            all_probs = probs.data
+            valid_probs = {cid: all_probs[cid].item() for cid in self.classes if cid < len(all_probs)}
+            
+            if valid_probs:
+                best_id, best_conf = max(valid_probs.items(), key=lambda x: x[1])
+                return self._normalize_class_name(result_cls[0].names[best_id]), best_conf
+            return "Unknown", 0.0
+            
+        top1_idx = probs.top1
+        return self._normalize_class_name(result_cls[0].names[top1_idx]), probs.top1conf.item()
+
     def detect(self, frame: np.ndarray, tracker_config: str, min_confidence: float) -> List[DetectionResult]:
         """
         Two-stage detection: binary detection followed by species classification.
@@ -308,10 +333,9 @@ class TwoStageStrategy(DetectionStrategy):
             blur_variance = None
             
             if classified and box['track_id'] == classified['track_id']:
-                result_cls = self.classifier_model(classified['crop'], classes=self.classes, verbose=False)
-                if result_cls and result_cls[0].probs:
-                    top1_idx = result_cls[0].probs.top1
-                    species_name = self._normalize_class_name(result_cls[0].names[top1_idx])
+                species_name, conf = self._classify_crop(classified['crop'])
+                box['conf'] = conf
+
                 crop = classified['crop']
                 blur_variance = classified['blur_variance']
             
