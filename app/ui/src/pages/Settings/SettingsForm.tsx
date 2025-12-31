@@ -15,6 +15,7 @@ import InputLabel from '@mui/material/InputLabel';
 import ListItemText from '@mui/material/ListItemText';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
+import FormHelperText from '@mui/material/FormHelperText';
 
 export const SettingsForm = ({
   currentSettings,
@@ -44,6 +45,12 @@ export const SettingsForm = ({
       alert('Failed to fetch coordinates. Please check the ZIP code.');
     }
   };
+
+  const resolutions = [
+    { label: 'FullHD (1920x1080)', width: 1920, height: 1080 },
+    { label: 'HD (1280x720)', width: 1280, height: 720 },
+    { label: 'VGA (640x480)', width: 640, height: 480 },
+  ];
 
   return (
     <Box
@@ -110,6 +117,9 @@ export const SettingsForm = ({
                         </MenuItem>
                       ))}
                     </Select>
+                    <FormHelperText>
+                      Select species to ignore when sending notifications
+                    </FormHelperText>
                   </FormControl>
                 )}
               </form.Field>
@@ -135,6 +145,7 @@ export const SettingsForm = ({
                   type="string"
                   onChange={(e) => field.handleChange(e.target.value)}
                   label="OpenWeather API Key"
+                  helperText="Required for fetching weather data"
                 />
               </>
             )}
@@ -152,6 +163,7 @@ export const SettingsForm = ({
                   type="password"
                   onChange={(e) => field.handleChange(e.target.value)}
                   label="Gemini API Key"
+                  helperText="Optional: Enables LLM verification for bird detection"
                 />
               </>
             )}
@@ -169,6 +181,7 @@ export const SettingsForm = ({
                   type="string"
                   onChange={(e) => field.handleChange(e.target.value)}
                   label="ZIP Code"
+                  helperText="Enter ZIP code to automatically fetch location"
                 />
               </>
             )}
@@ -228,37 +241,51 @@ export const SettingsForm = ({
         Processor Settings
       </Typography>
       <Grid container spacing={2}>
-        <Grid size={{ xs: 6 }}>
+        <Grid size={{ xs: 12 }}>
           <form.Field name="processor.video_width">
-            {(field) => (
-              <>
-                <TextField
-                  fullWidth
-                  id={field.name}
-                  name={field.name}
-                  value={field.state.value}
-                  type="string"
-                  onChange={(e) => field.handleChange(Number(e.target.value))}
-                  label="Video Width"
-                />
-              </>
-            )}
-          </form.Field>
-        </Grid>
-        <Grid size={{ xs: 6 }}>
-          <form.Field name="processor.video_height">
-            {(field) => (
-              <>
-                <TextField
-                  fullWidth
-                  id={field.name}
-                  name={field.name}
-                  value={field.state.value}
-                  type="string"
-                  onChange={(e) => field.handleChange(Number(e.target.value))}
-                  label="Video Height"
-                />
-              </>
+            {(widthField) => (
+              <form.Field name="processor.video_height">
+                {(heightField) => {
+                  const currentWidth = widthField.state.value;
+                  const currentHeight = heightField.state.value;
+                  const selectedResolution = resolutions.find(
+                    (r) => r.width === currentWidth && r.height === currentHeight,
+                  );
+
+                  return (
+                    <FormControl fullWidth>
+                      <InputLabel>Video Resolution</InputLabel>
+                      <Select
+                        value={
+                          selectedResolution
+                            ? `${selectedResolution.width}x${selectedResolution.height}`
+                            : ''
+                        }
+                        label="Video Resolution"
+                        onChange={(e) => {
+                          const [w, h] = (e.target.value as string)
+                            .split('x')
+                            .map(Number);
+                          widthField.handleChange(w);
+                          heightField.handleChange(h);
+                        }}
+                      >
+                        {resolutions.map((res) => (
+                          <MenuItem
+                            key={res.label}
+                            value={`${res.width}x${res.height}`}
+                          >
+                            {res.label}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                      <FormHelperText>
+                        Select the resolution for video recording
+                      </FormHelperText>
+                    </FormControl>
+                  );
+                }}
+              </form.Field>
             )}
           </form.Field>
         </Grid>
@@ -274,6 +301,7 @@ export const SettingsForm = ({
                   type="string"
                   onChange={(e) => field.handleChange(e.target.value)}
                   label="Object Tracker"
+                  helperText="Path to the object tracking configuration file"
                 />
               </>
             )}
@@ -291,6 +319,7 @@ export const SettingsForm = ({
                   type="string"
                   onChange={(e) => field.handleChange(Number(e.target.value))}
                   label="Max Record Seconds"
+                  helperText="Maximum duration for a single recording session"
                 />
               </>
             )}
@@ -308,6 +337,7 @@ export const SettingsForm = ({
                   type="string"
                   onChange={(e) => field.handleChange(Number(e.target.value))}
                   label="Max Inactive Seconds"
+                  helperText="Stop recording after this many seconds of no activity"
                 />
               </>
             )}
@@ -324,7 +354,8 @@ export const SettingsForm = ({
                   value={field.state.value}
                   type="string"
                   onChange={(e) => field.handleChange(Number(e.target.value))}
-                  label="Spectrogram horizontal resolution (px/sec)"
+                  label="Spectrogram Horizontal Resolution (px/sec)"
+                  helperText="Higher values result in wider spectrogram images"
                 />
               </>
             )}
@@ -356,6 +387,9 @@ export const SettingsForm = ({
                     </MenuItem>
                   ))}
                 </Select>
+                <FormHelperText>
+                  Only detect birds from these families
+                </FormHelperText>
               </FormControl>
             )}
           </form.Field>
