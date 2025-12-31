@@ -5,7 +5,11 @@ from unittest.mock import MagicMock
 # Adjust import assuming running from project root
 import sys
 import os
-sys.path.append(os.path.abspath("app/processor/src"))
+# Ensure project root is in path to import app modules
+current_dir = os.path.dirname(os.path.abspath(__file__))
+# app/processor/tests -> app/processor/src
+src_path = os.path.abspath(os.path.join(current_dir, '../src'))
+sys.path.append(src_path)
 from decision_maker import DecisionMaker
 
 class TestDecisionMaker(unittest.TestCase):

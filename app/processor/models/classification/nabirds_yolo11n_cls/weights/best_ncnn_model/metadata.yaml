@@ -1,6 +1,6 @@
 description: Ultralytics YOLO11n-cls model trained on /workspace/nabirds_yolo_cleaned_cls
 author: Ultralytics
-date: '2025-12-28T11:15:33.708293'
+date: '2025-12-30T23:42:56.374971'
 version: 8.3.241
 license: AGPL-3.0 License (https://ultralytics.com/license)
 docs: https://docs.ultralytics.com
@@ -21,19 +21,19 @@ names:
   7: American_Crow
   8: American_Dipper
   9: American_Goldfinch_(Breeding_Male)
-  10: American_Goldfinch_(Female
+  10: American_Goldfinch_(Female_OR_Nonbreeding_Male)
   11: American_Kestrel_(Adult_male)
   12: American_Kestrel_(Female,_immature)
   13: American_Oystercatcher
   14: American_Pipit
   15: American_Redstart_(Adult_Male)
-  16: American_Redstart_(Female
+  16: American_Redstart_(Female_OR_juvenile)
   17: American_Robin_(Adult)
   18: American_Robin_(Juvenile)
   19: American_Tree_Sparrow
   20: American_White_Pelican
   21: American_Wigeon_(Breeding_male)
-  22: American_Wigeon_(Female
+  22: American_Wigeon_(Female_OR_Eclipse_male)
   23: American_Woodcock
   24: Anhinga
   25: Anna's_Hummingbird_(Adult_Male)
@@ -42,14 +42,14 @@ names:
   28: Bald_Eagle_(Adult,_subadult)
   29: Bald_Eagle_(Immature,_juvenile)
   30: Baltimore_Oriole_(Adult_male)
-  31: Baltimore_Oriole_(Female
+  31: Baltimore_Oriole_(Female_OR_Immature_male)
   32: Band-tailed_Pigeon
   33: Bank_Swallow
   34: Barn_Owl
   35: Barn_Swallow
   36: Barred_Owl
   37: Barrow's_Goldeneye_(Breeding_male)
-  38: Barrow's_Goldeneye_(Female
+  38: Barrow's_Goldeneye_(Female_OR_Eclipse_male)
   39: Bay-breasted_Warbler_(Breeding_male)
   40: Bay-breasted_Warbler_(Female,_Nonbreeding_male,_Immature)
   41: Bell's_Vireo
@@ -57,7 +57,7 @@ names:
   43: Bewick's_Wren
   44: Black-and-white_Warbler
   45: Black-bellied_Plover_(Breeding)
-  46: Black-bellied_Plover_(Nonbreeding
+  46: Black-bellied_Plover_(Nonbreeding_OR_juvenile)
   47: Black-bellied_Whistling-Duck
   48: Black-billed_Cuckoo
   49: Black-billed_Magpie
@@ -68,13 +68,13 @@ names:
   54: Black-crowned_Night-Heron_(Adult)
   55: Black-crowned_Night-Heron_(Immature)
   56: Black-headed_Grosbeak_(Adult_Male)
-  57: Black-headed_Grosbeak_(Female
+  57: Black-headed_Grosbeak_(Female_OR_immature_male)
   58: Black-legged_Kittiwake_(Adult)
   59: Black-legged_Kittiwake_(Immature)
   60: Black-necked_Stilt
   61: Black-tailed_Gnatcatcher
   62: Black-throated_Blue_Warbler_(Adult_Male)
-  63: Black-throated_Blue_Warbler_(Female
+  63: Black-throated_Blue_Warbler_(Female_OR_Immature_male)
   64: Black-throated_Gray_Warbler
   65: Black-throated_Green_Warbler
   66: Black_Guillemot_(Breeding)
@@ -82,7 +82,7 @@ names:
   68: Black_Oystercatcher
   69: Black_Phoebe
   70: Black_Rosy-Finch
-  71: Black_Scoter_(Female
+  71: Black_Scoter_(Female_OR_juvenile)
   72: Black_Scoter_(Male)
   73: Black_Skimmer
   74: Black_Tern
@@ -90,24 +90,24 @@ names:
   76: Black_Vulture
   77: Blackburnian_Warbler
   78: Blackpoll_Warbler_(Breeding_male)
-  79: Blackpoll_Warbler_(Female
+  79: Blackpoll_Warbler_(Female_OR_juvenile)
   80: Blue-gray_Gnatcatcher
   81: Blue-headed_Vireo
-  82: Blue-winged_Teal__(Female
+  82: Blue-winged_Teal__(Female_OR_juvenile)
   83: Blue-winged_Teal__(Male)
   84: Blue-winged_Warbler
   85: Blue_Grosbeak_(Adult_Male)
-  86: Blue_Grosbeak_(Female
+  86: Blue_Grosbeak_(Female_OR_juvenile)
   87: Blue_Jay
   88: Boat-tailed_Grackle
   89: Bobolink_(Breeding_male)
-  90: Bobolink_(Female
+  90: Bobolink_(Female_OR_juvenile_OR_nonbreeding_male)
   91: Bohemian_Waxwing
   92: Bonaparte's_Gull
   93: Boreal_Chickadee
   94: Brandt's_Cormorant
   95: Brant
-  96: Brewer's_Blackbird_(Female
+  96: Brewer's_Blackbird_(Female_OR_Juvenile)
   97: Brewer's_Blackbird_(Male)
   98: Brewer's_Sparrow
   99: Bridled_Titmouse
@@ -119,23 +119,23 @@ names:
   105: Broad-winged_Hawk_(Immature)
   106: Bronzed_Cowbird
   107: Brown-capped_Rosy-Finch
-  108: Brown-headed_Cowbird_(Female
+  108: Brown-headed_Cowbird_(Female_OR_Juvenile)
   109: Brown-headed_Cowbird_(Male)
   110: Brown-headed_Nuthatch
   111: Brown_Creeper
   112: Brown_Pelican
   113: Brown_Thrasher
   114: Bufflehead_(Breeding_male)
-  115: Bufflehead_(Female
+  115: Bufflehead_(Female_OR_immature_male)
   116: Bullock's_Oriole_(Adult_male)
-  117: Bullock's_Oriole_(Female
+  117: Bullock's_Oriole_(Female_OR_Immature_male)
   118: Burrowing_Owl
   119: Bushtit
   120: Cackling_Goose
   121: Cactus_Wren
   122: California_Gull_(Adult)
   123: California_Gull_(Immature)
-  124: California_Quail_(Female
+  124: California_Quail_(Female_OR_juvenile)
   125: California_Quail_(Male)
   126: California_Thrasher
   127: California_Towhee
@@ -144,7 +144,7 @@ names:
   130: Canada_Goose
   131: Canada_Warbler
   132: Canvasback_(Breeding_male)
-  133: Canvasback_(Female
+  133: Canvasback_(Female_OR_Eclipse_male)
   134: Canyon_Towhee
   135: Canyon_Wren
   136: Cape_May_Warbler
@@ -152,7 +152,7 @@ names:
   138: Carolina_Wren
   139: Caspian_Tern
   140: Cassin's_Finch_(Adult_Male)
-  141: Cassin's_Finch_(Female
+  141: Cassin's_Finch_(Female_OR_immature)
   142: Cassin's_Kingbird
   143: Cassin's_Vireo
   144: Cattle_Egret
@@ -160,36 +160,36 @@ names:
   146: Cedar_Waxwing
   147: Chestnut-backed_Chickadee
   148: Chestnut-sided_Warbler_(Breeding_male)
-  149: Chestnut-sided_Warbler_(Female
+  149: Chestnut-sided_Warbler_(Female_OR_immature_male)
   150: Chihuahuan_Raven
   151: Chimney_Swift
   152: Chipping_Sparrow_(Breeding)
-  153: Chipping_Sparrow_(Immature
-  154: Cinnamon_Teal_(Female
+  153: Chipping_Sparrow_(Immature_OR_nonbreeding_adult)
+  154: Cinnamon_Teal_(Female_OR_juvenile)
   155: Cinnamon_Teal_(Male)
   156: Clark's_Grebe
   157: Clark's_Nutcracker
   158: Clay-colored_Sparrow
   159: Cliff_Swallow
   160: Common_Eider_(Adult_male)
-  161: Common_Eider_(Female
-  162: Common_Eider_(Immature
+  161: Common_Eider_(Female_OR_juvenile)
+  162: Common_Eider_(Immature_OR_Eclipse_male)
   163: Common_Gallinule_(Adult)
   164: Common_Gallinule_(Immature)
   165: Common_Goldeneye_(Breeding_male)
-  166: Common_Goldeneye_(Female
+  166: Common_Goldeneye_(Female_OR_Eclipse_male)
   167: Common_Grackle
   168: Common_Ground-Dove
   169: Common_Loon_(Breeding)
-  170: Common_Loon_(Nonbreeding
+  170: Common_Loon_(Nonbreeding_OR_juvenile)
   171: Common_Merganser_(Breeding_male)
-  172: Common_Merganser_(Female
+  172: Common_Merganser_(Female_OR_immature_male)
   173: Common_Nighthawk
   174: Common_Raven
   175: Common_Redpoll
   176: Common_Tern
   177: Common_Yellowthroat_(Adult_Male)
-  178: Common_Yellowthroat_(Female
+  178: Common_Yellowthroat_(Female_OR_immature_male)
   179: Cooper's_Hawk_(Adult)
   180: Cooper's_Hawk_(Immature)
   181: Cordilleran_Flycatcher
@@ -199,7 +199,7 @@ names:
   185: Curve-billed_Thrasher
   186: Dark-eyed_Junco_(Oregon)
   187: Dark-eyed_Junco_(Pink-sided)
-  188: Dark-eyed_Junco_(Red-backed
+  188: Dark-eyed_Junco_(Red-backed_OR_Gray-headed)
   189: Dark-eyed_Junco_(Slate-colored)
   190: Dark-eyed_Junco_(White-winged)
   191: Dickcissel
@@ -207,9 +207,9 @@ names:
   193: Double-crested_Cormorant_(Immature)
   194: Downy_Woodpecker
   195: Dunlin_(Breeding)
-  196: Dunlin_(Nonbreeding
+  196: Dunlin_(Nonbreeding_OR_juvenile)
   197: Eared_Grebe_(Breeding)
-  198: Eared_Grebe_(Nonbreeding
+  198: Eared_Grebe_(Nonbreeding_OR_juvenile)
   199: Eastern_Bluebird
   200: Eastern_Kingbird
   201: Eastern_Meadowlark
@@ -222,17 +222,17 @@ names:
   208: European_Starling_(Juvenile)
   209: European_Starling_(Nonbreeding_Adult)
   210: Evening_Grosbeak_(Adult_Male)
-  211: Evening_Grosbeak_(Female
+  211: Evening_Grosbeak_(Female_OR_Juvenile)
   212: Field_Sparrow
   213: Fish_Crow
   214: Florida_Scrub-Jay
   215: Forster's_Tern
   216: Fox_Sparrow_(Red)
   217: Fox_Sparrow_(Sooty)
-  218: Fox_Sparrow_(Thick-billed
+  218: Fox_Sparrow_(Thick-billed_OR_Slate-colored)
   219: Gadwall_(Breeding_male)
-  220: Gadwall_(Female
-  221: Gambel's_Quail_(Female
+  220: Gadwall_(Female_OR_Eclipse_male)
+  221: Gambel's_Quail_(Female_OR_juvenile)
   222: Gambel's_Quail_(Male)
   223: Gila_Woodpecker
   224: Glaucous-winged_Gull_(Adult)
@@ -258,15 +258,15 @@ names:
   244: Great_Horned_Owl
   245: Greater_Roadrunner
   246: Greater_Scaup_(Breeding_male)
-  247: Greater_Scaup_(Female
+  247: Greater_Scaup_(Female_OR_Eclipse_male)
   248: Greater_White-fronted_Goose
   249: Greater_Yellowlegs
   250: Green-tailed_Towhee
   251: Green-winged_Teal_(Male)
-  252: Green-winged_Teal__(Female
+  252: Green-winged_Teal__(Female_OR_juvenile)
   253: Green_Heron
   254: Hairy_Woodpecker
-  255: Harlequin_Duck_(Female
+  255: Harlequin_Duck_(Female_OR_juvenile)
   256: Harlequin_Duck_(Male)
   257: Harris's_Hawk
   258: Harris's_Sparrow_(Adult)
@@ -279,53 +279,53 @@ names:
   265: Herring_Gull_(Immature)
   266: Hoary_Redpoll
   267: Hooded_Merganser_(Breeding_male)
-  268: Hooded_Merganser_(Female
+  268: Hooded_Merganser_(Female_OR_immature_male)
   269: Hooded_Oriole_(Adult_male)
-  270: Hooded_Oriole_(Female
+  270: Hooded_Oriole_(Female_OR_Immature_male)
   271: Hooded_Warbler
   272: Horned_Grebe_(Breeding)
-  273: Horned_Grebe_(Nonbreeding
+  273: Horned_Grebe_(Nonbreeding_OR_juvenile)
   274: Horned_Lark
   275: House_Finch_(Adult_Male)
-  276: House_Finch_(Female
-  277: House_Sparrow_(Female
+  276: House_Finch_(Female_OR_immature)
+  277: House_Sparrow_(Female_OR_Juvenile)
   278: House_Sparrow_(Male)
   279: House_Wren
   280: Hutton's_Vireo
   281: Inca_Dove
   282: Indigo_Bunting_(Adult_Male)
-  283: Indigo_Bunting_(Female
+  283: Indigo_Bunting_(Female_OR_juvenile)
   284: Juniper_Titmouse
   285: Killdeer
   286: Ladder-backed_Woodpecker
   287: Lark_Bunting_(Breeding_male)
-  288: Lark_Bunting_(Female
+  288: Lark_Bunting_(Female_OR_Nonbreeding_male)
   289: Lark_Sparrow
   290: Laughing_Gull_(Breeding)
-  291: Laughing_Gull_(Nonbreeding
+  291: Laughing_Gull_(Nonbreeding_OR_Immature)
   292: Lazuli_Bunting_(Adult_Male)
-  293: Lazuli_Bunting_(Female
+  293: Lazuli_Bunting_(Female_OR_juvenile)
   294: Least_Flycatcher
   295: Least_Sandpiper
   296: Lesser_Goldfinch_(Adult_Male)
-  297: Lesser_Goldfinch_(Female
+  297: Lesser_Goldfinch_(Female_OR_juvenile)
   298: Lesser_Scaup_(Breeding_male)
-  299: Lesser_Scaup_(Female
+  299: Lesser_Scaup_(Female_OR_Eclipse_male)
   300: Lesser_Yellowlegs
   301: Lincoln's_Sparrow
   302: Little_Blue_Heron_(Adult)
   303: Little_Blue_Heron_(Immature)
   304: Loggerhead_Shrike
   305: Long-billed_Curlew
-  306: Long-tailed_Duck_(Female
+  306: Long-tailed_Duck_(Female_OR_juvenile)
   307: Long-tailed_Duck_(Summer_male)
   308: Long-tailed_Duck_(Winter_male)
   309: Louisiana_Waterthrush
   310: MacGillivray's_Warbler
   311: Magnolia_Warbler_(Breeding_male)
-  312: Magnolia_Warbler_(Female
+  312: Magnolia_Warbler_(Female_OR_immature_male)
   313: Mallard_(Breeding_male)
-  314: Mallard_(Female
+  314: Mallard_(Female_OR_Eclipse_male)
   315: Marbled_Godwit
   316: Marsh_Wren
   317: Merlin
@@ -343,22 +343,22 @@ names:
   329: Neotropic_Cormorant
   330: Northern_Bobwhite
   331: Northern_Cardinal_(Adult_Male)
-  332: Northern_Cardinal_(Female
+  332: Northern_Cardinal_(Female_OR_Juvenile)
   333: Northern_Flicker_(Red-shafted)
   334: Northern_Flicker_(Yellow-shafted)
   335: Northern_Gannet_(Adult,_Subadult)
-  336: Northern_Gannet_(Immature
+  336: Northern_Gannet_(Immature_OR_Juvenile)
   337: Northern_Harrier_(Adult_male)
   338: Northern_Harrier_(Female,_immature)
   339: Northern_Mockingbird
   340: Northern_Parula
   341: Northern_Pintail_(Breeding_male)
-  342: Northern_Pintail_(Female
+  342: Northern_Pintail_(Female_OR_Eclipse_male)
   343: Northern_Pygmy-Owl
   344: Northern_Rough-winged_Swallow
   345: Northern_Saw-whet_Owl
   346: Northern_Shoveler_(Breeding_male)
-  347: Northern_Shoveler_(Female
+  347: Northern_Shoveler_(Female_OR_Eclipse_male)
   348: Northern_Shrike
   349: Northern_Waterthrush
   350: Northwestern_Crow
@@ -366,28 +366,28 @@ names:
   352: Oak_Titmouse
   353: Orange-crowned_Warbler
   354: Orchard_Oriole_(Adult_Male)
-  355: Orchard_Oriole_(Female
+  355: Orchard_Oriole_(Female_OR_Juvenile)
   356: Orchard_Oriole_(Immature_Male)
   357: Osprey
   358: Ovenbird
   359: Pacific-slope_Flycatcher
   360: Pacific_Loon_(Breeding)
-  361: Pacific_Loon_(Nonbreeding
+  361: Pacific_Loon_(Nonbreeding_OR_juvenile)
   362: Pacific_Wren
   363: Painted_Bunting_(Adult_Male)
-  364: Painted_Bunting_(Female
+  364: Painted_Bunting_(Female_OR_juvenile)
   365: Palm_Warbler
   366: Pelagic_Cormorant
   367: Peregrine_Falcon_(Adult)
   368: Peregrine_Falcon_(Immature)
-  369: Phainopepla_(Female
+  369: Phainopepla_(Female_OR_juvenile)
   370: Phainopepla_(Male)
   371: Pied-billed_Grebe
   372: Pigeon_Guillemot_(Breeding)
   373: Pigeon_Guillemot_(Nonbreeding,_juvenile)
   374: Pileated_Woodpecker
   375: Pine_Grosbeak_(Adult_Male)
-  376: Pine_Grosbeak_(Female
+  376: Pine_Grosbeak_(Female_OR_juvenile)
   377: Pine_Siskin
   378: Pine_Warbler
   379: Plumbeous_Vireo
@@ -395,16 +395,16 @@ names:
   381: Prairie_Warbler
   382: Prothonotary_Warbler
   383: Purple_Finch_(Adult_Male)
-  384: Purple_Finch_(Female
+  384: Purple_Finch_(Female_OR_immature)
   385: Purple_Gallinule_(Adult)
   386: Purple_Gallinule_(Immature)
   387: Purple_Martin_(Adult_male)
-  388: Purple_Martin_(Female
+  388: Purple_Martin_(Female_OR_juvenile)
   389: Pygmy_Nuthatch
   390: Pyrrhuloxia
   391: Red-bellied_Woodpecker
   392: Red-breasted_Merganser_(Breeding_male)
-  393: Red-breasted_Merganser_(Female
+  393: Red-breasted_Merganser_(Female_OR_immature_male)
   394: Red-breasted_Nuthatch
   395: Red-breasted_Sapsucker
   396: Red-eyed_Vireo
@@ -412,31 +412,31 @@ names:
   398: Red-headed_Woodpecker_(Immature)
   399: Red-naped_Sapsucker
   400: Red-necked_Grebe_(Breeding)
-  401: Red-necked_Grebe_(Nonbreeding
+  401: Red-necked_Grebe_(Nonbreeding_OR_juvenile)
   402: Red-shouldered_Hawk_(Adult_)
   403: Red-shouldered_Hawk_(Immature)
   404: Red-tailed_Hawk_(Dark_morph)
   405: Red-tailed_Hawk_(Light_morph_adult)
   406: Red-tailed_Hawk_(Light_morph_immature)
   407: Red-throated_Loon_(Breeding)
-  408: Red-throated_Loon_(Nonbreeding
-  409: Red-winged_Blackbird_(Female
+  408: Red-throated_Loon_(Nonbreeding_OR_juvenile)
+  409: Red-winged_Blackbird_(Female_OR_juvenile)
   410: Red-winged_Blackbird_(Male)
   411: Red_Crossbill_(Adult_Male)
-  412: Red_Crossbill_(Female
+  412: Red_Crossbill_(Female_OR_juvenile)
   413: Reddish_Egret_(Dark_morph)
   414: Reddish_Egret_(White_morph)
   415: Redhead_(Breeding_male)
-  416: Redhead_(Female
+  416: Redhead_(Female_OR_Eclipse_male)
   417: Ring-billed_Gull_(Adult)
   418: Ring-billed_Gull_(Immature)
   419: Ring-necked_Duck_(Breeding_male)
-  420: Ring-necked_Duck_(Female
-  421: Ring-necked_Pheasant_(Female
+  420: Ring-necked_Duck_(Female_OR_Eclipse_male)
+  421: Ring-necked_Pheasant_(Female_OR_juvenile)
   422: Ring-necked_Pheasant_(Male)
   423: Rock_Pigeon
   424: Rose-breasted_Grosbeak_(Adult_Male)
-  425: Rose-breasted_Grosbeak_(Female
+  425: Rose-breasted_Grosbeak_(Female_OR_immature_male)
   426: Roseate_Spoonbill
   427: Ross's_Goose
   428: Rough-legged_Hawk_(Dark_morph)
@@ -446,7 +446,7 @@ names:
   432: Ruby-throated_Hummingbird_(Adult_Male)
   433: Ruby-throated_Hummingbird_(Female,_immature)
   434: Ruddy_Duck_(Breeding_male)
-  435: Ruddy_Duck_(Female
+  435: Ruddy_Duck_(Female_OR_juvenile)
   436: Ruddy_Duck_(Winter_male)
   437: Ruddy_Turnstone
   438: Ruffed_Grouse
@@ -455,13 +455,13 @@ names:
   441: Rufous_Hummingbird_(Female,_immature)
   442: Rusty_Blackbird
   443: Sanderling_(Breeding)
-  444: Sanderling_(Nonbreeding
+  444: Sanderling_(Nonbreeding_OR_juvenile)
   445: Sandhill_Crane
   446: Savannah_Sparrow
   447: Say's_Phoebe
   448: Scaled_Quail
   449: Scarlet_Tanager_(Breeding_Male)
-  450: Scarlet_Tanager_(Female
+  450: Scarlet_Tanager_(Female_OR_Nonbreeding_Male)
   451: Scissor-tailed_Flycatcher
   452: Semipalmated_Plover
   453: Semipalmated_Sandpiper
@@ -477,14 +477,14 @@ names:
   463: Solitary_Sandpiper
   464: Song_Sparrow
   465: Spotted_Sandpiper_(Breeding)
-  466: Spotted_Sandpiper_(Nonbreeding
+  466: Spotted_Sandpiper_(Nonbreeding_OR_juvenile)
   467: Spotted_Towhee
   468: Squirrel
   469: Steller's_Jay
   470: Summer_Tanager_(Adult_Male)
   471: Summer_Tanager_(Female)
   472: Summer_Tanager_(Immature_Male)
-  473: Surf_Scoter_(Female
+  473: Surf_Scoter_(Female_OR_immature)
   474: Surf_Scoter_(Male)
   475: Surfbird
   476: Swainson's_Hawk_(Dark_morph_)
@@ -521,7 +521,7 @@ names:
   507: Western_Screech-Owl
   508: Western_Scrub-Jay
   509: Western_Tanager_(Breeding_Male)
-  510: Western_Tanager_(Female
+  510: Western_Tanager_(Female_OR_Nonbreeding_Male)
   511: Western_Wood-Pewee
   512: Whimbrel
   513: White-breasted_Nuthatch
@@ -530,13 +530,13 @@ names:
   516: White-eyed_Vireo
   517: White-faced_Ibis
   518: White-tailed_Kite
-  519: White-throated_Sparrow_(Tan-striped
+  519: White-throated_Sparrow_(Tan-striped_OR_immature)
   520: White-throated_Sparrow_(White-striped)
   521: White-throated_Swift
   522: White-winged_Crossbill_(Adult_Male)
-  523: White-winged_Crossbill_(Female
+  523: White-winged_Crossbill_(Female_OR_juvenile)
   524: White-winged_Dove
-  525: White-winged_Scoter_(Female
+  525: White-winged_Scoter_(Female_OR_juvenile)
   526: White-winged_Scoter_(Male)
   527: White_Ibis_(Adult)
   528: White_Ibis_(Immature)
@@ -548,7 +548,7 @@ names:
   534: Wilson's_Warbler
   535: Winter_Wren
   536: Wood_Duck_(Breeding_male)
-  537: Wood_Duck_(Female
+  537: Wood_Duck_(Female_OR_Eclipse_male)
   538: Wood_Stork
   539: Wood_Thrush
   540: Wrentit
@@ -559,13 +559,14 @@ names:
   545: Yellow-crowned_Night-Heron_(Adult)
   546: Yellow-crowned_Night-Heron_(Immature)
   547: Yellow-headed_Blackbird_(Adult_Male)
-  548: Yellow-headed_Blackbird_(Female
+  548: Yellow-headed_Blackbird_(Female_OR_Immature_Male)
   549: Yellow-rumped_Warbler_(Breeding_Audubon's)
   550: Yellow-rumped_Warbler_(Breeding_Myrtle)
-  551: Yellow-rumped_Warbler_(Winter
-  552: Yellow-throated_Vireo
-  553: Yellow-throated_Warbler
-  554: Yellow_Warbler
+  551: Yellow-rumped_Warbler_(Winter_OR_juvenile_Audubon's)
+  552: Yellow-rumped_Warbler_(Winter_OR_juvenile_Myrtle)
+  553: Yellow-throated_Vireo
+  554: Yellow-throated_Warbler
+  555: Yellow_Warbler
 args:
   batch: 1
   half: true
