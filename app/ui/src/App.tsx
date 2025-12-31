@@ -18,10 +18,11 @@ import { System } from './pages/System';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#059669',
+      main: '#043D34', // Deep Jungle
+      light: '#10B981', // Vibrant Emerald (for buttons/accents)
     },
     secondary: {
-      main: '#0ea5e9',
+      main: '#0EA5E9', // Tech Blue
     },
   },
 });

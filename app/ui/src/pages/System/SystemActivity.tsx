@@ -1,4 +1,6 @@
-import { Box, Paper, Typography, Stack } from '@mui/material';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Stack from '@mui/material/Stack';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { StaticDatePicker } from '@mui/x-date-pickers/StaticDatePicker';
@@ -6,6 +8,7 @@ import { PickersDay, PickersDayProps } from '@mui/x-date-pickers/PickersDay';
 import dayjs, { Dayjs } from 'dayjs';
 import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
+import { BASE_API_URL } from '../../api/api';
 
 interface ActivityDay {
   date: string;
@@ -89,7 +92,7 @@ export const SystemActivity = () => {
     queryKey: ['activity', dayjs().format('YYYY-MM')],
     queryFn: async () => {
       const { data } = await axios.get<ActivityDay[]>(
-        '/api/ui/system/activity',
+        `${BASE_API_URL}/system/activity`,
         {
           params: { month: dayjs().format('YYYY-MM') },
         },

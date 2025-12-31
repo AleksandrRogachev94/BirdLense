@@ -27,6 +27,7 @@ export default [
     },
     rules: {
       'react/react-in-jsx-scope': 'off', // Disable 'React must be in scope when using JSX
+      'react/prop-types': 'off', // Disable prop-types validation as we use TypeScript
       'prettier/prettier': 'warn', // Report Prettier issues as warnings
       'no-restricted-imports': [
         'error',
@@ -34,23 +35,28 @@ export default [
           paths: [
             {
               name: '@mui/material',
-              message: 'Please use specific imports from @mui/material instead of importing the entire module.',
+              message:
+                'Please use specific imports from @mui/material instead of importing the entire module.',
             },
             {
               name: '@mui/lab',
-              message: 'Please use specific imports from @mui/lab instead of importing the entire module.',
+              message:
+                'Please use specific imports from @mui/lab instead of importing the entire module.',
             },
             {
               name: '@mui/x-charts',
-              message: 'Please use specific imports from @mui/x-charts instead of importing the entire module.',
+              message:
+                'Please use specific imports from @mui/x-charts instead of importing the entire module.',
             },
             {
               name: '@mui/x-date-pickers',
-              message: 'Please use specific imports from @mui/x-date-pickers instead of importing the entire module.',
+              message:
+                'Please use specific imports from @mui/x-date-pickers instead of importing the entire module.',
             },
             {
               name: '@mui/x-tree-view',
-              message: 'Please use specific imports from @mui/x-tree-view instead of importing the entire module.',
+              message:
+                'Please use specific imports from @mui/x-tree-view instead of importing the entire module.',
             },
           ],
           patterns: ['@mui/*/*/*'],

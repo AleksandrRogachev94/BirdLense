@@ -14,6 +14,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { BarChart } from '@mui/x-charts/BarChart';
 import dayjs, { Dayjs } from 'dayjs';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import { BASE_API_URL } from '../../api/api';
 
 interface StorageStats {
   date: string;
@@ -54,7 +55,9 @@ export const StorageManagement = () => {
   } = useQuery<StorageStats[]>({
     queryKey: ['storageStats'],
     queryFn: async () => {
-      const { data } = await axios.get<StorageStats[]>('/api/ui/storage/stats');
+      const { data } = await axios.get<StorageStats[]>(
+        `${BASE_API_URL}/storage/stats`,
+      );
       return data;
     },
   });
@@ -62,7 +65,7 @@ export const StorageManagement = () => {
   const purgeVideosMutation = useMutation<PurgeResponse, Error, Dayjs>({
     mutationFn: async (date) => {
       const { data } = await axios.post<PurgeResponse>(
-        '/api/ui/storage/purge',
+        `${BASE_API_URL}/storage/purge`,
         {
           date: date.format('YYYY-MM-DD'),
         },

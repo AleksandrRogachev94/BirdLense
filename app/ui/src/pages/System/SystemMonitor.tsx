@@ -9,6 +9,7 @@ import MemoryIcon from '@mui/icons-material/Memory';
 import StorageIcon from '@mui/icons-material/Storage';
 import SpeedIcon from '@mui/icons-material/Speed';
 import ThermostatIcon from '@mui/icons-material/DeviceThermostat';
+import { BASE_API_URL } from '../../api/api';
 
 interface MetricCardProps {
   icon: React.ElementType;
@@ -45,7 +46,7 @@ export const SystemMonitor = () => {
   const { data, error, isLoading } = useQuery({
     queryKey: ['systemMetrics'],
     queryFn: async () => {
-      const response = await fetch('/api/ui/system/metrics');
+      const response = await fetch(`${BASE_API_URL}/system/metrics`);
       if (!response.ok) throw new Error('Failed to fetch system metrics');
       return response.json();
     },
