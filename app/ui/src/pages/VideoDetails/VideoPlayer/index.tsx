@@ -11,6 +11,7 @@ import Grid from '@mui/material/Grid2';
 import IconButton from '@mui/material/IconButton';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
+import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -133,6 +134,34 @@ export const VideoPlayer: React.FC<{ video: Video }> = ({ video }) => {
     startHideTimer();
   }, [startHideTimer]);
 
+  const handleFullscreen = useCallback(() => {
+    if (videoRef.current) {
+      videoRef.current
+        .requestFullscreen()
+        .then(() => {
+          if (videoRef.current) {
+            videoRef.current.controls = true;
+          }
+        })
+        .catch((err) => {
+          console.error('Error attempting to enable fullscreen:', err);
+        });
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      if (!document.fullscreenElement && videoRef.current) {
+        videoRef.current.controls = false;
+      }
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    };
+  }, []);
+
   // Show controls when video is paused
   useEffect(() => {
     if (!playing) {
@@ -202,6 +231,29 @@ export const VideoPlayer: React.FC<{ video: Video }> = ({ video }) => {
             ) : (
               <PlayArrowIcon fontSize="medium" />
             )}
+          </IconButton>
+        )}
+
+        {/* Fullscreen Button */}
+        {view === 'video' && (!playing || showControls) && (
+          <IconButton
+            onClick={(e) => {
+              e.stopPropagation();
+              handleFullscreen();
+            }}
+            sx={{
+              position: 'absolute',
+              bottom: 8,
+              right: 8,
+              backgroundColor: 'rgba(0,0,0,0.3)',
+              color: 'white',
+              '&:hover': {
+                backgroundColor: 'rgba(0,0,0,0.5)',
+              },
+              zIndex: 1,
+            }}
+          >
+            <FullscreenIcon />
           </IconButton>
         )}
 
