@@ -13,7 +13,6 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import MUILink from '@mui/material/Link';
 import MenuIcon from '@mui/icons-material/Menu';
-import EmojiNatureIcon from '@mui/icons-material/EmojiNature';
 import SettingsIcon from '@mui/icons-material/Settings';
 import LiveTvIcon from '@mui/icons-material/LiveTv';
 import Divider from '@mui/material/Divider';
@@ -52,9 +51,14 @@ export function Navigation() {
           <Box
             sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}
           >
-            <EmojiNatureIcon sx={{ mr: 1 }} />
-            <Typography variant="h6" sx={{ mr: 4 }}>
-              Bird Lense
+            <Box
+              component="img"
+              src="/logo.png"
+              alt="BirdLense Logo"
+              sx={{ mr: 1.5, height: 40, width: 40, borderRadius: 1 }}
+            />
+            <Typography variant="h6" sx={{ mr: 4, fontWeight: 700 }}>
+              BirdLense
             </Typography>
           </Box>
 
@@ -142,8 +146,13 @@ export function Navigation() {
               alignItems: 'center',
             }}
           >
-            <EmojiNatureIcon sx={{ mr: 1 }} />
-            <Typography variant="h6">Smart Bird Feeder</Typography>
+            <Box
+              component="img"
+              src="/logo.png"
+              alt="BirdLense Logo"
+              sx={{ mr: 1, height: 32, width: 32, borderRadius: 0.5 }}
+            />
+            <Typography variant="h6">BirdLense</Typography>
           </Box>
 
           {/* Desktop Navigation Tabs */}
