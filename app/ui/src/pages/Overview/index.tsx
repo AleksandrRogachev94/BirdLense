@@ -13,6 +13,7 @@ import { fetchOverviewData, fetchWeather } from '../../api/api';
 import { WeatherCard } from '../../components/WeatherCard';
 import { StatCard } from '../../components/StatCard';
 import DailyPatternChart from './DailyPatternChart';
+import { DailySummary } from './DailySummary';
 import Pets from '@mui/icons-material/Pets';
 import TrendingUp from '@mui/icons-material/TrendingUp';
 import Timer from '@mui/icons-material/Timer';
@@ -58,7 +59,7 @@ export const Overview = () => {
     (overviewData?.stats.videoDuration || 1);
 
   return (
-    <Box>
+    <Box sx={{ pb: 4 }}>
       <Grid
         container
         sx={{ pb: 4 }}
@@ -83,7 +84,7 @@ export const Overview = () => {
         </Grid>
       </Grid>
 
-      <Grid container spacing={3} sx={{ minHeight: '300px' }}>
+      <Grid container spacing={2} sx={{ minHeight: '300px' }}>
         {/* Stats Cards */}
         <Grid size={{ xs: 12, md: 8 }}>
           <Grid container spacing={2}>
@@ -117,13 +118,13 @@ export const Overview = () => {
             </Grid>
             <Grid size={{ xs: 12, sm: 6, md: 4 }}>
               <StatCard
-              icon={AccessTime}
-              title="Busiest Hour"
-              value={
-                overviewData?.stats.totalDetections > 0
-                ? formatHour(overviewData?.stats.busiestHour)
-                : 'N/A'
-              }
+                icon={AccessTime}
+                title="Busiest Hour"
+                value={
+                  (overviewData?.stats.totalDetections ?? 0) > 0
+                    ? formatHour(overviewData?.stats.busiestHour ?? 0)
+                    : 'N/A'
+                }
               />
             </Grid>
             <Grid size={{ xs: 12, sm: 6, md: 4 }}>
@@ -137,13 +138,18 @@ export const Overview = () => {
         </Grid>
 
         {/* Weather Card */}
-        <Grid size={{ xs: 12, md: 4 }} sx={{ display: 'flex' }}>
+        <Grid size={{ xs: 12, sm: 6, md: 4 }} sx={{ display: 'flex' }}>
           {weather && <WeatherCard weather={weather} />}
         </Grid>
 
+        {/* Daily Summary */}
+        <Grid size={{ xs: 12, sm: 6, md: 4 }} sx={{ display: 'flex' }}>
+          <DailySummary date={selectedDay} />
+        </Grid>
+
         {/* Daily Pattern Chart */}
-        <Grid size={{ xs: 12 }}>
-          <Paper>
+        <Grid size={{ xs: 12, md: 8 }}>
+          <Paper sx={{ p: 2 }}>
             <Typography variant="h6" gutterBottom>
               Daily Activity Pattern
             </Typography>
@@ -151,7 +157,7 @@ export const Overview = () => {
               <DailyPatternChart
                 data={overviewData.topSpecies}
                 date={selectedDay}
-                size={800}
+                size={500}
               />
             )}
           </Paper>

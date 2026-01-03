@@ -103,7 +103,7 @@ export const DailyPatternChart: React.FC<DailyPatternChartProps> = ({
       sx={{
         width: '100%',
         display: 'flex',
-        flexDirection: isMobile ? 'column' : 'row',
+        flexDirection: 'column',
         alignItems: 'center',
         gap: 2,
       }}
@@ -171,9 +171,10 @@ export const DailyPatternChart: React.FC<DailyPatternChartProps> = ({
               const startAngle = (hour * 360) / 24;
               const endAngle = ((hour + 1) * 360) / 24;
               const detections = getOffsetValue(species.detections, hour);
-              const intensity = detections === 0 
-                ? 0 
-                : 0.25 + (0.7 * detections / maxDetections); // Scale non-zero values from 0.25 to 1.0
+              const intensity =
+                detections === 0
+                  ? 0
+                  : 0.25 + (0.7 * detections) / maxDetections; // Scale non-zero values from 0.25 to 1.0
 
               return (
                 <Tooltip
@@ -234,15 +235,11 @@ export const DailyPatternChart: React.FC<DailyPatternChartProps> = ({
       <Box
         sx={{
           display: 'flex',
-          flexDirection: 'column',
-          gap: 1,
-          bgcolor: 'background.paper',
-          p: 2,
-          mr: 2,
-          mb: 2,
-          borderRadius: 1,
-          boxShadow: 1,
-          maxWidth: isMobile ? '100%' : 'auto',
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
+          gap: 2,
+          p: 1,
         }}
       >
         {data.map((species) => {

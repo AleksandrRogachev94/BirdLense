@@ -43,7 +43,7 @@ export const WeatherCard = ({ weather }: { weather: Weather }) => {
   }
 
   return (
-    <Paper sx={{ padding: 2 }}>
+    <Paper sx={{ padding: 2, height: '100%' }}>
       <Stack spacing={2}>
         <Typography variant="h6">Weather</Typography>
         <Box

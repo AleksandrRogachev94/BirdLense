@@ -181,3 +181,18 @@ export const fetchSpeciesSummary = async (
     return response.data;
   }
 };
+
+export const fetchDailySummary = async (
+  date: string,
+): Promise<{ summary: string }> => {
+  if (useMockData) {
+    await sleep(2000);
+    return {
+      summary:
+        'This is a mock summary for ' + date + '. The birds were active today!',
+    };
+  } else {
+    const response = await axios.post(`${BASE_API_URL}/summary`, { date });
+    return response.data;
+  }
+};
