@@ -192,7 +192,14 @@ export const fetchDailySummary = async (
         'This is a mock summary for ' + date + '. The birds were active today!',
     };
   } else {
-    const response = await axios.post(`${BASE_API_URL}/summary`, { date });
-    return response.data;
+    try {
+      const response = await axios.post(`${BASE_API_URL}/summary`, { date });
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.data?.error) {
+        throw new Error(error.response.data.error);
+      }
+      throw error;
+    }
   }
 };

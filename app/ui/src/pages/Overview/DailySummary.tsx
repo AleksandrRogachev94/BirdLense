@@ -92,6 +92,13 @@ export const DailySummary = ({ date }: DailySummaryProps) => {
               Generate a summary of bird visits for {date.format('MMM D, YYYY')}{' '}
               using Gemini AI.
             </Typography>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ mb: 2, display: 'block' }}
+            >
+              Requires Gemini API key (Settings → Secrets)
+            </Typography>
             <Button
               variant="contained"
               onClick={handleGenerate}
@@ -103,7 +110,9 @@ export const DailySummary = ({ date }: DailySummaryProps) => {
         )}
         {mutation.isError && (
           <Typography color="error" variant="body2" sx={{ mt: 2 }}>
-            Error generating summary. Please try again.
+            {mutation.error instanceof Error
+              ? mutation.error.message
+              : 'Error generating summary. Please try again.'}
           </Typography>
         )}
       </Box>

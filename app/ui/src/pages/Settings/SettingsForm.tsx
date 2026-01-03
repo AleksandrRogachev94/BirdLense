@@ -163,7 +163,7 @@ export const SettingsForm = ({
                   type="password"
                   onChange={(e) => field.handleChange(e.target.value)}
                   label="Gemini API Key"
-                  helperText="Optional: Enables LLM verification for bird detection"
+                  helperText="Enables: Daily AI Summary, LLM verification for bird detection"
                 />
               </>
             )}
@@ -249,7 +249,8 @@ export const SettingsForm = ({
                   const currentWidth = widthField.state.value;
                   const currentHeight = heightField.state.value;
                   const selectedResolution = resolutions.find(
-                    (r) => r.width === currentWidth && r.height === currentHeight,
+                    (r) =>
+                      r.width === currentWidth && r.height === currentHeight,
                   );
 
                   return (
