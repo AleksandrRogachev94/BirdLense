@@ -7,6 +7,7 @@ from util import weather_fetcher, update_species_info_from_wiki
 from app_config.app_config import app_config
 
 
+
 def register_routes(app):
     @app.route('/api/ui/health', methods=['GET'])
     def health():
@@ -265,6 +266,31 @@ def register_routes(app):
             'topSpecies': top_species,
             'stats': stats
         }, 200
+
+    @app.route('/api/ui/summary', methods=['POST'])
+    def get_daily_summary():
+        from services.daily_summary_service import DailySummaryService
+        
+        # Parse query parameters or body
+        data = request.json or {}
+        date_param = data.get('date', None) or request.args.get('date', None)
+        
+        try:
+            if date_param:
+                date = datetime.strptime(date_param, '%Y-%m-%d')
+            else:
+                date = datetime.now()
+        except ValueError:
+            return {"error": "Invalid date format. Use YYYY-MM-DD."}, 400
+
+        try:
+            result = DailySummaryService.get_summary(date)
+            return result, 200
+        except ValueError as e:
+            return {'error': str(e)}, 400
+        except Exception as e:
+            app.logger.error(f"Error generating summary: {str(e)}")
+            return {'error': f"Failed to generate summary: {str(e)}"}, 500
 
     @app.route('/api/ui/timeline', methods=['GET'])
     def get_video_species():
