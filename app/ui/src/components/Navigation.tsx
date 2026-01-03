@@ -18,7 +18,7 @@ import LiveTvIcon from '@mui/icons-material/LiveTv';
 import Divider from '@mui/material/Divider';
 
 const NAVIGATION_ITEMS = [
-  { label: 'Overview', path: '/' },
+  { label: 'Dashboard', path: '/' },
   { label: 'Timeline', path: '/timeline' },
   { label: 'Food Management', path: '/food' },
   { label: 'Bird Directory', path: '/species' },
@@ -49,7 +49,18 @@ export function Navigation() {
         <Toolbar disableGutters>
           {/* Logo Section - Desktop */}
           <Box
-            sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}
+            component={Link}
+            to="/"
+            sx={{
+              display: { xs: 'none', md: 'flex' },
+              alignItems: 'center',
+              textDecoration: 'none',
+              color: 'inherit',
+              mr: 4, // Moved margin from Typography to container for better click area
+              '&:hover': {
+                opacity: 0.9,
+              },
+            }}
           >
             <Box
               component="img"
@@ -57,7 +68,7 @@ export function Navigation() {
               alt="BirdLense Logo"
               sx={{ mr: 1.5, height: 40, width: 40, borderRadius: 1 }}
             />
-            <Typography variant="h6" sx={{ mr: 4, fontWeight: 700 }}>
+            <Typography variant="h6" sx={{ fontWeight: 700 }}>
               BirdLense
             </Typography>
           </Box>
@@ -140,10 +151,14 @@ export function Navigation() {
 
           {/* Logo Section - Mobile */}
           <Box
+            component={Link}
+            to="/"
             sx={{
               display: { xs: 'flex', md: 'none' },
               flexGrow: 1,
               alignItems: 'center',
+              textDecoration: 'none',
+              color: 'inherit',
             }}
           >
             <Box

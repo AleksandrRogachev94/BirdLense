@@ -1,7 +1,7 @@
 import { PageHelpProps } from './components/PageHelp';
 
 export const overviewHelpConfig: PageHelpProps = {
-  title: 'Bird Activity Overview',
+  title: 'Bird Activity Dashboard',
   description:
     'View real-time and daily statistics about bird activity at your feeder. This dashboard provides key metrics, current weather conditions, and a 24-hour activity pattern visualization.',
   details: [
