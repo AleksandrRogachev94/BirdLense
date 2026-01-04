@@ -303,8 +303,9 @@ def register_routes(app):
             return {'error': 'Both start_time and end_time are required'}, 400
 
         try:
-            start_time = datetime.fromtimestamp(int(start_time))
-            end_time = datetime.fromtimestamp(int(end_time))
+            # Use UTC but remove timezone info to match naive DB storage
+            start_time = datetime.fromtimestamp(int(start_time), timezone.utc).replace(tzinfo=None)
+            end_time = datetime.fromtimestamp(int(end_time), timezone.utc).replace(tzinfo=None)
         except ValueError:
             return {'error': 'Invalid datetime format'}, 400
 
@@ -319,8 +320,9 @@ def register_routes(app):
             .join(VideoSpecies)
             .join(Video)
             .filter(
-                SpeciesVisit.start_time >= start_time,
-                SpeciesVisit.end_time <= end_time
+                # Use overlap logic
+                SpeciesVisit.end_time >= start_time,
+                SpeciesVisit.start_time <= end_time
             )
             .order_by(SpeciesVisit.start_time.desc())
             .all()
