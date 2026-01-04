@@ -73,7 +73,10 @@ export const DailySummary = ({ date }: DailySummaryProps) => {
           </Box>
         ) : summary ? (
           <Box sx={{ width: '100%' }}>
-            <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap', mb: 2 }}>
+            <Typography
+              variant="body2"
+              sx={{ whiteSpace: 'pre-wrap', mb: 2, textAlign: 'justify' }}
+            >
               {summary}
             </Typography>
             <Button
