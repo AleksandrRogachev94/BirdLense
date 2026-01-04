@@ -14,11 +14,12 @@ import { WeatherCard } from '../../components/WeatherCard';
 import { StatCard } from '../../components/StatCard';
 import DailyPatternChart from './DailyPatternChart';
 import { DailySummary } from './DailySummary';
-import Pets from '@mui/icons-material/Pets';
-import TrendingUp from '@mui/icons-material/TrendingUp';
-import Timer from '@mui/icons-material/Timer';
-import AccessTime from '@mui/icons-material/AccessTime';
-import VideoSettings from '@mui/icons-material/VideoSettings';
+import VisibilityOutlined from '@mui/icons-material/VisibilityOutlined';
+import TimelapseOutlined from '@mui/icons-material/TimelapseOutlined';
+import ScheduleOutlined from '@mui/icons-material/ScheduleOutlined';
+import WbSunnyOutlined from '@mui/icons-material/WbSunnyOutlined';
+import VideocamOutlined from '@mui/icons-material/VideocamOutlined';
+import { BirdIcon } from '../../components/icons/BirdIcon';
 import { PageHelp } from '../../components/PageHelp';
 import { overviewHelpConfig } from '../../page-help-config';
 
@@ -54,9 +55,11 @@ export const Overview = () => {
     );
   if (errorSightings || errorWeather) return <div>Error loading data.</div>;
 
-  const ratio =
-    (overviewData?.stats.audioDuration || 0) /
-    (overviewData?.stats.videoDuration || 1);
+  const formatRecordingTime = (seconds: number) => {
+    if (seconds < 60) return `${Math.round(seconds)} sec`;
+    if (seconds < 3600) return `${Math.round(seconds / 60)} min`;
+    return `${(seconds / 3600).toFixed(1)} hrs`;
+  };
 
   return (
     <Box sx={{ pb: 4 }}>
@@ -90,35 +93,35 @@ export const Overview = () => {
           <Grid container spacing={2}>
             <Grid size={{ xs: 12, sm: 6, md: 4 }}>
               <StatCard
-                icon={Pets}
+                icon={BirdIcon}
                 title="Unique Species"
                 value={overviewData?.stats.uniqueSpecies || 0}
               />
             </Grid>
             <Grid size={{ xs: 12, sm: 6, md: 4 }}>
               <StatCard
-                icon={TrendingUp}
+                icon={VisibilityOutlined}
                 title="Total Visits"
                 value={overviewData?.stats.totalDetections || 0}
               />
             </Grid>
             <Grid size={{ xs: 12, sm: 6, md: 4 }}>
               <StatCard
-                icon={AccessTime}
-                title="Last Hour"
+                icon={ScheduleOutlined}
+                title="Visits (Last Hour)"
                 value={overviewData?.stats.lastHourDetections || 0}
               />
             </Grid>
             <Grid size={{ xs: 12, sm: 6, md: 4 }}>
               <StatCard
-                icon={Timer}
+                icon={TimelapseOutlined}
                 title="Average Visit"
                 value={`${Math.round(overviewData?.stats.avgVisitDuration || 0)} sec`}
               />
             </Grid>
             <Grid size={{ xs: 12, sm: 6, md: 4 }}>
               <StatCard
-                icon={AccessTime}
+                icon={WbSunnyOutlined}
                 title="Busiest Hour"
                 value={
                   (overviewData?.stats.totalDetections ?? 0) > 0
@@ -129,9 +132,11 @@ export const Overview = () => {
             </Grid>
             <Grid size={{ xs: 12, sm: 6, md: 4 }}>
               <StatCard
-                icon={VideoSettings}
-                title="Audio/Video Ratio"
-                value={ratio.toFixed(2)}
+                icon={VideocamOutlined}
+                title="Recording Time"
+                value={formatRecordingTime(
+                  overviewData?.stats.videoDuration || 0,
+                )}
               />
             </Grid>
           </Grid>

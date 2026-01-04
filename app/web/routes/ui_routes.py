@@ -209,7 +209,7 @@ def register_routes(app):
             func.sum(SpeciesVisit.max_simultaneous).label('totalDetections'),
             func.sum(
                 case(
-                    (SpeciesVisit.start_time >= date - timedelta(hours=1),
+                    (SpeciesVisit.start_time >= datetime.now() - timedelta(hours=1),
                      SpeciesVisit.max_simultaneous),
                     else_=0
                 )
