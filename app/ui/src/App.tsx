@@ -115,7 +115,7 @@ function App() {
         <BrowserRouter>
           <Navigation />
           <main>
-            <Container>
+            <Container maxWidth="xl">
               <Routes>
                 <Route path="/" element={<Overview />} />
                 <Route path="/timeline" element={<TimelinePage />} />
