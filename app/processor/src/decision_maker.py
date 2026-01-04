@@ -74,7 +74,8 @@ class DecisionMaker():
                     'end_time': track['end_time'],
                     'confidence': confidence,
                     'best_frame': track.get('best_frame'),
-                    'source': 'video'
+                    'source': 'video',
+                    'frames': track.get('frames', [])  # Per-frame bounding box data
                 })
 
         return result

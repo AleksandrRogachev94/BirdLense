@@ -1,4 +1,5 @@
 from flask import request
+import json as json_module
 from sqlalchemy import func, case, distinct, or_
 from sqlalchemy.orm import aliased
 from datetime import datetime, timezone, timedelta
@@ -34,6 +35,21 @@ def register_routes(app):
         if not video:
             return {'error': 'Video not found'}, 404
 
+        def build_species_data(vs):
+            data = {
+                'species_id': vs.species.id,
+                'species_name': vs.species.name,
+                'start_time': vs.start_time,
+                'end_time': vs.end_time,
+                'confidence': vs.confidence,
+                'source': vs.source,
+                'image_url': vs.species.image_url,
+            }
+            # Always include frames if available
+            if vs.frames:
+                data['frames'] = json_module.loads(vs.frames)
+            return data
+
         video_json = {
             'id': video.id,
             'created_at': video.created_at.astimezone(timezone.utc).isoformat(),
@@ -52,17 +68,7 @@ def register_routes(app):
                 'clouds': video.weather_clouds,
                 'wind_speed': video.weather_wind_speed
             },
-            'species': [
-                {
-                    'species_id': vs.species.id,
-                    'species_name': vs.species.name,
-                    'start_time': vs.start_time,
-                    'end_time': vs.end_time,
-                    'confidence': vs.confidence,
-                    'source': vs.source,
-                    'image_url': vs.species.image_url,
-                } for vs in video.video_species
-            ],
+            'species': [build_species_data(vs) for vs in video.video_species],
             'food': [
                 {
                     'id': bf.id,

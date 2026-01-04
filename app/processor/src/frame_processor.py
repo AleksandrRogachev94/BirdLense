@@ -22,6 +22,9 @@ class FrameProcessor:
         if img is None:
             raise Exception('Frame is missing')
         self.cnt += 1
+        
+        # Capture frame timestamp BEFORE processing to account for detection latency
+        frame_time = round(time.time() - self.start_time, 2)
 
         # Check lighting condition first
         if not self.light_detector.has_sufficient_light(img):
@@ -52,7 +55,7 @@ class FrameProcessor:
 
         # Update tracks with valid detections
         for res in results:
-            self.update_track(res.track_id, res.class_name, res.confidence, res.crop, res.blur_variance)
+            self.update_track(res.track_id, res.class_name, res.confidence, res.bbox, frame_time, res.crop, res.blur_variance)
 
         self.logger.debug(
             f'Detection Time: {(time.time() - st) * 1000:.0f} msec | '
@@ -61,19 +64,25 @@ class FrameProcessor:
 
         return len(results) > 0
 
-    def update_track(self, track_id, class_name, confidence, crop=None, blur_variance=None):
+    def update_track(self, track_id, class_name, confidence, bbox, frame_time, crop=None, blur_variance=None):
         if track_id not in self.tracks:
             self.tracks[track_id] = {
-                'start_time': round(time.time() - self.start_time, 1),
+                'start_time': frame_time,
                 'preds': [],
                 'best_frame': None,
-                'best_frame_score': 0.0
+                'best_frame_score': 0.0,
+                'frames': []  # List of {t: float, bbox: [x1,y1,x2,y2]}
             }
         # Only append real predictions (None means not classified this frame)
         if class_name is not None:
             self.tracks[track_id]['preds'].append((class_name, confidence))
-        self.tracks[track_id]['end_time'] = round(
-            time.time() - self.start_time, 1)
+        self.tracks[track_id]['end_time'] = frame_time
+        
+        # Store frame bbox for track visualization
+        self.tracks[track_id]['frames'].append({
+            't': frame_time,
+            'bbox': [round(float(b), 4) for b in bbox]
+        })
         
         # Update best frame if this crop is sharper
         if crop is not None and blur_variance is not None:

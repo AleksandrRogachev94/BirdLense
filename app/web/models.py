@@ -29,6 +29,8 @@ class VideoSpecies(db.Model):
     confidence: Mapped[float] = mapped_column(Float, nullable=False)
     source: Mapped[str] = mapped_column(
         String, nullable=False)  # video or audio
+    # JSON: [{t: 0.1, bbox: [x1,y1,x2,y2]}, ...] for track visualization
+    frames: Mapped[str] = mapped_column(String, nullable=True)
     video: Mapped["Video"] = relationship(back_populates="video_species")
     species: Mapped["Species"] = relationship(back_populates="video_species")
     species_visit: Mapped["SpeciesVisit"] = relationship(

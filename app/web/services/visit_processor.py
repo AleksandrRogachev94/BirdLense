@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, timezone
 from typing import List, Dict, Optional, Tuple
+import json
 from models import Video, Species, VideoSpecies, SpeciesVisit
 from util import update_species_info_from_wiki
 
@@ -12,7 +13,7 @@ class VisitProcessor:
 
     def process_video_detection(self, species: Species, video: Video,
                                 detection_start: float, detection_end: float,
-                                confidence: float) -> Tuple[SpeciesVisit, VideoSpecies]:
+                                confidence: float, frames: Optional[List[Dict]] = None) -> Tuple[SpeciesVisit, VideoSpecies]:
         """
         Process a video detection and create/update associated visit.
         Returns the visit and video_species record.
@@ -35,7 +36,8 @@ class VisitProcessor:
             source='video',
             created_at=detection_time,
             species_visit=visit,
-            video=video
+            video=video,
+            frames=json.dumps(frames) if frames else None
         )
         self.db.session.add(video_species)
 
@@ -93,7 +95,8 @@ class VisitProcessor:
                     video=video,
                     detection_start=det['start_time'],
                     detection_end=det['end_time'],
-                    confidence=det['confidence']
+                    confidence=det['confidence'],
+                    frames=det.get('frames')
                 )
                 # Create tuple key from visit attributes
                 visit_key = (visit.species_id, visit.start_time)
