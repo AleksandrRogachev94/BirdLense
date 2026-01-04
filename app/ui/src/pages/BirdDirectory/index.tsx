@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { fetchBirdDirectory } from '../../api/api';
 import Box from '@mui/material/Box';
@@ -7,6 +7,12 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
+import TextField from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
+import SearchIcon from '@mui/icons-material/Search';
+import UnfoldMoreIcon from '@mui/icons-material/UnfoldMore';
+import UnfoldLessIcon from '@mui/icons-material/UnfoldLess';
 import { SelectChangeEvent } from '@mui/material/Select';
 import { BirdDirectoryTreeView } from './BirdDirectoryTreeView';
 import { Species } from '../../types';
@@ -19,121 +25,245 @@ interface NestedSpecies extends Species {
   children: NestedSpecies[];
 }
 
+// Convert flat species list to nested tree structure
 const convertToNested = (speciesList: Species[]): NestedSpecies[] => {
   const speciesMap = new Map<number, NestedSpecies>();
 
-  // First pass: Create all nodes with initial counts
   speciesList.forEach((species) => {
     speciesMap.set(species.id, {
       ...species,
       children: [],
-      count: species.count || 0, // Initialize with species count or 0
+      count: species.count || 0,
     });
   });
 
-  // Second pass: Build tree structure
   const result: NestedSpecies[] = [];
   speciesList.forEach((species) => {
     if (species.parent_id === null) {
       result.push(speciesMap.get(species.id)!);
     } else {
-      const parent = speciesMap.get(species.parent_id);
-      if (parent) {
-        parent.children.push(speciesMap.get(species.id)!);
-      }
+      speciesMap
+        .get(species.parent_id)
+        ?.children.push(speciesMap.get(species.id)!);
     }
   });
 
-  // Helper function to calculate total count for a node and its descendants
+  // Calculate cumulative counts
   const calculateTotalCount = (node: NestedSpecies): number => {
-    const childrenCount = node.children.reduce((sum, child) => {
-      return sum + calculateTotalCount(child);
-    }, 0);
+    const childrenCount = node.children.reduce(
+      (sum, child) => sum + calculateTotalCount(child),
+      0,
+    );
     node.count = (node.count || 0) + childrenCount;
     return node.count;
   };
-
-  // Calculate counts starting from root nodes
   result.forEach(calculateTotalCount);
 
-  return result[0].children;
+  return result[0]?.children || [];
 };
 
+// Filter tree by filter type
 const filterNestedSpecies = (
   species: NestedSpecies[],
   filter: FilterType,
-  hasActiveParent: boolean = false,
+  hasActiveParent = false,
 ): NestedSpecies[] => {
   return species
-    .map((species) => ({
-      ...species,
+    .map((s) => ({
+      ...s,
       children: filterNestedSpecies(
-        species.children,
+        s.children,
         filter,
-        species.active || hasActiveParent,
+        s.active || hasActiveParent,
       ),
     }))
-    .filter((species) => {
-      switch (filter) {
-        case 'regional':
-          return (
-            hasActiveParent || species.active || species.children.length > 0
-          );
-        case 'observed':
-          return (species.count || 0) > 0 || species.children.length > 0;
-        default:
-          return true;
+    .filter((s) => {
+      if (filter === 'regional')
+        return hasActiveParent || s.active || s.children.length > 0;
+      if (filter === 'observed')
+        return (s.count || 0) > 0 || s.children.length > 0;
+      return true;
+    });
+};
+
+// Filter tree by search query, keeping ancestors of matches
+const filterBySearch = (
+  species: NestedSpecies[],
+  query: string,
+): NestedSpecies[] => {
+  if (!query) return species;
+  const lowerQuery = query.toLowerCase();
+  return species
+    .map((node) => ({
+      ...node,
+      children: filterBySearch(node.children, query),
+    }))
+    .filter(
+      (node) =>
+        node.name.toLowerCase().includes(lowerQuery) ||
+        node.children.length > 0,
+    );
+};
+
+// Collect IDs of all expandable nodes + nodes that should auto-expand for search
+const collectTreeInfo = (species: NestedSpecies[], searchQuery: string) => {
+  const expandableIds: number[] = [];
+  const autoExpandIds: number[] = [];
+  const lowerQuery = searchQuery.toLowerCase();
+
+  const traverse = (nodes: NestedSpecies[]): boolean => {
+    let hasMatch = false;
+    nodes.forEach((node) => {
+      if (node.children.length > 0) {
+        expandableIds.push(node.id);
+        const childHasMatch = traverse(node.children);
+        const selfMatches =
+          searchQuery && node.name.toLowerCase().includes(lowerQuery);
+        if (selfMatches || childHasMatch) {
+          autoExpandIds.push(node.id);
+          hasMatch = true;
+        }
+      } else if (searchQuery && node.name.toLowerCase().includes(lowerQuery)) {
+        hasMatch = true;
       }
     });
+    return hasMatch;
+  };
+  traverse(species);
+  return { expandableIds, autoExpandIds };
 };
 
 export const BirdDirectory = () => {
   const [filter, setFilter] = useState<FilterType>('observed');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set());
 
-  const { data, isLoading, error } = useQuery({
+  const {
+    data: rawData,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['bird-directory'],
-    queryFn: () => fetchBirdDirectory(),
-    select: (data) => {
-      // First convert to nested structure
-      const nestedSpecies = convertToNested(data);
-      // Then filter the tree while preserving hierarchy
-      return filterNestedSpecies(nestedSpecies, filter);
-    },
+    queryFn: fetchBirdDirectory,
   });
 
-  const handleFilterChange = (event: SelectChangeEvent<FilterType>) => {
-    setFilter(event.target.value as FilterType);
-  };
+  // Process data once
+  const { filteredData, expandableIds, autoExpandIds } = useMemo(() => {
+    if (!rawData)
+      return { filteredData: [], expandableIds: [], autoExpandIds: [] };
+    const nested = convertToNested(rawData);
+    const filtered = filterNestedSpecies(nested, filter);
+    const searched = filterBySearch(filtered, searchQuery);
+    const { expandableIds, autoExpandIds } = collectTreeInfo(
+      filtered,
+      searchQuery,
+    );
+    return { filteredData: searched, expandableIds, autoExpandIds };
+  }, [rawData, filter, searchQuery]);
 
-  if (isLoading)
+  // Auto-expand when searching
+  useEffect(() => {
+    if (searchQuery) {
+      setExpandedIds(new Set(autoExpandIds));
+    }
+  }, [searchQuery, autoExpandIds]);
+
+  const handleToggleExpand = useCallback((id: number) => {
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }, []);
+
+  if (isLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center' }}>
         <CircularProgress />
       </Box>
     );
+  }
   if (error) return <div>Error loading bird directory data.</div>;
 
   return (
     <>
       <PageHelp {...birdDirHelpConfig} />
-      <Box display="flex" justifyContent="center" alignItems="center" mb={2}>
-        <FormControl>
+
+      {/* Controls row - consistent height with sx overrides */}
+      <Box display="flex" flexWrap="wrap" alignItems="center" gap={1.5} mb={3}>
+        <TextField
+          size="small"
+          placeholder="Search species..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
+                </InputAdornment>
+              ),
+            },
+          }}
+          sx={{ width: 180 }}
+        />
+
+        <FormControl size="small">
           <InputLabel id="filter-label">Filter</InputLabel>
-          <Select
+          <Select<FilterType>
             labelId="filter-label"
             value={filter}
-            onChange={handleFilterChange}
+            onChange={(e: SelectChangeEvent<FilterType>) =>
+              setFilter(e.target.value as FilterType)
+            }
             label="Filter"
-            sx={{ minWidth: 100 }}
+            sx={{ minWidth: 120 }}
           >
             <MenuItem value="all">All Species</MenuItem>
             <MenuItem value="regional">Regional</MenuItem>
             <MenuItem value="observed">Observed</MenuItem>
           </Select>
         </FormControl>
+
+        <IconButton
+          size="small"
+          onClick={() => setExpandedIds(new Set(expandableIds))}
+          disabled={
+            expandableIds.length === 0 ||
+            expandedIds.size === expandableIds.length
+          }
+          title="Expand all"
+        >
+          <UnfoldMoreIcon fontSize="small" />
+        </IconButton>
+        <IconButton
+          size="small"
+          onClick={() => setExpandedIds(new Set())}
+          disabled={expandedIds.size === 0}
+          title="Collapse all"
+        >
+          <UnfoldLessIcon fontSize="small" />
+        </IconButton>
       </Box>
 
-      <BirdDirectoryTreeView birds={data || []} onSelect={() => {}} />
+      {filteredData.length === 0 ? (
+        <Box sx={{ color: 'text.secondary', py: 4 }}>
+          {searchQuery
+            ? `No species found matching "${searchQuery}"`
+            : 'No species to display with the selected filter.'}
+        </Box>
+      ) : (
+        <BirdDirectoryTreeView
+          birds={filteredData}
+          expandedIds={expandedIds}
+          onToggleExpand={handleToggleExpand}
+          searchQuery={searchQuery}
+        />
+      )}
     </>
   );
 };

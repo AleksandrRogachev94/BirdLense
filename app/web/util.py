@@ -110,46 +110,32 @@ def build_hierarchy_tree():
 
 
 def get_wikipedia_image_and_description(title):
-    # URL encode the title
-    url = f"https://en.wikipedia.org/w/api.php?action=query&prop=pageimages|pageprops|extracts&format=json&piprop=thumbnail&titles={title}&pithumbsize=300&redirects&exintro"
-
-    # Send request to the API
-    response = requests.get(url)
-
-    # Parse the JSON response
-    data = response.json()
-
-    # Check if the response contains the expected data
-    if "query" in data and "pages" in data["query"]:
-        page_info = data["query"]["pages"]
-
-        # Get the page ID (assuming the first page in the response)
-        page_id = next(iter(page_info))
-
-        page = page_info[page_id]
-
-        # Extract image URL and description
-        image_url = page.get("thumbnail", {}).get(
-            "source", "No image available")
-        description_html = page.get("extract", "No description available")
-
-        # Clean up description by removing HTML tags and trimming spaces and newlines
-        description = re.sub(r'<[^>]*>', '', description_html).strip()
-
-        # Return image URL and cleaned description
+    """Fetch image and description from Wikipedia. Returns (None, None) on any error."""
+    try:
+        url = f"https://en.wikipedia.org/w/api.php?action=query&prop=pageimages|pageprops|extracts&format=json&piprop=thumbnail&titles={title}&pithumbsize=300&redirects&exintro"
+        response = requests.get(url, timeout=10)
+        data = response.json()
+        page = list(data.get("query", {}).get("pages", {}).values())[0]
+        image_url = page.get("thumbnail", {}).get("source")
+        description = re.sub(r'<[^>]*>', '', page.get("extract", "")).strip() or None
         return image_url, description
-    else:
-        return None, "No data found"
+    except Exception as e:
+        logging.warning(f"Wikipedia API failed for '{title}': {e}")
+        return None, None
 
 
-# Update missing species data from Wikipedia. Returns True if any data was updated.
 def update_species_info_from_wiki(sp):
-    if not sp.image_url or not sp.description:
-        clean_name = re.sub(r'\(.*\)', '', sp.name).strip()
-        sp.image_url, sp.description = get_wikipedia_image_and_description(
-            clean_name)
-        return True
-    return False
+    """Update missing species data from Wikipedia. Returns True if updated."""
+    if sp.image_url and sp.description:
+        return False
+    image_url, description = get_wikipedia_image_and_description(
+        re.sub(r'\(.*\)', '', sp.name).strip()
+    )
+    if image_url and not sp.image_url:
+        sp.image_url = image_url
+    if description and not sp.description:
+        sp.description = description
+    return bool(image_url or description)
 
 
 def notify(message, link="live", tags=None):

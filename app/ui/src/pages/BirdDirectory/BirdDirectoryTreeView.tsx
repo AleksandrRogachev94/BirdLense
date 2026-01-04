@@ -5,7 +5,6 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
 
 interface NestedSpecies {
   id: number;
@@ -17,19 +16,53 @@ interface NestedSpecies {
 
 interface BirdDirectoryTreeViewProps {
   birds: NestedSpecies[];
-  onSelect: (id: number) => void;
+  expandedIds: Set<number>;
+  onToggleExpand: (id: number) => void;
+  searchQuery?: string;
 }
 
 const TreeItem = ({
   node,
   parentActive = false,
+  expandedIds,
+  onToggleExpand,
+  searchQuery = '',
 }: {
   node: NestedSpecies;
   parentActive?: boolean;
+  expandedIds: Set<number>;
+  onToggleExpand: (id: number) => void;
+  searchQuery?: string;
 }) => {
-  const [expanded, setExpanded] = useState(false);
   const hasChildren = node.children.length > 0;
-  const isClickable = node.active || parentActive;
+  // Clickable if: active, has active parent, or is a leaf with observations
+  const isLeafWithObservations = !hasChildren && (node.count || 0) > 0;
+  const isClickable = node.active || parentActive || isLeafWithObservations;
+  const expanded = expandedIds.has(node.id);
+
+  // Highlight matching text
+  const highlightMatch = (text: string) => {
+    if (!searchQuery) return text;
+    const index = text.toLowerCase().indexOf(searchQuery.toLowerCase());
+    if (index === -1) return text;
+    return (
+      <>
+        {text.slice(0, index)}
+        <Box
+          component="span"
+          sx={{
+            backgroundColor: 'primary.main',
+            color: 'primary.contrastText',
+            borderRadius: 0.5,
+            px: 0.25,
+          }}
+        >
+          {text.slice(index, index + searchQuery.length)}
+        </Box>
+        {text.slice(index + searchQuery.length)}
+      </>
+    );
+  };
 
   return (
     <li>
@@ -37,16 +70,18 @@ const TreeItem = ({
         sx={{
           display: 'flex',
           alignItems: 'center',
-          p: 0.5,
+          p: 0.75,
+          borderRadius: 1,
+          transition: 'background-color 0.15s ease',
           '&:hover': {
-            backgroundColor: 'rgba(0, 0, 0, 0.04)',
+            backgroundColor: 'rgba(255, 255, 255, 0.05)',
           },
         }}
       >
         {hasChildren && (
           <IconButton
             size="small"
-            onClick={() => setExpanded(!expanded)}
+            onClick={() => onToggleExpand(node.id)}
             sx={{ mr: 1 }}
           >
             {expanded ? <ExpandMoreIcon /> : <ChevronRightIcon />}
@@ -73,11 +108,13 @@ const TreeItem = ({
                 flex: 1,
               }}
             >
-              <Typography variant="body2">{node.name}</Typography>
+              <Typography variant="body2">
+                {highlightMatch(node.name)}
+              </Typography>
               <OpenInNewIcon sx={{ ml: 1, fontSize: 16 }} />
             </Link>
           ) : (
-            <Typography variant="body2">{node.name}</Typography>
+            <Typography variant="body2">{highlightMatch(node.name)}</Typography>
           )}
         </Box>
 
@@ -101,6 +138,9 @@ const TreeItem = ({
               key={child.id}
               node={child}
               parentActive={node.active || parentActive}
+              expandedIds={expandedIds}
+              onToggleExpand={onToggleExpand}
+              searchQuery={searchQuery}
             />
           ))}
         </ul>
@@ -111,22 +151,34 @@ const TreeItem = ({
 
 export const BirdDirectoryTreeView = ({
   birds,
+  expandedIds,
+  onToggleExpand,
+  searchQuery,
 }: BirdDirectoryTreeViewProps) => {
   return (
     <Box
       sx={{
         maxWidth: 600,
-        margin: '0 auto',
+        margin: 0,
         '& ul': {
           listStyle: 'none',
-          padding: '0 0 0 24px',
+          padding: 0,
           margin: 0,
+        },
+        '& ul ul': {
+          paddingLeft: '24px',
         },
       }}
     >
       <ul>
         {birds.map((bird) => (
-          <TreeItem key={bird.id} node={bird} />
+          <TreeItem
+            key={bird.id}
+            node={bird}
+            expandedIds={expandedIds}
+            onToggleExpand={onToggleExpand}
+            searchQuery={searchQuery}
+          />
         ))}
       </ul>
     </Box>
