@@ -1,7 +1,7 @@
 import Grid from '@mui/material/Grid2';
-import AccessTime from '@mui/icons-material/AccessTime';
-import Pets from '@mui/icons-material/Pets';
-import Groups from '@mui/icons-material/Groups';
+import TimelapseOutlined from '@mui/icons-material/TimelapseOutlined';
+import VisibilityOutlined from '@mui/icons-material/VisibilityOutlined';
+import { BirdIcon } from '../../components/icons/BirdIcon';
 import { SpeciesVisit } from '../../types';
 import { StatCard } from '../../components/StatCard';
 
@@ -26,14 +26,22 @@ export const TimelineStats = ({ visits }: { visits: SpeciesVisit[] }) => {
   return (
     <Grid container spacing={3} mb={5}>
       <Grid size={{ xs: 12, sm: 4 }}>
-        <StatCard icon={Pets} title="Unique Species" value={uniqueSpecies} />
-      </Grid>
-      <Grid size={{ xs: 12, sm: 4 }}>
-        <StatCard icon={Groups} title="Total Visits" value={totalDetections} />
+        <StatCard
+          icon={BirdIcon}
+          title="Unique Species"
+          value={uniqueSpecies}
+        />
       </Grid>
       <Grid size={{ xs: 12, sm: 4 }}>
         <StatCard
-          icon={AccessTime}
+          icon={VisibilityOutlined}
+          title="Total Visits"
+          value={totalDetections}
+        />
+      </Grid>
+      <Grid size={{ xs: 12, sm: 4 }}>
+        <StatCard
+          icon={TimelapseOutlined}
           title="Total Duration"
           value={`${totalDurationMin}m`}
         />
