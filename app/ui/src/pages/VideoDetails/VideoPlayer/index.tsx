@@ -7,18 +7,16 @@ import React, {
 } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid2';
 import IconButton from '@mui/material/IconButton';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { useTheme } from '@mui/material/styles';
+import Chip from '@mui/material/Chip';
+import Fade from '@mui/material/Fade';
 import { Video, VideoSpecies } from '../../../types';
 import { BASE_URL } from '../../../api/api';
-import { SmallSpeciesCard } from './SmallSpeciesCard';
 import { ProgressBar } from './ProgressBar';
 import { SpectrogramPlayer } from './SpectrogramPlayer';
 import { useVideoControl } from './useVideoControl';
@@ -29,56 +27,124 @@ interface ViewToggleProps {
   audioDisabled: boolean;
 }
 
+interface VideoPlayerProps {
+  video: Video;
+}
+
 const ViewToggle: React.FC<ViewToggleProps> = ({
   view,
   onChange,
   audioDisabled,
 }) => (
-  <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-    <Tabs value={view} onChange={(_, newView) => onChange(newView)}>
-      <Tab label="Video" value="video" />
-      <Tab label="Spectrogram" value="audio" disabled={audioDisabled} />
+  <Box
+    sx={{
+      position: 'absolute',
+      top: 16,
+      left: 16,
+      zIndex: 10,
+      bgcolor: 'rgba(0, 0, 0, 0.6)',
+      borderRadius: 1,
+      backdropFilter: 'blur(4px)',
+    }}
+  >
+    <Tabs
+      value={view}
+      onChange={(_, newView) => onChange(newView)}
+      sx={{
+        minHeight: 'auto',
+        '& .MuiTab-root': {
+          minHeight: 32,
+          color: 'rgba(255, 255, 255, 0.7)',
+          '&.Mui-selected': {
+            color: 'white',
+          },
+        },
+        '& .MuiTabs-indicator': {
+          backgroundColor: 'primary.main',
+        },
+      }}
+    >
+      <Tab label="Video" value="video" sx={{ py: 0.5, px: 2 }} />
+      <Tab
+        label="Spectrogram"
+        value="audio"
+        disabled={audioDisabled}
+        sx={{ py: 0.5, px: 2 }}
+      />
     </Tabs>
   </Box>
 );
 
-interface ActiveSpeciesDisplayProps {
+// Compact overlay for active species detection
+interface CompactDetectionOverlayProps {
   species: VideoSpecies[];
 }
 
-const ActiveSpeciesDisplay: React.FC<ActiveSpeciesDisplayProps> = ({
+const CompactDetectionOverlay: React.FC<CompactDetectionOverlayProps> = ({
   species,
-}) => (
-  <Grid
-    container
-    spacing={1}
-    mt={1}
-    justifyContent="center"
-    alignItems="center"
-    sx={{ height: 200 }}
-  >
-    {species.length > 0 ? (
-      species.map((species, index) => (
-        <Grid
-          key={`${species.species_id}-${species.start_time}-${index}`}
-          size={{ xs: 6, md: 2 }}
-        >
-          <SmallSpeciesCard species={species} />
-        </Grid>
-      ))
-    ) : (
-      <Grid>
-        <Typography variant="body1">
-          No species detected at this moment.
-        </Typography>
-      </Grid>
-    )}
-  </Grid>
-);
+}) => {
+  if (species.length === 0) {
+    return null;
+  }
 
-export const VideoPlayer: React.FC<{ video: Video }> = ({ video }) => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  return (
+    <Fade in timeout={300}>
+      <Box
+        sx={{
+          position: 'absolute',
+          bottom: 8,
+          left: 8,
+          zIndex: 10,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 0.5,
+          maxWidth: { xs: '50%' },
+        }}
+      >
+        {species.map((s, index) => (
+          <Box
+            key={`${s.species_id}-${s.start_time}-${index}`}
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
+              bgcolor: 'rgba(0, 0, 0, 0.7)',
+              backdropFilter: 'blur(4px)',
+              borderRadius: 1,
+              px: 1.5,
+              py: 0.75,
+            }}
+          >
+            <Typography
+              variant="body2"
+              noWrap
+              sx={{
+                color: 'white',
+                fontWeight: 500,
+                fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                maxWidth: { xs: 120, sm: 200 },
+              }}
+            >
+              {s.species_name}
+            </Typography>
+            <Chip
+              label={`${Math.round(s.confidence * 100)}%`}
+              size="small"
+              color="primary"
+              sx={{
+                height: { xs: 18, sm: 20 },
+                fontSize: { xs: '0.65rem', sm: '0.7rem' },
+                flexShrink: 0,
+              }}
+            />
+          </Box>
+        ))}
+      </Box>
+    </Fade>
+  );
+};
+
+export const VideoPlayer: React.FC<VideoPlayerProps> = ({ video }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const timeoutRef = useRef<number>();
   const [view, setView] = useState<'video' | 'audio'>('video');
@@ -190,21 +256,28 @@ export const VideoPlayer: React.FC<{ video: Video }> = ({ video }) => {
 
   return (
     <Box>
-      <ViewToggle
-        view={view}
-        onChange={setView}
-        audioDisabled={!video.species.some((det) => det.source === 'audio')}
-      />
-
       <Box
         sx={{
-          height: isMobile ? '240px' : '400px',
+          width: '100%',
+          aspectRatio: '16 / 9', // Enforce 16:9 aspect ratio
           position: 'relative',
-          mt: 1,
+          mt: 0, // Removed top margin for cleaner alignment
         }}
         onMouseMove={handleMouseMove}
         onTouchStart={handleTouch}
       >
+        {/* Overlay Tabs */}
+        {showControls && (
+          <ViewToggle
+            view={view}
+            onChange={setView}
+            audioDisabled={!video.species.some((det) => det.source === 'audio')}
+          />
+        )}
+
+        {/* Active Species Overlay */}
+        <CompactDetectionOverlay species={activeDetections} />
+
         {(!playing || showControls) && (
           <IconButton
             onClick={(e) => {
@@ -245,7 +318,7 @@ export const VideoPlayer: React.FC<{ video: Video }> = ({ video }) => {
               position: 'absolute',
               bottom: 8,
               right: 8,
-              backgroundColor: 'rgba(0,0,0,0.3)',
+              backgroundColor: 'rgba(0,0,0,0.3)', // Consistent with other overlays
               color: 'white',
               '&:hover': {
                 backgroundColor: 'rgba(0,0,0,0.5)',
@@ -301,8 +374,6 @@ export const VideoPlayer: React.FC<{ video: Video }> = ({ video }) => {
         detections={filteredDetections}
         onSeek={handleSeek}
       />
-
-      <ActiveSpeciesDisplay species={activeDetections} />
     </Box>
   );
 };

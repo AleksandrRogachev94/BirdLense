@@ -114,7 +114,7 @@ function App() {
         <CssBaseline />
         <BrowserRouter>
           <Navigation />
-          <main>
+          <main style={{ paddingBottom: '2em' }}>
             <Container maxWidth="xl">
               <Routes>
                 <Route path="/" element={<Overview />} />

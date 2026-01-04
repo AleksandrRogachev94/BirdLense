@@ -1,196 +1,92 @@
 import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid2';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
-import Divider from '@mui/material/Divider';
 import Chip from '@mui/material/Chip';
 import Avatar from '@mui/material/Avatar';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import { Video, VideoSpecies } from '../../types';
-import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import { Video } from '../../types';
 import { WeatherCard } from '../../components/WeatherCard';
-import { labelToUniqueHexColor } from '../../util';
-import { Link } from 'react-router-dom';
 import { BASE_URL } from '../../api/api';
 
-interface GroupedSpecies {
-  species_id: number;
-  species_name: string;
-  image_url?: string;
-  detections: VideoSpecies[];
-  confidenceRange: string;
-  totalDuration: number;
-}
-
 export const VideoInfo = ({ video }: { video: Video }) => {
-  const {
-    processor_version,
-    start_time,
-    end_time,
-    favorite,
-    weather,
-    species,
-    food,
-  } = video;
+  const { processor_version, start_time, end_time, favorite, weather, food } =
+    video;
 
-  const formatDate = (date: string | Date) => new Date(date).toLocaleString();
+  const formatDate = (date: string | Date) =>
+    new Date(date).toLocaleString(undefined, {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    });
 
-  const groupedSpecies = species
-    .filter((species) => species.source === 'video')
-    .reduce((groups: GroupedSpecies[], sp) => {
-      let group = groups.find(
-        (g) => g.species_id === sp.species_id,
-      ) as GroupedSpecies;
-      if (!group) {
-        group = {
-          ...sp,
-          detections: [],
-          confidenceRange: '',
-          totalDuration: 0, // Initialize total duration
-        };
-        groups.push(group);
-      }
-      // Add detection to the group
-      group.detections.push(sp);
-      // Calculate the duration for this detection (in seconds)
-      const detectionDuration = sp.end_time - sp.start_time;
-      // Add the detection duration to the total duration
-      group.totalDuration += detectionDuration;
-      return groups;
-    }, []);
-
-  // Calculate confidence range
-  groupedSpecies.forEach((group) => {
-    const confidences = group.detections.map((d) => d.confidence * 100);
-    group.confidenceRange = `${Math.min(...confidences).toFixed(1)}% - ${Math.max(...confidences).toFixed(1)}%`;
-  });
+  const duration = Math.round(
+    (new Date(end_time).getTime() - new Date(start_time).getTime()) / 1000,
+  );
 
   return (
-    <Box sx={{ padding: 2 }}>
-      {/* Header */}
-      <Typography variant="h4" gutterBottom>
-        Video Information
-      </Typography>
-      <Box
-        sx={{ display: 'flex', alignItems: 'center', gap: 1, marginBottom: 2 }}
-      >
-        {favorite && (
-          <Chip
-            icon={<FavoriteIcon />}
-            label="Favorite"
-            color="primary"
-            size="small"
-          />
-        )}
-      </Box>
-      <Divider sx={{ marginBottom: 4 }} />
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      {/* Favorite Badge */}
+      {favorite && (
+        <Chip
+          icon={<FavoriteIcon />}
+          label="Favorite"
+          color="primary"
+          size="small"
+          sx={{ alignSelf: 'flex-start' }}
+        />
+      )}
 
-      <Grid container spacing={2}>
-        {/* Species Section */}
-        <Grid size={{ xs: 12, md: 12 }}>
-          <Typography variant="h6" gutterBottom>
-            Detected Species
+      {/* Recording Info Card */}
+      <Paper sx={{ p: 2 }}>
+        <Typography
+          variant="h6"
+          gutterBottom
+          sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+        >
+          <AccessTimeIcon fontSize="small" />
+          Recording Info
+        </Typography>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+          <Typography variant="body2" color="text.secondary">
+            <strong>Start:</strong> {formatDate(start_time)}
           </Typography>
-          <Grid container spacing={2}>
-            {groupedSpecies.map((group) => (
-              <Grid size={{ xs: 12, md: 4 }} key={group.species_id}>
-                <Card
-                  sx={{
-                    border: `2px solid ${labelToUniqueHexColor(group.species_name)}`,
-                  }}
-                >
-                  <CardMedia
-                    component="img"
-                    alt={group.species_name}
-                    height="175"
-                    image={group.image_url}
-                  />
-                  <CardContent>
-                    <Typography gutterBottom variant="h6" component="div">
-                      {group.species_name} ({group.detections.length})
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{ color: 'text.secondary' }}
-                    >
-                      Confidence Range: {group.confidenceRange}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{ color: 'text.secondary' }}
-                    >
-                      Total Duration:{' '}
-                      {Math.round(group.totalDuration * 10) / 10}s
-                    </Typography>
-                  </CardContent>
-                  <CardActions>
-                    <Button
-                      size="small"
-                      component={Link}
-                      to={`/species/${group.species_id}`}
-                    >
-                      Learn More
-                    </Button>
-                  </CardActions>
-                </Card>
-              </Grid>
+          <Typography variant="body2" color="text.secondary">
+            <strong>End:</strong> {formatDate(end_time)}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            <strong>Duration:</strong> {duration}s
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            <strong>Processor:</strong> v{processor_version}
+          </Typography>
+        </Box>
+      </Paper>
+
+      {/* Weather Card */}
+      <WeatherCard weather={weather} />
+
+      {/* Food Section */}
+      {food.length > 0 && (
+        <Paper sx={{ p: 2 }}>
+          <Typography variant="h6" gutterBottom>
+            Bird Food
+          </Typography>
+          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+            {food.map((f) => (
+              <Chip
+                key={f.id}
+                avatar={
+                  <Avatar alt={f.name} src={`${BASE_URL}/${f.image_url}`}>
+                    {f.name[0]}
+                  </Avatar>
+                }
+                label={f.name}
+                variant="outlined"
+              />
             ))}
-          </Grid>
-        </Grid>
-
-        {/* General Info Section */}
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Paper sx={{ padding: 2 }}>
-            <Typography variant="h6" gutterBottom>
-              General Info
-            </Typography>
-            <Typography variant="body1">
-              Processor Version: {processor_version}
-            </Typography>
-            <Typography variant="body1">
-              Start Time: {formatDate(start_time)}
-            </Typography>
-            <Typography variant="body1">
-              End Time: {formatDate(end_time)}
-            </Typography>
-          </Paper>
-        </Grid>
-
-        {/* Weather Section */}
-        <Grid size={{ xs: 12, md: 6 }}>
-          <WeatherCard weather={weather} />
-        </Grid>
-
-        {/* Food Section */}
-        {food.length > 0 && (
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Paper sx={{ padding: 2 }}>
-              <Typography variant="h6" gutterBottom>
-                Bird Food
-              </Typography>
-              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                {food.map((f) => (
-                  <Chip
-                    key={f.id}
-                    avatar={
-                      <Avatar alt={f.name} src={`${BASE_URL}/${f.image_url}`}>
-                        {/* Fallback to first letter if image fails to load */}
-                        {f.name[0]}
-                      </Avatar>
-                    }
-                    label={f.name}
-                    variant="outlined"
-                  />
-                ))}
-              </Box>
-            </Paper>
-          </Grid>
-        )}
-      </Grid>
+          </Box>
+        </Paper>
+      )}
     </Box>
   );
 };
