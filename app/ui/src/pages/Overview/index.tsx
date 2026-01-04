@@ -14,6 +14,8 @@ import { WeatherCard } from '../../components/WeatherCard';
 import { StatCard } from '../../components/StatCard';
 import DailyPatternChart from './DailyPatternChart';
 import { DailySummary } from './DailySummary';
+import { SpeciesDistributionChart } from './SpeciesDistributionChart';
+import { HourlyActivityChart } from './HourlyActivityChart';
 import VisibilityOutlined from '@mui/icons-material/VisibilityOutlined';
 import TimelapseOutlined from '@mui/icons-material/TimelapseOutlined';
 import ScheduleOutlined from '@mui/icons-material/ScheduleOutlined';
@@ -115,7 +117,7 @@ export const Overview = () => {
             <Grid size={{ xs: 12, sm: 6, md: 4 }}>
               <StatCard
                 icon={TimelapseOutlined}
-                title="Average Visit"
+                title="Mean Visit Duration"
                 value={`${Math.round(overviewData?.stats.avgVisitDuration || 0)} sec`}
               />
             </Grid>
@@ -152,18 +154,44 @@ export const Overview = () => {
           <DailySummary date={selectedDay} />
         </Grid>
 
-        {/* Daily Pattern Chart */}
-        <Grid size={{ xs: 12, md: 8 }}>
-          <Paper sx={{ p: 2 }}>
+        {/* Hourly Activity Line Chart */}
+        <Grid size={{ xs: 12, md: 8 }} sx={{ display: 'flex' }}>
+          <Paper sx={{ p: 2, width: '100%' }}>
             <Typography variant="h6" gutterBottom>
+              Hourly Activity
+            </Typography>
+            {overviewData?.topSpecies && (
+              <HourlyActivityChart data={overviewData.topSpecies} />
+            )}
+          </Paper>
+        </Grid>
+      </Grid>
+
+      <Grid container spacing={2} sx={{ mt: 2 }}>
+        {/* Daily Pattern Chart */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Paper sx={{ p: 1, overflow: 'hidden' }}>
+            <Typography variant="h6" sx={{ px: 1 }} gutterBottom>
               Daily Activity Pattern
             </Typography>
             {overviewData?.topSpecies && (
               <DailyPatternChart
                 data={overviewData.topSpecies}
                 date={selectedDay}
-                size={500}
+                size={450}
               />
+            )}
+          </Paper>
+        </Grid>
+
+        {/* Species Distribution */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Paper sx={{ p: 2, height: '100%' }}>
+            <Typography variant="h6" gutterBottom>
+              Top Species Distribution
+            </Typography>
+            {overviewData?.topSpecies && (
+              <SpeciesDistributionChart data={overviewData.topSpecies} />
             )}
           </Paper>
         </Grid>
