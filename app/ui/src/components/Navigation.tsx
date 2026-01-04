@@ -9,13 +9,28 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
 import MUILink from '@mui/material/Link';
 import MenuIcon from '@mui/icons-material/Menu';
 import SettingsIcon from '@mui/icons-material/Settings';
-import LiveTvIcon from '@mui/icons-material/LiveTv';
+import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import Divider from '@mui/material/Divider';
+import { keyframes } from '@mui/system';
+
+// Pulse animation for the live indicator
+const pulse = keyframes`
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+`;
 
 const NAVIGATION_ITEMS = [
   { label: 'Dashboard', path: '/' },
@@ -24,16 +39,32 @@ const NAVIGATION_ITEMS = [
   { label: 'Bird Directory', path: '/species' },
 ] as const;
 
+// Pill-shaped nav item styles (defined outside component to avoid recreation)
+const navPillStyles = {
+  px: 2.5,
+  py: 1,
+  borderRadius: '20px',
+  fontSize: '0.9rem',
+  fontWeight: 500,
+  color: 'rgba(255, 255, 255, 0.75)',
+  textDecoration: 'none',
+  transition: 'all 0.2s',
+  '&:hover': {
+    bgcolor: 'rgba(255, 255, 255, 0.1)',
+    color: 'white',
+  },
+};
+
+const activeNavPillStyles = {
+  ...navPillStyles,
+  bgcolor: 'rgba(255, 255, 255, 0.15)',
+  color: 'white',
+  fontWeight: 600,
+};
+
 export function Navigation() {
   const location = useLocation();
   const currentPath = location.pathname.split('?')[0];
-
-  const currentTabValue = React.useMemo(() => {
-    const index = NAVIGATION_ITEMS.findIndex(
-      (item) => item.path === currentPath,
-    );
-    return index >= 0 ? index : false;
-  }, [currentPath]);
 
   const [mobileMenuAnchor, setMobileMenuAnchor] =
     React.useState<null | HTMLElement>(null);
@@ -46,8 +77,8 @@ export function Navigation() {
   return (
     <AppBar position="sticky" color="primary" sx={{ mb: 3 }}>
       <Container maxWidth="xl">
-        <Toolbar disableGutters>
-          {/* Logo Section - Desktop */}
+        <Toolbar disableGutters sx={{ gap: 1 }}>
+          {/* Logo Section - Desktop (Clickable) */}
           <Box
             component={Link}
             to="/"
@@ -56,9 +87,10 @@ export function Navigation() {
               alignItems: 'center',
               textDecoration: 'none',
               color: 'inherit',
-              mr: 4, // Moved margin from Typography to container for better click area
+              mr: 3,
+              transition: 'opacity 0.2s ease-in-out',
               '&:hover': {
-                opacity: 0.9,
+                opacity: 0.85,
               },
             }}
           >
@@ -90,6 +122,14 @@ export function Navigation() {
               keepMounted
               anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
               transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+              slotProps={{
+                paper: {
+                  sx: {
+                    borderRadius: 2,
+                    mt: 1,
+                  },
+                },
+              }}
             >
               {/* Main Navigation Items */}
               {NAVIGATION_ITEMS.map((item) => (
@@ -110,8 +150,20 @@ export function Navigation() {
                 component={Link}
                 to="/live"
                 selected={currentPath === '/live'}
+                sx={{
+                  color: '#ef4444',
+                  '&.Mui-selected': {
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                  },
+                }}
               >
-                <LiveTvIcon sx={{ mr: 1 }} />
+                <FiberManualRecordIcon
+                  sx={{
+                    mr: 1,
+                    fontSize: 14,
+                    animation: `${pulse} 1.5s ease-in-out infinite`,
+                  }}
+                />
                 Live View
               </MenuItem>
 
@@ -123,7 +175,7 @@ export function Navigation() {
                 to="/settings"
                 selected={currentPath === '/settings'}
               >
-                <SettingsIcon sx={{ mr: 1 }} />
+                <SettingsIcon sx={{ mr: 1, fontSize: 20 }} />
                 Settings
               </MenuItem>
               <MenuItem
@@ -149,7 +201,7 @@ export function Navigation() {
             </Menu>
           </Box>
 
-          {/* Logo Section - Mobile */}
+          {/* Logo Section - Mobile (Clickable) */}
           <Box
             component={Link}
             to="/"
@@ -170,67 +222,86 @@ export function Navigation() {
             <Typography variant="h6">BirdLense</Typography>
           </Box>
 
-          {/* Desktop Navigation Tabs */}
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            <Tabs
-              value={currentTabValue}
-              textColor="inherit"
-              indicatorColor="secondary"
-              aria-label="navigation tabs"
-              sx={{
-                '& .MuiTab-root': {
-                  color: 'white',
-                  opacity: 0.7,
-                  '&.Mui-selected': {
-                    color: 'white',
-                    opacity: 1,
-                  },
-                },
-              }}
-            >
-              {NAVIGATION_ITEMS.map((item, index) => (
-                <Tab
-                  key={item.path}
-                  label={item.label}
-                  component={Link}
-                  to={item.path}
-                  value={index}
-                />
-              ))}
-            </Tabs>
+          {/* Desktop Navigation - Pill Style */}
+          <Box
+            sx={{
+              flexGrow: 1,
+              display: { xs: 'none', md: 'flex' },
+              gap: 0.5,
+              alignItems: 'center',
+            }}
+          >
+            {NAVIGATION_ITEMS.map((item) => (
+              <Box
+                key={item.path}
+                component={Link}
+                to={item.path}
+                sx={
+                  currentPath === item.path
+                    ? activeNavPillStyles
+                    : navPillStyles
+                }
+              >
+                {item.label}
+              </Box>
+            ))}
           </Box>
 
           {/* Action Buttons - Desktop */}
           <Box
             sx={{
               display: { xs: 'none', md: 'flex' },
-              gap: 1,
+              gap: 1.5,
               alignItems: 'center',
             }}
           >
+            {/* Live Button - Red with pulse */}
             <Button
               component={Link}
               to="/live"
-              color="inherit"
-              startIcon={<LiveTvIcon />}
+              startIcon={
+                <FiberManualRecordIcon
+                  sx={{
+                    fontSize: 12,
+                    animation: `${pulse} 1.5s ease-in-out infinite`,
+                  }}
+                />
+              }
               sx={{
-                bgcolor:
+                bgcolor: currentPath === '/live' ? '#dc2626' : '#ef4444',
+                color: 'white',
+                px: 2.5,
+                py: 0.75,
+                borderRadius: '20px',
+                fontWeight: 600,
+                textTransform: 'none',
+                boxShadow:
                   currentPath === '/live'
-                    ? 'rgba(255, 255, 255, 0.12)'
-                    : 'transparent',
+                    ? '0 0 20px rgba(239, 68, 68, 0.5)'
+                    : '0 0 12px rgba(239, 68, 68, 0.3)',
+                transition: 'all 0.2s ease-in-out',
                 '&:hover': {
-                  bgcolor: 'rgba(255, 255, 255, 0.2)',
+                  bgcolor: '#dc2626',
+                  boxShadow: '0 0 24px rgba(239, 68, 68, 0.6)',
+                  transform: 'translateY(-1px)',
                 },
               }}
             >
               Live
             </Button>
+
+            {/* Settings Icon */}
             <IconButton
               color="inherit"
               onClick={(e) => setSettingsMenuAnchor(e.currentTarget)}
               aria-label="settings"
               aria-controls="settings-menu"
               aria-expanded={Boolean(settingsMenuAnchor)}
+              sx={{
+                '&:hover': {
+                  bgcolor: 'rgba(255, 255, 255, 0.1)',
+                },
+              }}
             >
               <SettingsIcon />
             </IconButton>
@@ -244,6 +315,15 @@ export function Navigation() {
             onClose={handleSettingsMenuClose}
             anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
             transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+            slotProps={{
+              paper: {
+                sx: {
+                  borderRadius: 2,
+                  mt: 1,
+                  minWidth: 160,
+                },
+              },
+            }}
           >
             <MenuItem
               component={Link}
