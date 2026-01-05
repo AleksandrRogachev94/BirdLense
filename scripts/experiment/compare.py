@@ -6,12 +6,13 @@ from tqdm import tqdm
 
 # 1. Load Models
 # base_model = YOLO("yolo11n.pt") 
-base_model = YOLO("../../app/processor/models/detection/nabirds_yolo11n_binary_results/weights/best.pt") 
-custom_cls_model = YOLO("../../app/processor/models/classification/nabirds_yolo11n_cls/weights/best.pt")
-custom_det_model = YOLO("../../app/processor/models/detection/nabirds_yolov8_runs/detect/train7/weights/best.pt") 
+base_model = YOLO("../../app/processor/models/detection/nabirds_yolo11n_binary/weights/best_ncnn_model", task="detect") 
+custom_cls_model = YOLO("../../app/processor/models/classification/nabirds_yolo11n_cls/weights/best_ncnn_model", task="classify")
+custom_det_model = YOLO("../../app/processor/models/detection/nabirds_yolov8n_ncnn_model", task="detect") 
 
 # 2. Configuration
-input_path = "./bird_videos/05-31-170950-video.mp4"
+# input_path = "./bird_videos/05-31-170950-video.mp4"
+input_path = "/Users/alex/Downloads/manybirds.mp4"
 output_folder = "./processed_comparisons"
 os.makedirs(output_folder, exist_ok=True)
 
@@ -22,8 +23,8 @@ USE_CUSTOM_TRACKER_FOR_A = False
 # Params
 SKIP_FRAMES = 0
 IMGSZ_TRACK = 320
-IMGSZ_DET = 416
-CONF = 0.1
+IMGSZ_DET = 640
+CONF = 0.2
 
 # Visual Settings
 FONT_SCALE = 1.0      # Increased from 0.6
@@ -55,10 +56,10 @@ while cap.isOpened():
         # --- Approach A: Two-Stage ---
         # Binary Choice for tracking
         if USE_CUSTOM_TRACKER_FOR_A:
-            res_a = custom_det_model.track(view_a, persist=True, imgsz=IMGSZ_TRACK, conf=CONF, verbose=False, tracker='bytetrack.yaml')
+            res_a = custom_det_model.track(view_a, persist=True, imgsz=IMGSZ_TRACK, conf=CONF, verbose=False, tracker='bytetrack.yaml', task="detect")
         else:
             # classes=[14]
-            res_a = base_model.track(view_a, persist=True, imgsz=IMGSZ_TRACK, conf=CONF, verbose=False, tracker='bytetrack.yaml')
+            res_a = base_model.track(view_a, persist=True, imgsz=IMGSZ_TRACK, conf=CONF, verbose=False, tracker='bytetrack.yaml', task="detect")
 
         if res_a[0].boxes.id is not None:
             boxes = res_a[0].boxes.xyxy.cpu().numpy()
@@ -75,8 +76,10 @@ while cap.isOpened():
                     meta.append((x1, y1, x2, y2, tid))
             
             if crops:
-                cls_res = custom_cls_model(crops, verbose=False)
-                for i, r in enumerate(cls_res):
+                # Process crops one at a time to avoid NCNN batch inference issues
+                for i, crop in enumerate(crops):
+                    cls_res = custom_cls_model(crop, verbose=False, task="classify")
+                    r = cls_res[0]
                     label = r.names[r.probs.top1]
                     x1, y1, x2, y2, tid = meta[i]
                     history_a[tid].append(label)
@@ -98,7 +101,7 @@ while cap.isOpened():
                     cv2.putText(view_a, text_label, (x1, y1 + text_h + 5), cv2.FONT_HERSHEY_SIMPLEX, FONT_SCALE, TEXT_COLOR, FONT_THICKNESS)
 
         # --- Approach B: Single-Stage ---
-        res_b = custom_det_model.track(view_b, persist=True, imgsz=IMGSZ_DET, conf=CONF, verbose=False, tracker='bytetrack.yaml')
+        res_b = custom_det_model.track(view_b, persist=True, imgsz=IMGSZ_DET, conf=CONF, verbose=False, tracker='bytetrack.yaml', task="detect")
         if res_b[0].boxes.id is not None:
             for box, tid, cls_idx in zip(res_b[0].boxes.xyxy, res_b[0].boxes.id, res_b[0].boxes.cls):
                 label = custom_det_model.names[int(cls_idx)]
