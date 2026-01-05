@@ -21,3 +21,11 @@ Simple script to convert NABirds' hierarchy.txt file from child_id:parent_id for
 ## convert_oidv4_to_yolo
 
 This script is used to convert the OIDv4 dataset with just one 1 extracted class, squirrel, to Ultralytics YOLO format. The squirrel class was extracted using [OIDv4 Toolkit](https://github.com/EscVM/OIDv4_ToolKit). The result was then manually merged with the NABirds YOLO dataset to get the final result used for training
+
+## download_coco_birds.py
+
+This script downloads the COCO 2017 dataset filtered to only include images containing birds. It uses the `fiftyone` library to efficiently download and filter the dataset, then converts it to YOLO format. Requires `pip install fiftyone pycocotools`.
+
+## merge_datasets_binary.py
+
+This script merges the cleaned NABirds dataset (`nabirds_yolo_cleaned/`) with the COCO birds dataset (`coco_birds_yolo/`) and collapses all bird species into a single "bird" class (class 0). This creates a binary detection dataset useful for training a general bird detector without species classification.
