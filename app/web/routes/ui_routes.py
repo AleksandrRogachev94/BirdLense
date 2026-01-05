@@ -268,9 +268,25 @@ def register_routes(app):
             'audioDuration': round(source_duration_query.audio_duration or 0)
         }
 
+        # Query hourly average temperature from videos
+        hourly_temp_query = db.session.query(
+            func.strftime('%H', Video.start_time).label('hour'),
+            func.avg(Video.weather_temp).label('avg_temp')
+        ).filter(
+            Video.start_time >= start_of_day,
+            Video.start_time <= end_of_day,
+            Video.weather_temp.isnot(None)
+        ).group_by('hour').all()
+
+        # Format hourly temperature as array of 24 values (null for hours with no data)
+        hourly_temperature = [None] * 24
+        for hour, avg_temp in hourly_temp_query:
+            hourly_temperature[int(hour)] = round(avg_temp, 1) if avg_temp else None
+
         return {
             'topSpecies': top_species,
-            'stats': stats
+            'stats': stats,
+            'hourlyTemperature': hourly_temperature
         }, 200
 
     @app.route('/api/ui/summary', methods=['POST'])
