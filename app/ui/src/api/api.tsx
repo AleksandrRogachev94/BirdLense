@@ -163,7 +163,15 @@ export const fetchOverviewData = async (
     await sleep(1000);
     return mockOverviewData;
   } else {
-    const response = await axios.get(`${BASE_API_URL}/overview?date=${date}`);
+    // Create local day boundaries and convert to UTC timestamps
+    const localStart = new Date(date + 'T00:00:00');
+    const localEnd = new Date(date + 'T23:59:59.999');
+    const response = await axios.get(`${BASE_API_URL}/overview`, {
+      params: {
+        start_time: Math.floor(localStart.getTime() / 1000),
+        end_time: Math.floor(localEnd.getTime() / 1000),
+      },
+    });
     return response.data;
   }
 };
@@ -193,7 +201,13 @@ export const fetchDailySummary = async (
     };
   } else {
     try {
-      const response = await axios.post(`${BASE_API_URL}/summary`, { date });
+      // Create local day boundaries and convert to UTC timestamps
+      const localStart = new Date(date + 'T00:00:00');
+      const localEnd = new Date(date + 'T23:59:59.999');
+      const response = await axios.post(`${BASE_API_URL}/summary`, {
+        start_time: Math.floor(localStart.getTime() / 1000),
+        end_time: Math.floor(localEnd.getTime() / 1000),
+      });
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.data?.error) {

@@ -47,9 +47,7 @@ Avoid fluffy or overly conversational language. Be direct and insightful, but us
 
 class DailySummaryService:
     @staticmethod
-    def get_summary(date: datetime) -> dict:
-        start_of_day = date.replace(hour=0, minute=0, second=0, microsecond=0)
-        end_of_day = date.replace(hour=23, minute=59, second=59, microsecond=999999)
+    def get_summary(start_of_day: datetime, end_of_day: datetime) -> dict:
 
         # Initialize buckets
         weather_by_bucket = defaultdict(list)

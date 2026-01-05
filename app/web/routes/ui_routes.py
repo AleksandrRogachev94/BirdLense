@@ -123,21 +123,22 @@ def register_routes(app):
 
     @app.route('/api/ui/overview', methods=['GET'])
     def get_overview():
-        # Parse query parameters
-        date_param = request.args.get('date', None)
+        # Parse query parameters - accept UTC timestamps directly from frontend
+        start_time_param = request.args.get('start_time', None)
+        end_time_param = request.args.get('end_time', None)
+        
         try:
-            # If a date is provided, parse it; otherwise, use the current date
-            if date_param:
-                date = datetime.strptime(date_param, '%Y-%m-%d')
+            if start_time_param and end_time_param:
+                # Frontend sends UTC timestamps for the user's local day boundaries
+                start_of_day = datetime.fromtimestamp(int(start_time_param), timezone.utc).replace(tzinfo=None)
+                end_of_day = datetime.fromtimestamp(int(end_time_param), timezone.utc).replace(tzinfo=None)
             else:
-                date = datetime.now()
-        except ValueError:
-            return {"error": "Invalid date format. Use YYYY-MM-DD."}, 400
-
-        # Set the start and end of the day for the given date
-        start_of_day = date.replace(hour=0, minute=0, second=0, microsecond=0)
-        end_of_day = date.replace(
-            hour=23, minute=59, second=59, microsecond=999999)
+                # Fallback to server's current day (for backwards compatibility)
+                now = datetime.now()
+                start_of_day = now.replace(hour=0, minute=0, second=0, microsecond=0)
+                end_of_day = now.replace(hour=23, minute=59, second=59, microsecond=999999)
+        except (ValueError, TypeError):
+            return {"error": "Invalid timestamp format."}, 400
 
         # Subquery to get active species and their direct child species
         ParentSpecies = aliased(Species)  # Alias for self-join
@@ -293,20 +294,26 @@ def register_routes(app):
     def get_daily_summary():
         from services.daily_summary_service import DailySummaryService
         
-        # Parse query parameters or body
+        # Parse request body - accept UTC timestamps directly
         data = request.json or {}
-        date_param = data.get('date', None) or request.args.get('date', None)
+        start_time_param = data.get('start_time', None)
+        end_time_param = data.get('end_time', None)
         
         try:
-            if date_param:
-                date = datetime.strptime(date_param, '%Y-%m-%d')
+            if start_time_param and end_time_param:
+                # Frontend sends UTC timestamps for the user's local day boundaries
+                start_of_day = datetime.fromtimestamp(int(start_time_param), timezone.utc).replace(tzinfo=None)
+                end_of_day = datetime.fromtimestamp(int(end_time_param), timezone.utc).replace(tzinfo=None)
             else:
-                date = datetime.now()
-        except ValueError:
-            return {"error": "Invalid date format. Use YYYY-MM-DD."}, 400
+                # Fallback to server's current day
+                now = datetime.now()
+                start_of_day = now.replace(hour=0, minute=0, second=0, microsecond=0)
+                end_of_day = now.replace(hour=23, minute=59, second=59, microsecond=999999)
+        except (ValueError, TypeError):
+            return {"error": "Invalid timestamp format."}, 400
 
         try:
-            result = DailySummaryService.get_summary(date)
+            result = DailySummaryService.get_summary(start_of_day, end_of_day)
             return result, 200
         except ValueError as e:
             return {'error': str(e)}, 400
