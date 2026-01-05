@@ -161,7 +161,10 @@ export const Overview = () => {
               Hourly Activity
             </Typography>
             {overviewData?.topSpecies && (
-              <HourlyActivityChart data={overviewData.topSpecies} />
+              <HourlyActivityChart
+                data={overviewData.topSpecies}
+                hourlyTemperature={overviewData.hourlyTemperature}
+              />
             )}
           </Paper>
         </Grid>

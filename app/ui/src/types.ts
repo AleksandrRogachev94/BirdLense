@@ -142,6 +142,7 @@ export interface OverviewStats {
 export interface OverviewData {
   topSpecies: OverviewTopSpecies[];
   stats: OverviewStats;
+  hourlyTemperature: (number | null)[]; // 24 values, avg temp per hour (°C)
 }
 
 export interface DetectionCounts {
