@@ -184,6 +184,11 @@ export const DailyPatternChart: React.FC<DailyPatternChartProps> = ({
                       {species.name}: {detections} detections at {hour}:00
                     </Typography>
                   }
+                  slotProps={{
+                    popper: {
+                      sx: { pointerEvents: 'none' },
+                    },
+                  }}
                 >
                   <path
                     d={describeArc(
