@@ -16,8 +16,12 @@ from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
-CONFIDENCE_THRESHOLD = 0.7
+CONFIDENCE_THRESHOLD = 0.5
 MODEL = "gemini-3-flash-preview"
+
+# Rate limiting defaults
+DEFAULT_MAX_CALLS_PER_HOUR = 20
+DEFAULT_MAX_CALLS_PER_DAY = 100
 
 PROMPT = """You are verifying a bird detection from a feeder camera.
 The ML model detected: "{detected_species}"
@@ -38,18 +42,58 @@ class VerificationResult(BaseModel):
 class LLMVerifier:
     """Verifies bird detections using Gemini."""
     
-    def __init__(self, api_key: str, log_dir: str = None):
+    def __init__(self, api_key: str, log_dir: str = None,
+                 max_calls_per_hour: int = DEFAULT_MAX_CALLS_PER_HOUR,
+                 max_calls_per_day: int = DEFAULT_MAX_CALLS_PER_DAY):
         self.client = genai.Client(api_key=api_key)
         self.log_dir = log_dir
-        logger.info("LLMVerifier initialized")
+        
+        # Rate limiting
+        self.max_calls_per_hour = max_calls_per_hour
+        self.max_calls_per_day = max_calls_per_day
+        self.calls_this_hour = 0
+        self.calls_this_day = 0
+        self.hour_reset_time = datetime.now()
+        self.day_reset_date = datetime.now().date()
+        
+        logger.info(f"LLMVerifier initialized (limits: {max_calls_per_hour}/hour, {max_calls_per_day}/day)")
+    
+    def _check_and_reset_limits(self):
+        """Reset counters if hour/day has passed."""
+        now = datetime.now()
+        
+        # Reset hourly counter
+        if (now - self.hour_reset_time).total_seconds() >= 3600:
+            self.calls_this_hour = 0
+            self.hour_reset_time = now
+        
+        # Reset daily counter
+        if now.date() > self.day_reset_date:
+            self.calls_this_day = 0
+            self.day_reset_date = now.date()
+    
+    def _is_rate_limited(self) -> bool:
+        """Check if we've exceeded rate limits."""
+        self._check_and_reset_limits()
+        return (self.calls_this_hour >= self.max_calls_per_hour or 
+                self.calls_this_day >= self.max_calls_per_day)
     
     def should_verify(self, confidence: float) -> bool:
-        return confidence < CONFIDENCE_THRESHOLD
+        if confidence >= CONFIDENCE_THRESHOLD:
+            return False
+        if self._is_rate_limited():
+            logger.warn("LLM verification skipped - rate limit reached")
+            return False
+        return True
     
     def verify(self, crop: np.ndarray, detected_species: str) -> dict:
         """Verify if detection is plausible."""
         if crop is None or crop.size == 0:
             return {'is_plausible': False, 'reasoning': 'Empty image'}
+        
+        # Increment rate limit counters
+        self.calls_this_hour += 1
+        self.calls_this_day += 1
         
         try:
             _, buffer = cv2.imencode('.jpg', crop, [cv2.IMWRITE_JPEG_QUALITY, 85])
