@@ -1,6 +1,6 @@
-description: Ultralytics YOLO11n model trained on /workspace/nabirds_yolo_cleaned/dataset.yaml
+description: Ultralytics YOLO11n model trained on /workspace/./birds_binary_yolo/dataset.yaml
 author: Ultralytics
-date: '2025-12-28T11:17:24.550908'
+date: '2026-01-05T14:50:03.736206'
 version: 8.3.241
 license: AGPL-3.0 License (https://ultralytics.com/license)
 docs: https://docs.ultralytics.com
@@ -11,7 +11,7 @@ imgsz:
 - 320
 - 320
 names:
-  0: item
+  0: bird
 args:
   batch: 1
   half: true
