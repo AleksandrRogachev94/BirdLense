@@ -15,6 +15,20 @@ export const labelToUniqueHexColor = (label: string): string => {
   return `#${((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1).toUpperCase()}`;
 };
 
+// Returns black or white text color based on background luminance
+export const getContrastTextColor = (hexColor: string): string => {
+  // Remove # if present
+  const hex = hexColor.replace('#', '');
+  const r = parseInt(hex.slice(0, 2), 16);
+  const g = parseInt(hex.slice(2, 4), 16);
+  const b = parseInt(hex.slice(4, 6), 16);
+
+  // Calculate relative luminance (WCAG formula)
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+
+  return luminance > 0.5 ? '#000000' : '#FFFFFF';
+};
+
 export const formatConfidence = (confidedence: number): string => {
   return `${Math.round(confidedence * 100)}%`;
 };

@@ -22,6 +22,11 @@ export interface SpeciesVisit {
   }[];
 }
 
+export interface TrackFrame {
+  t: number; // Time in seconds from video start
+  bbox: number[]; // Normalized [x1, y1, x2, y2]
+}
+
 export interface VideoSpecies {
   species_id: number;
   species_name: string;
@@ -30,6 +35,7 @@ export interface VideoSpecies {
   confidence: number;
   source: string;
   image_url?: string;
+  frames?: TrackFrame[]; // Optional, loaded when include_tracks=true
 }
 
 export interface Weather {

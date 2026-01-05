@@ -15,11 +15,14 @@ import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import Chip from '@mui/material/Chip';
 import Fade from '@mui/material/Fade';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import { Video, VideoSpecies } from '../../../types';
 import { BASE_URL } from '../../../api/api';
 import { ProgressBar } from './ProgressBar';
 import { SpectrogramPlayer } from './SpectrogramPlayer';
 import { useVideoControl } from './useVideoControl';
+import { TrackOverlay } from './TrackOverlay';
 
 interface ViewToggleProps {
   view: 'video' | 'audio';
@@ -150,6 +153,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ video }) => {
   const [view, setView] = useState<'video' | 'audio'>('video');
   const [error, setError] = useState<string | null>(null);
   const [showControls, setShowControls] = useState(true);
+  const [showTracks, setShowTracks] = useState(false);
 
   const { playing, progress, handleProgress, handleSeek, togglePlayPause } =
     useVideoControl(videoRef);
@@ -168,6 +172,15 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ video }) => {
         .filter((s) => s.source === view)
         .sort((a, b) => a.start_time - b.start_time),
     [video.species, view],
+  );
+
+  // Get video detections that have track frames data
+  const trackDetections = useMemo(
+    () =>
+      video.species.filter(
+        (s) => s.source === 'video' && s.frames && s.frames.length > 0,
+      ),
+    [video.species],
   );
 
   const activeDetections = useMemo(
@@ -273,6 +286,51 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ video }) => {
             onChange={setView}
             audioDisabled={!video.species.some((det) => det.source === 'audio')}
           />
+        )}
+
+        {/* Tracks Toggle - show only in video view */}
+        {showControls && view === 'video' && (
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 16,
+              right: 16,
+              zIndex: 10,
+              bgcolor: 'rgba(0, 0, 0, 0.6)',
+              borderRadius: 1,
+              backdropFilter: 'blur(4px)',
+              px: 1.5,
+              py: 0.5,
+            }}
+          >
+            <FormControlLabel
+              control={
+                <Switch
+                  size="small"
+                  checked={showTracks}
+                  onChange={(e) => setShowTracks(e.target.checked)}
+                  sx={{
+                    '& .MuiSwitch-thumb': { width: 14, height: 14 },
+                    '& .MuiSwitch-switchBase': { padding: '6px' },
+                  }}
+                />
+              }
+              label="Tracks"
+              sx={{
+                margin: 0,
+                '& .MuiFormControlLabel-label': {
+                  color: 'rgba(255, 255, 255, 0.9)',
+                  fontSize: '0.75rem',
+                  ml: 0.5,
+                },
+              }}
+            />
+          </Box>
+        )}
+
+        {/* Track Bounding Box Overlay */}
+        {showTracks && view === 'video' && trackDetections.length > 0 && (
+          <TrackOverlay species={trackDetections} currentTime={progress} />
         )}
 
         {/* Active Species Overlay */}
