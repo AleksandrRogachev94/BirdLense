@@ -30,12 +30,13 @@ export interface TrackFrame {
 export interface VideoSpecies {
   species_id: number;
   species_name: string;
+  track_id?: number; // ByteTrack ID for stable identification
   start_time: number; // seconds from video start time
   end_time: number; // seconds from video start time
   confidence: number;
   source: string;
   image_url?: string;
-  frames?: TrackFrame[]; // Optional, loaded when include_tracks=true
+  frames?: TrackFrame[];
 }
 
 export interface Weather {

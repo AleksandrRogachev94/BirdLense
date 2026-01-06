@@ -43,6 +43,7 @@ def register_routes(app):
                 'end_time': vs.end_time,
                 'confidence': vs.confidence,
                 'source': vs.source,
+                'track_id': vs.track_id,
                 'image_url': vs.species.image_url,
             }
             # Always include frames if available

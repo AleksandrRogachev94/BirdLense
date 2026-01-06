@@ -52,7 +52,7 @@ export const TrackOverlay: React.FC<TrackOverlayProps> = ({
         boxes.push({
           key: `${s.species_id}-${s.start_time}-${idx}`,
           speciesName: s.species_name,
-          trackIndex: idx + 1, // 1-indexed for display
+          trackIndex: s.track_id ?? idx + 1, // Use track_id, fallback to index for old data
           color,
           textColor: getContrastTextColor(color),
           bbox: closestFrame.bbox,

@@ -13,7 +13,8 @@ class VisitProcessor:
 
     def process_video_detection(self, species: Species, video: Video,
                                 detection_start: float, detection_end: float,
-                                confidence: float, frames: Optional[List[Dict]] = None) -> Tuple[SpeciesVisit, VideoSpecies]:
+                                confidence: float, track_id: Optional[int] = None,
+                                frames: Optional[List[Dict]] = None) -> Tuple[SpeciesVisit, VideoSpecies]:
         """
         Process a video detection and create/update associated visit.
         Returns the visit and video_species record.
@@ -34,6 +35,7 @@ class VisitProcessor:
             end_time=detection_end,
             confidence=confidence,
             source='video',
+            track_id=track_id,
             created_at=detection_time,
             species_visit=visit,
             video=video,
@@ -96,6 +98,7 @@ class VisitProcessor:
                     detection_start=det['start_time'],
                     detection_end=det['end_time'],
                     confidence=det['confidence'],
+                    track_id=det.get('track_id'),
                     frames=det.get('frames')
                 )
                 # Create tuple key from visit attributes

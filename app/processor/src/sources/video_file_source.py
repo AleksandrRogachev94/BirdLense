@@ -2,6 +2,7 @@ import logging
 import multiprocessing
 import cv2
 import time
+import numpy as np
 
 
 def recording_worker(control_queue, frame_queue, video_path, main_size, lores_size):
@@ -32,21 +33,24 @@ def recording_worker(control_queue, frame_queue, video_path, main_size, lores_si
             elif command == "exit":
                 break
 
-        if recording and cap.isOpened():
-            ret, frame = cap.read()
-            if not ret:
-                logger.info('Loooping video')
-                cap.set(cv2.CAP_PROP_POS_FRAMES, 0)  # loop video
-                continue
-            frame_main = cv2.resize(frame, main_size)
-            frame_lores = cv2.resize(frame, lores_size)
-            out.write(frame_main)
-            try:
-                if frame_queue.full():
-                    frame_queue.get(block=False)
-            except:
-                pass
-            frame_queue.put(frame_lores)
+        if recording:
+            if cap.isOpened():
+                ret, frame = cap.read()
+                if not ret:
+                    # Video ended - generate white frame
+                    logger.info('Video ended, generating white frames')
+                    cap.release()
+                    frame = None
+                else:
+                    frame_main = cv2.resize(frame, main_size)
+                    frame_lores = cv2.resize(frame, lores_size)
+                    out.write(frame_main)
+                    # Block until frame is consumed (no dropping)
+                    frame_queue.put(frame_lores)
+            else:
+                # Video already ended - generate white frame
+                frame_lores = 255 * np.ones((lores_size[1], lores_size[0], 3), dtype=np.uint8)
+                frame_queue.put(frame_lores)
         time.sleep(0.05)  # Release CPU to do some real processing
 
     if out is not None:

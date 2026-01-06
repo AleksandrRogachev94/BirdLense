@@ -38,7 +38,7 @@ class API():
 
     def create_video(self, species_video, species_audio, start_time, end_time, video_path, spectrogram_path):
         # Fields to exclude from API payload (non-serializable or internal)
-        exclude_fields = {'best_frame', 'track_id'}
+        exclude_fields = {'best_frame'}
         
         def clean_detection(d):
             return {k: v for k, v in d.items() if k not in exclude_fields}
