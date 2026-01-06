@@ -6,28 +6,37 @@ A Raspberry Pi-powered smart bird feeder that uses computer vision and audio rec
 
 ## Features
 
-- 🎥 Live video streaming
-- 🦜 Real-time bird detection using custom-trained YOLOv8
+- 🎥 Live video streaming with real-time detection overlays
+- 🦜 Bird detection using custom-trained YOLO with ByteTrack object tracking
+- 🔬 Two-stage detection: binary bird detector + species classifier
 - 🎤 Bird sound identification using [BirdNET](https://github.com/kahst/BirdNET-Analyzer)
-- 📊 Visit tracking and statistics
-- 📅 Timeline view of bird activities
+- 🤖 Optional LLM verification (Google Gemini) to validate low-confidence detections
+- 📊 Species visit tracking with statistics and daily AI summaries
+- 📅 Timeline view with video playback and track visualization
 - 📱 Modern Material UI mobile-friendly web interface
-- 🌡️ Weather integration and analysis
+- 🌡️ Weather integration with hourly temperature correlation
+- 🔔 Local push notifications via [ntfy](https://ntfy.sh)
+- 🔌 MCP (Model Context Protocol) support for AI agent integrations
 - 🚫 No cloud dependencies, runs completely local
-- 🖨️ Custom-designed 3D printing models for the bird feeder
-
-## Prerequisites
-
-- Raspberry Pi 4B or greater with a minimum of 4GB RAM
-- High-capacity microSD card (at least 128 GB recommended for ample storage)
-- Raspberry Pi Camera Module
-- USB Microphone
-- [Optional] 3D printer to print the Raspberry Pi enclosure and bird feeder
+- 🖨️ Custom 3D printing models for enclosure and feeder
 
 ## Sections
 
-- [Raspberry PI Application](./app)
-- [3D Printing](./3d_printing)
+- [Application](./app) - Raspberry Pi software
+- [3D Printing](./3d_printing) - Printable enclosure and feeder models
+
+## Prerequisites
+
+- Raspberry Pi 4B or 5 with a minimum of 4GB RAM
+- High-capacity microSD card (128 GB+ recommended)
+- Raspberry Pi Camera Module
+- USB Microphone
+- [Optional] PIR motion sensor for wake-on-motion
+- [Optional] 3D printer for custom enclosure
+
+## Getting Started
+
+See the [Application README](./app) for installation and setup instructions.
 
 ## Contributing
 
@@ -39,11 +48,12 @@ A Raspberry Pi-powered smart bird feeder that uses computer vision and audio rec
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License - see [LICENSE](LICENSE) for details.
 
 ## Acknowledgments
 
-- [YOLOv8](https://github.com/ultralytics/ultralytics) for object detection base models
-- [BirdNET-Analyzer](https://github.com/kahst/BirdNET-Analyzer) for bird sound identification
-- [Material-UI](https://mui.com/) for the user interface components
-- [OpenWeatherMap](https://openweathermap.org/) for weather integration
+- [Ultralytics YOLO](https://github.com/ultralytics/ultralytics) for object detection
+- [BirdNET-Analyzer](https://github.com/kahst/BirdNET-Analyzer) for audio identification
+- [NABirds](https://dl.allaboutbirds.org/nabirds) dataset for model training
+- [Material-UI](https://mui.com/) for UI components
+- [OpenWeatherMap](https://openweathermap.org/) for weather data

@@ -1,31 +1,33 @@
-# Birds Detection Dataset Scripts
+# Dataset Scripts
 
-[NABirds](https://dl.allaboutbirds.org/nabirds) was used as the base dataset for object detection model training. This folder contain various scripts to convert it to YOLO format, clean it up for better training results, and augment it with additional classes such "squirrel". I added these files in the repo for future reference in case I need to further improve the model.
+Scripts for preparing bird detection training datasets. Uses [NABirds](https://dl.allaboutbirds.org/nabirds) as the base dataset.
 
 ## convert_nabirds_yolo.py
 
-This script converts raw NABirds dataset to [Ultalytics YOLO format](https://docs.ultralytics.com/datasets/) used for training.
+Converts raw NABirds dataset to [Ultralytics YOLO format](https://docs.ultralytics.com/datasets/) used for training.
 
 ## remove_unused_classes.py
 
-This script changes the result of convert_nabirds_yolo.py script to remove all classes that are not present in the dataset. It was needed because the classes used in NABirds dataset are hierarhical, and only the lowest nodes in the hierarhical have actual images. It improves model performance and reduces computations.
+Removes all classes that don't have actual images from the converted dataset. Needed because NABirds uses a hierarchical class structure where only the leaf nodes have images. Improves model performance and reduces computation.
 
 ## convert_nabirds_yolo_reduced.py
 
-This script is similar to convert_nabirds_yolo.py, but it groups gender specific classes into a single classes based on the hierarchy leading to fewer classes. The intent was to minimize the number of classes and make model training simpler leading to better results. In practice, the performance was not significantly better, around 2 percents MAP50-95 score improvement, so this dataset is not actively used.
+Similar to `convert_nabirds_yolo.py`, but groups gender-specific classes into single classes based on the hierarchy. Results in fewer classes for simpler training. Performance improvement was marginal (~2% mAP50-95), so this dataset is not actively used.
 
 ## build_name_hierarchy.py
 
-Simple script to convert NABirds' hierarchy.txt file from child_id:parent_id format to child_name:parent_name format. The result is used in the raspberry pi app.
+Converts NABirds' `hierarchy.txt` from `child_id:parent_id` format to `child_name:parent_name` format. The result is used in the Raspberry Pi app for species categorization.
 
-## convert_oidv4_to_yolo
+## convert_oidv4_to_yolo.py
 
-This script is used to convert the OIDv4 dataset with just one 1 extracted class, squirrel, to Ultralytics YOLO format. The squirrel class was extracted using [OIDv4 Toolkit](https://github.com/EscVM/OIDv4_ToolKit). The result was then manually merged with the NABirds YOLO dataset to get the final result used for training
+Converts OIDv4 dataset (with squirrel class extracted using [OIDv4 Toolkit](https://github.com/EscVM/OIDv4_ToolKit)) to YOLO format. The result is manually merged with NABirds dataset to add squirrel detection.
 
 ## download_coco_birds.py
 
-This script downloads the COCO 2017 dataset filtered to only include images containing birds. It uses the `fiftyone` library to efficiently download and filter the dataset, then converts it to YOLO format. Requires `pip install fiftyone pycocotools`.
+Downloads COCO 2017 dataset filtered to only include images containing birds. Uses `fiftyone` library for efficient download and filtering, then converts to YOLO format.
+
+Requires: `pip install fiftyone pycocotools`
 
 ## merge_datasets_binary.py
 
-This script merges the cleaned NABirds dataset (`nabirds_yolo_cleaned/`) with the COCO birds dataset (`coco_birds_yolo/`) and collapses all bird species into a single "bird" class (class 0). This creates a binary detection dataset useful for training a general bird detector without species classification.
+Merges the cleaned NABirds dataset (`nabirds_yolo_cleaned/`) with COCO birds (`coco_birds_yolo/`) and collapses all species into a single "bird" class (class 0). Creates a binary detection dataset for training a general bird detector without species classification.
