@@ -11,7 +11,6 @@ services:
     depends_on:
       - web
       - ui
-      - processor
     ports:
       - "80:8080"
       - "8081:8081"
@@ -31,7 +30,7 @@ services:
     devices:
       - /dev/video0 # camera
       - /dev/video10 # V4L2 H264 encoder (hardware)
-      - /dev/video11 # V4L2 H264 encoder (hardware) 
+      - /dev/video11 # V4L2 H264 encoder (hardware)
       - /dev/video12 # V4L2 H264 encoder (hardware)
       - /dev/video18 # V4L2 H264 stateless decoder
       - /dev/video19 # V4L2 H264 stateless decoder
