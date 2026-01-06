@@ -1,94 +1,82 @@
 import logging
-import multiprocessing
 import cv2
 import time
-import numpy as np
-
-
-def recording_worker(control_queue, frame_queue, video_path, main_size, lores_size):
-    """
-    Subprocess that does video processing
-    """
-    logger = logging.getLogger(__name__)
-    cap = cv2.VideoCapture(video_path)
-    fourcc = cv2.VideoWriter_fourcc(*'avc1')
-
-    out = None
-    recording = False
-
-    while True:
-        if not control_queue.empty():
-            command, data = control_queue.get(block=False)  # don't block loop
-            logger.debug(
-                f'VideoSource received command. Command: {command}, Data: {data}')
-
-            if command == "start":
-                out = cv2.VideoWriter(data, fourcc, 10.0, main_size)
-                recording = True
-            elif command == "stop":
-                if out is not None:
-                    out.release()
-                    out = None
-                recording = False
-            elif command == "exit":
-                break
-
-        if recording:
-            if cap.isOpened():
-                ret, frame = cap.read()
-                if not ret:
-                    # Video ended - generate white frame
-                    logger.info('Video ended, generating white frames')
-                    cap.release()
-                    frame = None
-                else:
-                    frame_main = cv2.resize(frame, main_size)
-                    frame_lores = cv2.resize(frame, lores_size)
-                    out.write(frame_main)
-                    # Block until frame is consumed (no dropping)
-                    frame_queue.put(frame_lores)
-            else:
-                # Video already ended - generate white frame
-                frame_lores = 255 * np.ones((lores_size[1], lores_size[0], 3), dtype=np.uint8)
-                frame_queue.put(frame_lores)
-        time.sleep(0.05)  # Release CPU to do some real processing
-
-    if out is not None:
-        out.release()
-    cap.release()
 
 
 class VideoFileSource:
     """
-    This class is used as a replacement for CameraSource for testing only.
-    Instead of using camera input, it's reading  frames from a video file.
-    Just like CameraSource, it's using a subprocess to avoid skipping frames
+    Video file source that accurately simulates real camera behavior:
+    - Tracks elapsed time between capture() calls
+    - Skips frames that would have passed during processing
+    - Writes ALL frames to disk (skipped ones too)
     """
 
     def __init__(self, video_path, main_size=(1280, 720), lores_size=(640, 640)):
         self.logger = logging.getLogger(__name__)
-        self.frame_queue = multiprocessing.Queue(maxsize=1)
-        self.control_queue = multiprocessing.Queue()
-        self.video_path = video_path
-
-        self.recording_process = multiprocessing.Process(
-            target=recording_worker, args=(self.control_queue, self.frame_queue, video_path, main_size, lores_size))
-        self.recording_process.start()
+        self.cap = cv2.VideoCapture(video_path)
+        self.main_size = main_size
+        self.lores_size = lores_size
+        self.out = None
+        self.fourcc = cv2.VideoWriter_fourcc(*'avc1')
+        
+        self.source_fps = self.cap.get(cv2.CAP_PROP_FPS) or 30.0
+        self.frame_interval = 1.0 / self.source_fps
+        self.last_capture_time = None
+        self.frame_count = 0
+        
+        self.logger.info(f'VideoFileSource: {self.source_fps} FPS')
 
     def start_recording(self, output):
-        self.logger.info('Start video recording')
-        self.control_queue.put(("start", output))
+        self.logger.info(f'Start video recording to {output}')
+        self.out = cv2.VideoWriter(output, self.fourcc, self.source_fps, self.main_size)
+        self.frame_count = 0
+        self.last_capture_time = None  # Will be set on first capture
 
     def stop_recording(self):
         self.logger.info('Stop video recording')
-        self.control_queue.put(("stop", None))
+        if self.out is not None:
+            self.out.release()
+            self.out = None
 
     def capture(self):
-        self.control_queue.put(("capture", None))
-        # return BGR
-        return self.frame_queue.get()
+        """
+        Get next frame for processing.
+        Advances video by elapsed real time, writing skipped frames to disk.
+        Returns None when video ends.
+        """
+        if not self.cap.isOpened():
+            return None
+        
+        # Calculate how many frames should have passed since last capture
+        now = time.time()
+        if self.last_capture_time is None:
+            # First capture - start the clock now (syncs with frame_processor)
+            frames_to_advance = 1
+        else:
+            elapsed = now - self.last_capture_time
+            frames_to_advance = max(1, int(elapsed / self.frame_interval))
+        self.last_capture_time = now
+        
+        # Read and write frames, return only the last one
+        result_frame = None
+        for _ in range(frames_to_advance):
+            ret, frame = self.cap.read()
+            if not ret:
+                self.logger.info(f'Video ended after {self.frame_count} frames')
+                return None
+            
+            self.frame_count += 1
+            
+            # Write ALL frames to disk
+            if self.out is not None:
+                frame_main = cv2.resize(frame, self.main_size)
+                self.out.write(frame_main)
+            
+            result_frame = frame
+        
+        return cv2.resize(result_frame, self.lores_size) if result_frame is not None else None
 
     def close(self):
-        if self.recording_process is not None:
-            self.control_queue.put("exit")
-            self.recording_process.join()
+        self.stop_recording()
+        if self.cap is not None:
+            self.cap.release()
