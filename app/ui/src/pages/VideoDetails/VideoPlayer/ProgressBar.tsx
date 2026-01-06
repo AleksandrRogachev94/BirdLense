@@ -1,6 +1,7 @@
 import React, { useRef, useCallback, useMemo } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import Tooltip from '@mui/material/Tooltip';
 import { useTheme } from '@mui/material/styles';
 import { VideoSpecies } from '../../../types';
 import { labelToUniqueHexColor } from '../../../util';
@@ -96,11 +97,11 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
           sx={{
             position: 'relative',
             height: `${Math.max(detectionLayers.length * 12, 12)}px`,
-            backgroundColor: 'white',
+            backgroundColor: theme.palette.background.paper,
             borderRadius: '4px',
             flexGrow: 1,
             overflow: 'hidden',
-            border: '1px solid #e0e0e0',
+            border: '1px solid rgba(148, 163, 184, 0.1)',
             cursor: 'pointer',
           }}
         >
@@ -120,33 +121,37 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
           {/* Detection Markers */}
           {detectionLayers.flatMap((layer, layerIdx) =>
             layer.map((detection, index) => (
-              <Box
+              <Tooltip
                 key={`${layerIdx}-${index}`}
-                sx={{
-                  position: 'absolute',
-                  left: `${detection.startPercentage}%`,
-                  top: `${layerIdx * 12}px`,
-                  height: '10px',
-                  width: `${detection.width}%`,
-                  backgroundColor: labelToUniqueHexColor(
-                    detection.species.species_name,
-                  ),
-                  opacity: 0.5,
-                  zIndex: 2,
-                  transition: 'all 0.2s ease',
-                  '&:hover': {
-                    opacity: 0.8,
-                    transform: 'scaleY(1.2)',
-                    boxShadow: `0 0 8px ${labelToUniqueHexColor(
-                      detection.species.species_name,
-                    )}`,
-                    zIndex: 3,
-                  },
-                }}
+                slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}
                 title={`${detection.species.species_name} (${formatTime(
                   detection.species.start_time,
                 )} - ${formatTime(detection.species.end_time)})`}
-              />
+              >
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    left: `${detection.startPercentage}%`,
+                    top: `${layerIdx * 12}px`,
+                    height: '10px',
+                    width: `${detection.width}%`,
+                    backgroundColor: labelToUniqueHexColor(
+                      detection.species.species_name,
+                    ),
+                    opacity: 0.5,
+                    zIndex: 2,
+                    transition: 'all 0.2s ease',
+                    '&:hover': {
+                      opacity: 0.8,
+                      transform: 'scaleY(1.2)',
+                      boxShadow: `0 0 8px ${labelToUniqueHexColor(
+                        detection.species.species_name,
+                      )}`,
+                      zIndex: 3,
+                    },
+                  }}
+                />
+              </Tooltip>
             )),
           )}
         </Box>
