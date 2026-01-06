@@ -113,7 +113,7 @@ class SingleStageStrategy(DetectionStrategy):
              self.logger.info(f'Enabled classes: {enabled_classes}')
 
         # Warmup
-        self.model.track(np.zeros((640, 640, 3)), tracker="bytetrack.yaml", verbose=False)
+        self.model.track(np.zeros((640, 640, 3)), tracker="bytetrack.yaml", persist=True, verbose=False)
 
     def detect(self, frame: np.ndarray, tracker_config: str, min_confidence: float) -> List[DetectionResult]:
         results = self.model.track(
@@ -199,7 +199,7 @@ class TwoStageStrategy(DetectionStrategy):
             self.logger.info(f'Enabled classes: {enabled_classes}')
 
         # Warmup
-        self.binary_model.track(np.zeros((320, 320, 3), dtype=np.uint8), tracker="bytetrack.yaml", verbose=False)
+        self.binary_model.track(np.zeros((320, 320, 3), dtype=np.uint8), tracker="bytetrack.yaml", persist=True, verbose=False)
         self.classifier_model(np.zeros((224, 224, 3), dtype=np.uint8), verbose=False)
 
     def _normalize_class_name(self, name: str) -> str:
