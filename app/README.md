@@ -2,21 +2,11 @@
 
 ## Raspberry Pi Setup
 
-1. **Flash OS** using [Raspberry Pi Imager](https://www.raspberrypi.com/software/):
+Use [Raspberry Pi Imager](https://www.raspberrypi.com/software/) to flash **Raspberry Pi OS Lite (64-bit)**:
 
-   - Choose Raspberry Pi OS Lite (64-bit)
-   - Set hostname: `birdlense`
-   - Enable SSH with password or key
-   - Configure WiFi and timezone
-
-2. **First boot** - SSH in and enable camera:
-
-   ```bash
-   sudo raspi-config
-   ```
-
-   - Interface Options → Camera → Enable
-   - Reboot when prompted
+- Set hostname: `birdlense`
+- Enable SSH with password or key
+- Configure WiFi and timezone
 
 ## Quick Start
 
