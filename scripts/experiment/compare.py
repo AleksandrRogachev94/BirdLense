@@ -21,7 +21,8 @@ os.makedirs(output_folder, exist_ok=True)
 USE_CUSTOM_TRACKER_FOR_A = False 
 
 # Params
-SKIP_FRAMES = 0
+VIDEO_FPS = 30        # Assumed video FPS (will be overridden by actual FPS)
+PROCESSING_FPS = 5    # Simulated processing FPS (like Raspberry Pi)
 IMGSZ_TRACK = 320
 IMGSZ_DET = 640
 CONF = 0.2
@@ -46,14 +47,34 @@ out = cv2.VideoWriter(output_path, cv2.VideoWriter_fourcc(*'mp4v'), cap.get(cv2.
 pbar = tqdm(total=int(cap.get(cv2.CAP_PROP_FRAME_COUNT)), desc="Processing")
 frame_idx = 0
 
+# Calculate how often to process frames to simulate PROCESSING_FPS
+actual_fps = cap.get(cv2.CAP_PROP_FPS)
+PROCESS_INTERVAL = max(1, int(actual_fps / PROCESSING_FPS))  # e.g., 30/5 = 6
+print(f"Video FPS: {actual_fps}, Processing FPS: {PROCESSING_FPS}, Process every {PROCESS_INTERVAL} frames")
+
+# Track last boxes for non-processed frames (store coordinates, not full frames)
+last_boxes_a = []  # List of (x1, y1, x2, y2, text_label)
+last_res_b = None  # Store last result for approach B
+
+def draw_boxes_a(img, boxes_list):
+    """Draw stored boxes on current frame for approach A"""
+    for x1, y1, x2, y2, text_label in boxes_list:
+        (text_w, text_h), baseline = cv2.getTextSize(text_label, cv2.FONT_HERSHEY_SIMPLEX, FONT_SCALE, FONT_THICKNESS)
+        cv2.rectangle(img, (x1, y1), (x2, y2), BOX_COLOR, 2)
+        cv2.rectangle(img, (x1, y1), (x1 + text_w, y1 + text_h + 10), BOX_COLOR, -1)
+        cv2.putText(img, text_label, (x1, y1 + text_h + 5), cv2.FONT_HERSHEY_SIMPLEX, FONT_SCALE, TEXT_COLOR, FONT_THICKNESS)
+
 while cap.isOpened():
     success, frame = cap.read()
     if not success: break
     
     view_a, view_b = frame.copy(), frame.copy()
 
-    if frame_idx % (SKIP_FRAMES + 1) == 0:
+    # Only process every PROCESS_INTERVAL frames to simulate slower hardware
+    if frame_idx % PROCESS_INTERVAL == 0:
         # --- Approach A: Two-Stage ---
+        last_boxes_a = []  # Reset for this processed frame
+        
         # Binary Choice for tracking
         if USE_CUSTOM_TRACKER_FOR_A:
             res_a = custom_det_model.track(view_a, persist=True, imgsz=IMGSZ_TRACK, conf=CONF, verbose=False, tracker='bytetrack.yaml', task="detect")
@@ -84,21 +105,12 @@ while cap.isOpened():
                     x1, y1, x2, y2, tid = meta[i]
                     history_a[tid].append(label)
                     
-                    # --- UPDATED DRAWING LOGIC ---
+                    # Store box info for reuse on non-processed frames
                     text_label = f"ID:{tid} {label}"
-                    
-                    # Calculate text size to position it nicely inside
-                    (text_w, text_h), baseline = cv2.getTextSize(text_label, cv2.FONT_HERSHEY_SIMPLEX, FONT_SCALE, FONT_THICKNESS)
-                    
-                    # Draw Bounding Box
-                    cv2.rectangle(view_a, (x1, y1), (x2, y2), BOX_COLOR, 2)
-                    
-                    # Draw Filled Rectangle (Background for text) inside top-left
-                    # We ensure y1 + text_h doesn't go below y2 (simple check, though usually bird boxes are big enough)
-                    cv2.rectangle(view_a, (x1, y1), (x1 + text_w, y1 + text_h + 10), BOX_COLOR, -1)
-                    
-                    # Draw Text inside the filled rectangle
-                    cv2.putText(view_a, text_label, (x1, y1 + text_h + 5), cv2.FONT_HERSHEY_SIMPLEX, FONT_SCALE, TEXT_COLOR, FONT_THICKNESS)
+                    last_boxes_a.append((x1, y1, x2, y2, text_label))
+        
+        # Draw boxes on current frame
+        draw_boxes_a(view_a, last_boxes_a)
 
         # --- Approach B: Single-Stage ---
         res_b = custom_det_model.track(view_b, persist=True, imgsz=IMGSZ_DET, conf=CONF, verbose=False, tracker='bytetrack.yaml', task="detect")
@@ -106,7 +118,13 @@ while cap.isOpened():
             for box, tid, cls_idx in zip(res_b[0].boxes.xyxy, res_b[0].boxes.id, res_b[0].boxes.cls):
                 label = custom_det_model.names[int(cls_idx)]
                 history_b[int(tid)].append(label)
+        last_res_b = res_b[0]  # Store for reuse
         view_b = res_b[0].plot()
+    else:
+        # Non-processed frame: draw last known boxes on CURRENT frame (smooth video)
+        draw_boxes_a(view_a, last_boxes_a)
+        if last_res_b is not None:
+            view_b = last_res_b.plot(img=view_b)
 
     # Layout
     cv2.putText(view_a, f"Two-Stage (CustomTrack:{USE_CUSTOM_TRACKER_FOR_A})", (20, 40), 0, 0.8, (255, 255, 255), 2)
