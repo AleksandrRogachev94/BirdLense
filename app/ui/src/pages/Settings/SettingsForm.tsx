@@ -68,21 +68,29 @@ export const SettingsForm = ({
       <Typography variant="h5" gutterBottom>
         General
       </Typography>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+        Notification preferences and alerts
+      </Typography>
       <Grid container spacing={2} alignItems="center">
         <Grid size={{ xs: 12, sm: 4 }}>
           <form.Field name="general.enable_notifications">
             {(field) => (
-              <FormControlLabel
-                control={
-                  <Switch
-                    id={field.name}
-                    name={field.name}
-                    checked={field.state.value}
-                    onChange={(e) => field.handleChange(e.target.checked)}
-                  />
-                }
-                label="Enable Notifications"
-              />
+              <>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      id={field.name}
+                      name={field.name}
+                      checked={field.state.value}
+                      onChange={(e) => field.handleChange(e.target.checked)}
+                    />
+                  }
+                  label="Enable Notifications"
+                />
+                <FormHelperText>
+                  Get notified when birds visit your feeder
+                </FormHelperText>
+              </>
             )}
           </form.Field>
         </Grid>
@@ -131,7 +139,10 @@ export const SettingsForm = ({
       <Divider sx={{ my: 4 }} />
       {/* Secrets Section */}
       <Typography variant="h5" gutterBottom>
-        Secrets
+        Location & API Keys
+      </Typography>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+        Your location and third-party service credentials
       </Typography>
       <Grid container spacing={2}>
         <Grid size={{ xs: 12 }}>
@@ -145,7 +156,7 @@ export const SettingsForm = ({
                 type="string"
                 onChange={(e) => field.handleChange(e.target.value)}
                 label="OpenWeather API Key"
-                helperText="Required for fetching weather data"
+                helperText="Free key from openweathermap.org. Shows weather with detections."
               />
             )}
           </form.Field>
@@ -191,6 +202,7 @@ export const SettingsForm = ({
                   type="string"
                   onChange={(e) => field.handleChange(e.target.value)}
                   label="Latitude"
+                  helperText="For regional species & weather"
                 />
               </>
             )}
@@ -208,6 +220,7 @@ export const SettingsForm = ({
                   type="string"
                   onChange={(e) => field.handleChange(e.target.value)}
                   label="Longitude"
+                  helperText="For regional species & weather"
                 />
               </>
             )}
@@ -220,6 +233,9 @@ export const SettingsForm = ({
       {/* Processor Settings */}
       <Typography variant="h5" gutterBottom>
         Processor Settings
+      </Typography>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+        Recording behavior and detection filters
       </Typography>
       <Grid container spacing={2}>
         <Grid size={{ xs: 6 }}>
@@ -234,7 +250,7 @@ export const SettingsForm = ({
                   type="string"
                   onChange={(e) => field.handleChange(e.target.value)}
                   label="Object Tracker"
-                  helperText="Path to the object tracking configuration file"
+                  helperText="Advanced: tracking algorithm config"
                 />
               </>
             )}
@@ -287,8 +303,8 @@ export const SettingsForm = ({
                   value={field.state.value}
                   type="string"
                   onChange={(e) => field.handleChange(Number(e.target.value))}
-                  label="Spectrogram Horizontal Resolution (px/sec)"
-                  helperText="Higher values result in wider spectrogram images"
+                  label="Spectrogram Detail"
+                  helperText="Audio visualization quality (higher = more detail)"
                 />
               </>
             )}
@@ -321,7 +337,7 @@ export const SettingsForm = ({
                   ))}
                 </Select>
                 <FormHelperText>
-                  Only detect birds from these families
+                  Filter detections to only these bird types
                 </FormHelperText>
               </FormControl>
             )}
@@ -334,6 +350,9 @@ export const SettingsForm = ({
       {/* Camera Settings */}
       <Typography variant="h5" gutterBottom>
         Camera Settings
+      </Typography>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+        Video quality and Pi Camera v3 features
       </Typography>
       <Grid container spacing={2}>
         <Grid size={{ xs: 12 }}>
@@ -376,7 +395,8 @@ export const SettingsForm = ({
                         ))}
                       </Select>
                       <FormHelperText>
-                        Select the resolution for video recording
+                        Recording resolution only. Does not affect detection
+                        accuracy.
                       </FormHelperText>
                     </FormControl>
                   );
@@ -413,6 +433,10 @@ export const SettingsForm = ({
       {/* AI Settings Section */}
       <Typography variant="h5" gutterBottom>
         AI Settings
+      </Typography>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+        Enable AI-powered features like daily summaries and detection
+        verification
       </Typography>
       <Grid container spacing={2}>
         <Grid size={{ xs: 12 }}>
@@ -466,8 +490,8 @@ export const SettingsForm = ({
                 type="number"
                 slotProps={{ htmlInput: { min: 0, max: 1, step: 0.1 } }}
                 onChange={(e) => field.handleChange(Number(e.target.value))}
-                label="Min Confidence for LLM Verification"
-                helperText="Detections below this confidence will be verified by LLM (0-1)"
+                label="Verification Threshold"
+                helperText="Re-check detections below this confidence with AI (0=all, 1=none)"
               />
             )}
           </form.Field>
@@ -484,7 +508,7 @@ export const SettingsForm = ({
                 slotProps={{ htmlInput: { min: 0 } }}
                 onChange={(e) => field.handleChange(Number(e.target.value))}
                 label="Max Calls/Hour"
-                helperText="Rate limit"
+                helperText="Limit AI usage to control costs"
               />
             )}
           </form.Field>
@@ -501,7 +525,7 @@ export const SettingsForm = ({
                 slotProps={{ htmlInput: { min: 0 } }}
                 onChange={(e) => field.handleChange(Number(e.target.value))}
                 label="Max Calls/Day"
-                helperText="Rate limit"
+                helperText="Daily AI usage limit"
               />
             )}
           </form.Field>
