@@ -63,9 +63,10 @@ def main():
         motion_detector = PIRMotionDetector()
     decision_maker = DecisionMaker(max_record_seconds=app_config.get(
         'processor.max_record_seconds'), max_inactive_seconds=app_config.get('processor.max_inactive_seconds'))
-    main_size = (app_config.get('processor.video_width'),
-                 app_config.get('processor.video_height'))
-    media_source = MediaSource(main_size=main_size) if not args.input else VideoFileSource(
+    main_size = (app_config.get('camera.video_width'),
+                 app_config.get('camera.video_height'))
+    camera_config = app_config.get('camera')
+    media_source = MediaSource(main_size=main_size, camera_config=camera_config) if not args.input else VideoFileSource(
         args.input, main_size=main_size)
     audio_processor = AudioProcessor(lat=app_config.get(
         'secrets.latitude'), lon=app_config.get('secrets.longitude'), spectrogram_px_per_sec=app_config.get('processor.spectrogram_px_per_sec'))

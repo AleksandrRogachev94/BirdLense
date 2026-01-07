@@ -10,6 +10,15 @@ from picamera2.encoders import H264Encoder, JpegEncoder, Quality
 from picamera2.outputs import FileOutput
 from .ffmpeg_output_mono_audio import FfmpegOutputMonoAudio
 import cv2
+try:
+    from libcamera import controls
+except ImportError:
+    controls = None
+
+try:
+    from picamera2.devices.imx708 import IMX708
+except ImportError:
+    IMX708 = None
 
 
 class StreamingOutput(io.BufferedIOBase):
@@ -70,9 +79,24 @@ def start_streaming_server(streaming_output: StreamingOutput, control_queue: mul
     return server
 
 
-def recording_worker(control_queue: multiprocessing.Queue, frame_queue: multiprocessing.Queue, main_size: tuple, lores_size: tuple):
+def recording_worker(control_queue: multiprocessing.Queue, frame_queue: multiprocessing.Queue, main_size: tuple, lores_size: tuple, camera_config: dict = None):
     """Handles video processing and streaming."""
     logging.info("Recording worker started")
+
+    # Handle HDR configuration (Must be done before Picamera2 instantiation)
+    if camera_config and camera_config.get('hdr_mode', True):
+        if IMX708:
+            try:
+                # We assume the camera is available and let the device class handle it.
+                # If multiple cameras, this might need refinement, but standard usage is single cam.
+                with IMX708() as cam:
+                    cam.set_sensor_hdr_mode(True)
+                logging.info("HDR mode enabled for IMX708")
+            except Exception as e:
+                logging.warning(f"Failed to enable HDR: {e}")
+        else:
+             logging.warning("HDR requested but IMX708 device helper not found")
+
     picam2 = Picamera2()
     config = picam2.create_video_configuration(
         main={"size": main_size, "format": "RGB888"},
@@ -80,6 +104,14 @@ def recording_worker(control_queue: multiprocessing.Queue, frame_queue: multipro
         encode="main"
     )
     picam2.configure(config)
+
+    # Auto-enable Continuous Autofocus if camera supports it
+    if controls and "AfMode" in picam2.camera_controls:
+        picam2.set_controls({"AfMode": controls.AfModeEnum.Continuous})
+        logging.info("Autofocus enabled (Continuous mode)")
+    elif not controls:
+        logging.debug("libcamera.controls not available, skipping autofocus")
+
     stream_output = StreamingOutput()
     start_streaming_server(stream_output, control_queue)
 
@@ -140,12 +172,12 @@ def recording_worker(control_queue: multiprocessing.Queue, frame_queue: multipro
 class MediaSource:
     """Manages camera recording and streaming."""
 
-    def __init__(self, main_size: tuple = (1280, 720), lores_size: tuple = (640, 480)):
+    def __init__(self, main_size: tuple = (1280, 720), lores_size: tuple = (640, 480), camera_config: dict = None):
         self.frame_queue = multiprocessing.Queue(maxsize=1)
         self.control_queue = multiprocessing.Queue()
         self.process = multiprocessing.Process(
             target=recording_worker,
-            args=(self.control_queue, self.frame_queue, main_size, lores_size),
+            args=(self.control_queue, self.frame_queue, main_size, lores_size, camera_config),
         )
         self.process.start()
 

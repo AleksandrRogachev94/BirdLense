@@ -222,55 +222,6 @@ export const SettingsForm = ({
         Processor Settings
       </Typography>
       <Grid container spacing={2}>
-        <Grid size={{ xs: 12 }}>
-          <form.Field name="processor.video_width">
-            {(widthField) => (
-              <form.Field name="processor.video_height">
-                {(heightField) => {
-                  const currentWidth = widthField.state.value;
-                  const currentHeight = heightField.state.value;
-                  const selectedResolution = resolutions.find(
-                    (r) =>
-                      r.width === currentWidth && r.height === currentHeight,
-                  );
-
-                  return (
-                    <FormControl fullWidth>
-                      <InputLabel>Video Resolution</InputLabel>
-                      <Select
-                        value={
-                          selectedResolution
-                            ? `${selectedResolution.width}x${selectedResolution.height}`
-                            : ''
-                        }
-                        label="Video Resolution"
-                        onChange={(e) => {
-                          const [w, h] = (e.target.value as string)
-                            .split('x')
-                            .map(Number);
-                          widthField.handleChange(w);
-                          heightField.handleChange(h);
-                        }}
-                      >
-                        {resolutions.map((res) => (
-                          <MenuItem
-                            key={res.label}
-                            value={`${res.width}x${res.height}`}
-                          >
-                            {res.label}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                      <FormHelperText>
-                        Select the resolution for video recording
-                      </FormHelperText>
-                    </FormControl>
-                  );
-                }}
-              </form.Field>
-            )}
-          </form.Field>
-        </Grid>
         <Grid size={{ xs: 6 }}>
           <form.Field name="processor.tracker">
             {(field) => (
@@ -375,6 +326,85 @@ export const SettingsForm = ({
               </FormControl>
             )}
           </form.Field>
+        </Grid>
+      </Grid>
+
+      <Divider sx={{ my: 4 }} />
+
+      {/* Camera Settings */}
+      <Typography variant="h5" gutterBottom>
+        Camera Settings
+      </Typography>
+      <Grid container spacing={2}>
+        <Grid size={{ xs: 12 }}>
+          <form.Field name="camera.video_width">
+            {(widthField) => (
+              <form.Field name="camera.video_height">
+                {(heightField) => {
+                  const currentWidth = widthField.state.value;
+                  const currentHeight = heightField.state.value;
+                  const selectedResolution = resolutions.find(
+                    (r) =>
+                      r.width === currentWidth && r.height === currentHeight,
+                  );
+
+                  return (
+                    <FormControl fullWidth>
+                      <InputLabel>Video Resolution</InputLabel>
+                      <Select
+                        value={
+                          selectedResolution
+                            ? `${selectedResolution.width}x${selectedResolution.height}`
+                            : ''
+                        }
+                        label="Video Resolution"
+                        onChange={(e) => {
+                          const [w, h] = (e.target.value as string)
+                            .split('x')
+                            .map(Number);
+                          widthField.handleChange(w);
+                          heightField.handleChange(h);
+                        }}
+                      >
+                        {resolutions.map((res) => (
+                          <MenuItem
+                            key={res.label}
+                            value={`${res.width}x${res.height}`}
+                          >
+                            {res.label}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                      <FormHelperText>
+                        Select the resolution for video recording
+                      </FormHelperText>
+                    </FormControl>
+                  );
+                }}
+              </form.Field>
+            )}
+          </form.Field>
+        </Grid>
+        <Grid size={{ xs: 12 }}>
+          <form.Field name="camera.hdr_mode">
+            {(field) => (
+              <FormControlLabel
+                control={
+                  <Switch
+                    id={field.name}
+                    name={field.name}
+                    checked={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.checked)}
+                  />
+                }
+                label="Enable HDR Mode"
+              />
+            )}
+          </form.Field>
+          <FormHelperText>
+            Enable High Dynamic Range mode (Pi Camera v3 only). Autofocus is
+            enabled automatically if supported.
+          </FormHelperText>
         </Grid>
       </Grid>
 

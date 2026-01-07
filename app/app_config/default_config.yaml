@@ -4,8 +4,6 @@ general:
 
 # Video/Audio processor settings
 processor:
-  video_width: 1280
-  video_height: 720
   # frame_rate: 30
   tracker: "bytetrack.yaml"
   max_record_seconds: 60 # maximum length of video/audio recording
@@ -33,6 +31,12 @@ ai:
     min_confidence: 0.5 # Only verify detections below this confidence threshold
     max_calls_per_hour: 20 # Rate limit: max API calls per hour
     max_calls_per_day: 100 # Rate limit: max API calls per day
+
+# Camera settings (Pi Camera v3 / IMX708)
+camera:
+  video_width: 1280
+  video_height: 720
+  hdr_mode: true # Enable HDR if available. Autofocus is enabled automatically if supported.
 
 # Add your secrets and other configurations here
 secrets:

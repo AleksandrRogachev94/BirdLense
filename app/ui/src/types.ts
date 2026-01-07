@@ -92,8 +92,6 @@ export interface Settings {
     notification_excluded_species: string[]; // list of species to exclude from notifications
   };
   processor: {
-    video_width: number; // Video width in pixels, e.g., 1280
-    video_height: number; // Video height in pixels, e.g., 720
     tracker: string; // Path to tracker config, e.g., "bytetrack.yaml"
     max_record_seconds: number; // Max recording duration in seconds
     max_inactive_seconds: number; // Max inactivity before stopping recording
@@ -108,6 +106,11 @@ export interface Settings {
       max_calls_per_hour: number; // Rate limit: max API calls per hour
       max_calls_per_day: number; // Rate limit: max API calls per day
     };
+  };
+  camera: {
+    video_width: number; // Video width in pixels, e.g., 1280
+    video_height: number; // Video height in pixels, e.g., 720
+    hdr_mode: boolean; // Enable HDR if available (Pi Camera v3). Autofocus is auto-enabled.
   };
   secrets: {
     openweather_api_key: string; // API key for OpenWeather
