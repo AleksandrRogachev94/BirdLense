@@ -89,7 +89,8 @@ export const SettingsForm = ({
         <Grid size={{ xs: 12, sm: 8 }}>
           <form.Subscribe
             selector={(state) => [state.values.general.enable_notifications]}
-            children={([notificationsEnabled]) => (
+          >
+            {([notificationsEnabled]) => (
               <form.Field name="general.notification_excluded_species">
                 {(field) => (
                   <FormControl fullWidth disabled={!notificationsEnabled}>
@@ -124,7 +125,7 @@ export const SettingsForm = ({
                 )}
               </form.Field>
             )}
-          />
+          </form.Subscribe>
         </Grid>
       </Grid>
       <Divider sx={{ my: 4 }} />
@@ -136,36 +137,16 @@ export const SettingsForm = ({
         <Grid size={{ xs: 12 }}>
           <form.Field name="secrets.openweather_api_key">
             {(field) => (
-              <>
-                <TextField
-                  fullWidth
-                  id={field.name}
-                  name={field.name}
-                  value={field.state.value}
-                  type="string"
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  label="OpenWeather API Key"
-                  helperText="Required for fetching weather data"
-                />
-              </>
-            )}
-          </form.Field>
-        </Grid>
-        <Grid size={{ xs: 12 }}>
-          <form.Field name="secrets.gemini_api_key">
-            {(field) => (
-              <>
-                <TextField
-                  fullWidth
-                  id={field.name}
-                  name={field.name}
-                  value={field.state.value}
-                  type="password"
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  label="Gemini API Key"
-                  helperText="Enables: Daily AI Summary, LLM verification for bird detection"
-                />
-              </>
+              <TextField
+                fullWidth
+                id={field.name}
+                name={field.name}
+                value={field.state.value}
+                type="string"
+                onChange={(e) => field.handleChange(e.target.value)}
+                label="OpenWeather API Key"
+                helperText="Required for fetching weather data"
+              />
             )}
           </form.Field>
         </Grid>
@@ -392,6 +373,106 @@ export const SettingsForm = ({
                   Only detect birds from these families
                 </FormHelperText>
               </FormControl>
+            )}
+          </form.Field>
+        </Grid>
+      </Grid>
+
+      <Divider sx={{ my: 4 }} />
+
+      {/* AI Settings Section */}
+      <Typography variant="h5" gutterBottom>
+        AI Settings
+      </Typography>
+      <Grid container spacing={2}>
+        <Grid size={{ xs: 12 }}>
+          <form.Field name="ai.gemini_api_key">
+            {(field) => (
+              <TextField
+                fullWidth
+                id={field.name}
+                name={field.name}
+                value={field.state.value}
+                type="password"
+                onChange={(e) => field.handleChange(e.target.value)}
+                label="Gemini API Key"
+                helperText="Enables: Daily AI Summary, LLM verification for bird detection"
+              />
+            )}
+          </form.Field>
+        </Grid>
+        <Grid size={{ xs: 12, sm: 6 }}>
+          <form.Field name="ai.model">
+            {(field) => (
+              <FormControl fullWidth>
+                <InputLabel>Model</InputLabel>
+                <Select
+                  value={field.state.value || 'gemini-3-flash-preview'}
+                  label="Model"
+                  onChange={(e) => field.handleChange(e.target.value)}
+                >
+                  <MenuItem value="gemini-3-flash-preview">
+                    Gemini 3 Flash (Preview)
+                  </MenuItem>
+                  <MenuItem value="gemini-2.5-flash-lite">
+                    Gemini 2.5 Flash Lite
+                  </MenuItem>
+                </Select>
+                <FormHelperText>
+                  Model used for LLM verification and summaries
+                </FormHelperText>
+              </FormControl>
+            )}
+          </form.Field>
+        </Grid>
+        <Grid size={{ xs: 12, sm: 6 }}>
+          <form.Field name="ai.llm_verification.min_confidence">
+            {(field) => (
+              <TextField
+                fullWidth
+                id={field.name}
+                name={field.name}
+                value={field.state.value}
+                type="number"
+                slotProps={{ htmlInput: { min: 0, max: 1, step: 0.1 } }}
+                onChange={(e) => field.handleChange(Number(e.target.value))}
+                label="Min Confidence for LLM Verification"
+                helperText="Detections below this confidence will be verified by LLM (0-1)"
+              />
+            )}
+          </form.Field>
+        </Grid>
+        <Grid size={{ xs: 6, sm: 3 }}>
+          <form.Field name="ai.llm_verification.max_calls_per_hour">
+            {(field) => (
+              <TextField
+                fullWidth
+                id={field.name}
+                name={field.name}
+                value={field.state.value}
+                type="number"
+                slotProps={{ htmlInput: { min: 0 } }}
+                onChange={(e) => field.handleChange(Number(e.target.value))}
+                label="Max Calls/Hour"
+                helperText="Rate limit"
+              />
+            )}
+          </form.Field>
+        </Grid>
+        <Grid size={{ xs: 6, sm: 3 }}>
+          <form.Field name="ai.llm_verification.max_calls_per_day">
+            {(field) => (
+              <TextField
+                fullWidth
+                id={field.name}
+                name={field.name}
+                value={field.state.value}
+                type="number"
+                slotProps={{ htmlInput: { min: 0 } }}
+                onChange={(e) => field.handleChange(Number(e.target.value))}
+                label="Max Calls/Day"
+                helperText="Rate limit"
+              />
             )}
           </form.Field>
         </Grid>

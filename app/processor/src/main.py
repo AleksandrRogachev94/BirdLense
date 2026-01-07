@@ -73,9 +73,17 @@ def main():
     regional_species = api.set_active_species(regional_species)
 
     # Initialize LLM verifier if API key is configured
-    gemini_api_key = app_config.get('secrets.gemini_api_key')
-    llm_log_dir = os.path.join('data', 'llm_verification_logs')
-    llm_verifier = LLMVerifier(gemini_api_key, llm_log_dir) if gemini_api_key else None
+    gemini_api_key = app_config.get('ai.gemini_api_key')
+    llm_verifier = None
+    if gemini_api_key:
+        llm_verifier = LLMVerifier(
+            api_key=gemini_api_key,
+            model=app_config.get('ai.model'),
+            min_confidence=app_config.get('ai.llm_verification.min_confidence'),
+            max_calls_per_hour=app_config.get('ai.llm_verification.max_calls_per_hour'),
+            max_calls_per_day=app_config.get('ai.llm_verification.max_calls_per_day'),
+            log_dir=os.path.join('data', 'llm_verification_logs'),
+        )
 
     # Configure Detection Strategy
     strategy_type = app_config.get('processor.detection_strategy', 'single_stage')

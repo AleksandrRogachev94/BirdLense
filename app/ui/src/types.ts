@@ -100,9 +100,17 @@ export interface Settings {
     spectrogram_px_per_sec: number; // Spectrogram pixels per second
     included_bird_families: string[]; // List of bird families to use in detections
   };
+  ai: {
+    gemini_api_key: string; // API key for Google Gemini
+    model: string; // Model for LLM verification & summaries
+    llm_verification: {
+      min_confidence: number; // Only verify detections below this confidence
+      max_calls_per_hour: number; // Rate limit: max API calls per hour
+      max_calls_per_day: number; // Rate limit: max API calls per day
+    };
+  };
   secrets: {
     openweather_api_key: string; // API key for OpenWeather
-    gemini_api_key?: string; // API key for Google Gemini (optional)
     latitude: string; // Latitude as a string, e.g., "YOUR_LATITUDE_HERE"
     longitude: string; // Longitude as a string, e.g., "YOUR_LONGITUDE_HERE"
     zip?: string;

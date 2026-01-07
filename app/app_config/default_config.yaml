@@ -21,14 +21,22 @@ processor:
 
   detection_strategy: "two_stage" # Options: "single_stage", "two_stage"
   models:
-    single_stage: "models/detection/nabirds_yolov8n_ncnn_model" 
+    single_stage: "models/detection/nabirds_yolov8n_ncnn_model"
     binary: "models/detection/nabirds_yolo11n_binary/weights/best_ncnn_model"
     classifier: "models/classification/nabirds_yolo11n_cls/weights/best_ncnn_model"
+
+# AI settings for LLM verification and daily summaries
+ai:
+  gemini_api_key: "" # API key for Google Gemini
+  model: "gemini-3-flash-preview" # Model for LLM verification & summaries
+  llm_verification:
+    min_confidence: 0.5 # Only verify detections below this confidence threshold
+    max_calls_per_hour: 20 # Rate limit: max API calls per hour
+    max_calls_per_day: 100 # Rate limit: max API calls per day
 
 # Add your secrets and other configurations here
 secrets:
   openweather_api_key: ""
-  gemini_api_key: ""  # Optional: enables LLM verification when set
   # Default location. This is near the geographic center of the contiguous United States.
   latitude: "39.8283"
   longitude: "-98.5795"

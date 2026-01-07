@@ -123,16 +123,17 @@ class DailySummaryService:
         logger.info(timeline_text)
 
         # 4. Generate Summary via LLM
-        api_key = app_config.get('secrets.gemini_api_key')
+        api_key = app_config.get('ai.gemini_api_key')
         if not api_key:
             raise ValueError('Gemini API key not configured in settings.')
 
+        model = app_config.get('ai.model')
         prompt = _build_prompt(date, timeline_text)
 
         try:
             client = genai.Client(api_key=api_key)
             response = client.models.generate_content(
-                model="gemini-3-flash-preview",
+                model=model,
                 contents=prompt
             )
             return {'summary': response.text}

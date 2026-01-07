@@ -16,13 +16,6 @@ from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
-CONFIDENCE_THRESHOLD = 0.5
-MODEL = "gemini-3-flash-preview"
-
-# Rate limiting defaults
-DEFAULT_MAX_CALLS_PER_HOUR = 20
-DEFAULT_MAX_CALLS_PER_DAY = 100
-
 PROMPT = """You are verifying a bird detection from a feeder camera.
 The ML model detected: "{detected_species}"
 
@@ -42,11 +35,19 @@ class VerificationResult(BaseModel):
 class LLMVerifier:
     """Verifies bird detections using Gemini."""
     
-    def __init__(self, api_key: str, log_dir: str = None,
-                 max_calls_per_hour: int = DEFAULT_MAX_CALLS_PER_HOUR,
-                 max_calls_per_day: int = DEFAULT_MAX_CALLS_PER_DAY):
+    def __init__(
+        self,
+        api_key: str,
+        model: str,
+        min_confidence: float,
+        max_calls_per_hour: int,
+        max_calls_per_day: int,
+        log_dir: str = None,
+    ):
         self.client = genai.Client(api_key=api_key)
         self.log_dir = log_dir
+        self.model = model
+        self.min_confidence = min_confidence
         
         # Rate limiting
         self.max_calls_per_hour = max_calls_per_hour
@@ -56,7 +57,7 @@ class LLMVerifier:
         self.hour_reset_time = datetime.now()
         self.day_reset_date = datetime.now().date()
         
-        logger.info(f"LLMVerifier initialized (limits: {max_calls_per_hour}/hour, {max_calls_per_day}/day)")
+        logger.info(f"LLMVerifier initialized (model: {model}, min_conf: {min_confidence}, limits: {max_calls_per_hour}/hour, {max_calls_per_day}/day)")
     
     def _check_and_reset_limits(self):
         """Reset counters if hour/day has passed."""
@@ -79,7 +80,7 @@ class LLMVerifier:
                 self.calls_this_day >= self.max_calls_per_day)
     
     def should_verify(self, confidence: float) -> bool:
-        if confidence >= CONFIDENCE_THRESHOLD:
+        if confidence >= self.min_confidence:
             return False
         if self._is_rate_limited():
             logger.warn("LLM verification skipped - rate limit reached")
@@ -100,7 +101,7 @@ class LLMVerifier:
             prompt = PROMPT.format(detected_species=detected_species)
             
             response = self.client.models.generate_content(
-                model=MODEL,
+                model=self.model,
                 contents=[types.Content(role="user", parts=[
                     types.Part.from_bytes(data=buffer.tobytes(), mime_type="image/jpeg"),
                     types.Part.from_text(text=prompt)
