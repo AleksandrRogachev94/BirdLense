@@ -71,15 +71,20 @@ export const DetectedSpecies: React.FC<DetectedSpeciesProps> = ({
             <Card
               sx={{
                 height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
                 border: `2px solid ${labelToUniqueHexColor(group.species_name)}`,
               }}
             >
               <CardMedia
                 component="img"
                 alt={group.species_name}
-                height="120"
                 image={group.image_url}
-                sx={{ objectFit: 'cover' }}
+                sx={{
+                  aspectRatio: '16/10',
+                  objectFit: 'cover',
+                  objectPosition: 'center top',
+                }}
               />
               <CardContent sx={{ py: 1.5 }}>
                 <Typography variant="subtitle1" noWrap>
