@@ -10,15 +10,14 @@ interface TrackOverlayProps {
 }
 
 /**
- * Renders bounding boxes for detected species tracks synchronized with video playback.
- * Finds the closest stored frame to the current video time and renders boxes at those positions.
+ * Renders bounding boxes and trajectory trails for detected species tracks.
+ * Shows full movement path as a solid line with a dot at current position.
  */
 export const TrackOverlay: React.FC<TrackOverlayProps> = ({
   species,
   currentTime,
 }) => {
-  // Find the closest frame for each species detection at current time
-  const activeBoxes = useMemo(() => {
+  const { boxes, trails } = useMemo(() => {
     const boxes: Array<{
       key: string;
       speciesName: string;
@@ -28,16 +27,43 @@ export const TrackOverlay: React.FC<TrackOverlayProps> = ({
       bbox: number[];
     }> = [];
 
+    const trails: Array<{
+      key: string;
+      color: string;
+      points: string;
+      lastCenter: [number, number];
+    }> = [];
+
     species.forEach((s, idx) => {
       if (!s.frames || s.frames.length === 0) return;
-
-      // Only show boxes during detection time range
       if (currentTime < s.start_time || currentTime > s.end_time) return;
 
-      // Find the closest frame to current time
+      const color = labelToUniqueHexColor(s.species_name);
+
+      // Build trail from frames up to current time
+      const trailFrames = s.frames.filter((f) => f.t <= currentTime + 0.1);
+      if (trailFrames.length > 0) {
+        // Convert bbox centers to SVG coordinates (160x90 viewBox for 16:9)
+        const centers = trailFrames.map((f) => {
+          const [x1, y1, x2, y2] = f.bbox;
+          return `${((x1 + x2) / 2) * 160},${((y1 + y2) / 2) * 90}`;
+        });
+        const last = trailFrames[trailFrames.length - 1].bbox;
+
+        trails.push({
+          key: `trail-${s.species_id}-${s.start_time}-${idx}`,
+          color,
+          points: centers.join(' '),
+          lastCenter: [
+            ((last[0] + last[2]) / 2) * 160,
+            ((last[1] + last[3]) / 2) * 90,
+          ],
+        });
+      }
+
+      // Find closest frame for bounding box
       let closestFrame: TrackFrame | null = null;
       let minDiff = Infinity;
-
       for (const frame of s.frames) {
         const diff = Math.abs(frame.t - currentTime);
         if (diff < minDiff) {
@@ -46,13 +72,11 @@ export const TrackOverlay: React.FC<TrackOverlayProps> = ({
         }
       }
 
-      // Only show if within reasonable time threshold (300ms)
       if (closestFrame && minDiff < 0.3) {
-        const color = labelToUniqueHexColor(s.species_name);
         boxes.push({
-          key: `${s.species_id}-${s.start_time}-${idx}`,
+          key: `box-${s.species_id}-${s.start_time}-${idx}`,
           speciesName: s.species_name,
-          trackIndex: s.track_id ?? idx + 1, // Use track_id, fallback to index for old data
+          trackIndex: s.track_id ?? idx + 1,
           color,
           textColor: getContrastTextColor(color),
           bbox: closestFrame.bbox,
@@ -60,10 +84,10 @@ export const TrackOverlay: React.FC<TrackOverlayProps> = ({
       }
     });
 
-    return boxes;
+    return { boxes, trails };
   }, [species, currentTime]);
 
-  if (activeBoxes.length === 0) return null;
+  if (boxes.length === 0 && trails.length === 0) return null;
 
   return (
     <Box
@@ -77,7 +101,41 @@ export const TrackOverlay: React.FC<TrackOverlayProps> = ({
         zIndex: 5,
       }}
     >
-      {activeBoxes.map((box) => {
+      {/* Trajectory trails */}
+      <svg
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+        }}
+        viewBox="0 0 160 90"
+        preserveAspectRatio="none"
+      >
+        {trails.map((trail) => (
+          <g key={trail.key}>
+            <polyline
+              points={trail.points}
+              fill="none"
+              stroke={trail.color}
+              strokeWidth="0.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              opacity="0.7"
+            />
+            <circle
+              cx={trail.lastCenter[0]}
+              cy={trail.lastCenter[1]}
+              r={0.8}
+              fill={trail.color}
+            />
+          </g>
+        ))}
+      </svg>
+
+      {/* Bounding boxes */}
+      {boxes.map((box) => {
         const [x1, y1, x2, y2] = box.bbox;
         return (
           <Box

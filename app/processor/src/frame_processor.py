@@ -81,7 +81,7 @@ class FrameProcessor:
         # Store frame bbox for track visualization
         self.tracks[track_id]['frames'].append({
             't': frame_time,
-            'bbox': [round(float(b), 4) for b in bbox]
+            'bbox': [round(float(b), 2) for b in bbox]
         })
         
         # Update best frame if this crop is sharper
