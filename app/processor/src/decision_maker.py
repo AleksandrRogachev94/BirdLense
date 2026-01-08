@@ -1,5 +1,12 @@
+import logging
 import time
 from collections import Counter
+
+logger = logging.getLogger(__name__)
+
+# Minimum combined confidence to process a detection further (LLM validation, saving).
+# Below this threshold, detections are discarded as likely false positives.
+MIN_CONFIDENCE_TO_PROCESS = 0.10
 
 
 class DecisionMaker():
@@ -64,6 +71,11 @@ class DecisionMaker():
             
             # Combine confidences
             confidence = voting_confidence * avg_classifier_conf
+            
+            # Skip tracks with very low confidence - likely false positives
+            if confidence < MIN_CONFIDENCE_TO_PROCESS:
+                logger.debug(f"Skipping track {track_id} with {confidence:.0%} confidence - below threshold")
+                continue
             
             # Only consider species with at least min_track_duration
             if track['end_time'] - track['start_time'] >= self.min_track_duration:
