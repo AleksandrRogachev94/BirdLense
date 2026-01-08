@@ -113,7 +113,8 @@ def get_wikipedia_image_and_description(title):
     """Fetch image and description from Wikipedia. Returns (None, None) on any error."""
     try:
         url = f"https://en.wikipedia.org/w/api.php?action=query&prop=pageimages|pageprops|extracts&format=json&piprop=thumbnail&titles={title}&pithumbsize=300&redirects&exintro"
-        response = requests.get(url, timeout=10)
+        headers = {'User-Agent': 'BirdLense/1.0 (Bird feeder monitoring app)'}
+        response = requests.get(url, timeout=10, headers=headers)
         data = response.json()
         page = list(data.get("query", {}).get("pages", {}).values())[0]
         image_url = page.get("thumbnail", {}).get("source")
