@@ -142,8 +142,6 @@ def main():
                     api.notify_species(species)
                 if decision_maker.decide_stop_recording():
                     break
-                # give CPU some time to do something else
-                time.sleep(0.005)
             fps_tracker.log_summary()
         finally:
             media_source.stop_recording()
