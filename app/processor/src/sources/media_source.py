@@ -79,23 +79,39 @@ def start_streaming_server(streaming_output: StreamingOutput, control_queue: mul
     return server
 
 
+
+def _enable_hdr_if_available():
+    """Enable HDR on IMX708 sensor if available. Must be called before Picamera2 init."""
+    if not IMX708:
+        logging.debug("IMX708 device helper not available")
+        return False
+    
+    try:
+        camera_info = Picamera2.global_camera_info()
+        logging.info(f"Available cameras: {camera_info}")
+        
+        for i, cam in enumerate(camera_info):
+            if 'imx708' in cam.get('Model', '').lower():
+                logging.info(f"Found IMX708 at index {i}: {cam.get('Model')}")
+                with IMX708(i) as sensor:
+                    sensor.set_sensor_hdr_mode(True)
+                logging.info("HDR mode enabled")
+                return True
+        
+        logging.info("No IMX708 camera found, HDR not available")
+        return False
+    except Exception as e:
+        logging.warning(f"Failed to enable HDR: {e}")
+        return False
+
+
 def recording_worker(control_queue: multiprocessing.Queue, frame_queue: multiprocessing.Queue, main_size: tuple, lores_size: tuple, camera_config: dict = None):
     """Handles video processing and streaming."""
     logging.info("Recording worker started")
 
-    # Handle HDR configuration (Must be done before Picamera2 instantiation)
+    # Enable HDR if configured (must be done before Picamera2 init)
     if camera_config and camera_config.get('hdr_mode', True):
-        if IMX708:
-            try:
-                # We assume the camera is available and let the device class handle it.
-                # If multiple cameras, this might need refinement, but standard usage is single cam.
-                with IMX708() as cam:
-                    cam.set_sensor_hdr_mode(True)
-                logging.info("HDR mode enabled for IMX708")
-            except Exception as e:
-                logging.warning(f"Failed to enable HDR: {e}")
-        else:
-             logging.warning("HDR requested but IMX708 device helper not found")
+        _enable_hdr_if_available()
 
     picam2 = Picamera2()
     config = picam2.create_video_configuration(
