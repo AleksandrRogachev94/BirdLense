@@ -161,8 +161,10 @@ def main():
                 if llm_verifier:
                     video_detections = llm_verifier.validate_detections(video_detections)
                     
+            # Log summary without best_frame arrays
+            video_summary = [{k: v for k, v in d.items() if k != 'best_frame'} for d in video_detections]
             logging.info(
-                f'Processing stopped. Video Result: {video_detections}; Audio Result: {audio_detections}')
+                f'Processing stopped. Video Result: {video_summary}; Audio Result: {audio_detections}')
             if len(video_detections) > 0:
                 api.create_video(video_detections, audio_detections, start_time,
                                  end_time, video_output, spectrogram_path)
