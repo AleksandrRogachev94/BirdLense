@@ -147,3 +147,25 @@ camera_auto_detect=0
 ```
 
 Then reboot.
+
+## Hardware Wiring (Raspberry Pi 4B)
+
+### PIR Motion Sensor
+
+| PIR Pin | Pi Pin         | Description |
+| ------- | -------------- | ----------- |
+| VCC     | Pin 2          | 5V Power    |
+| OUT     | Pin 7 (GPIO 4) | Signal      |
+| GND     | Pin 6          | Ground      |
+
+### Cooling Fan
+
+Connect directly to 5V power for continuous cooling:
+
+| Fan Wire  | Pi Pin | Description |
+| --------- | ------ | ----------- |
+| Red (+)   | Pin 4  | 5V Power    |
+| Black (-) | Pin 6  | Ground      |
+
+> [!TIP]
+> Small fans draw minimal power (~0.1W) and continuous cooling improves Pi longevity during 24/7 operation.
