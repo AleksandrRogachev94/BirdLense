@@ -83,6 +83,8 @@ def main():
             min_confidence=app_config.get('ai.llm_verification.min_confidence'),
             max_calls_per_hour=app_config.get('ai.llm_verification.max_calls_per_hour'),
             max_calls_per_day=app_config.get('ai.llm_verification.max_calls_per_day'),
+            latitude=app_config.get('secrets.latitude'),
+            longitude=app_config.get('secrets.longitude'),
             log_dir=os.path.join('data', 'llm_verification_logs'),
         )
 
@@ -157,7 +159,7 @@ def main():
                 
                 # LLM validation (if enabled)
                 if llm_verifier:
-                    video_detections = llm_verifier.validate_detections(video_detections)
+                    video_detections = llm_verifier.validate_detections(video_detections, start_time)
                     
             # Log summary without best_frame arrays
             video_summary = [{k: v for k, v in d.items() if k != 'best_frame'} for d in video_detections]

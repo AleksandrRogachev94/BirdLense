@@ -18,12 +18,15 @@ logger = logging.getLogger(__name__)
 
 PROMPT = """You are verifying a bird detection from a feeder camera.
 The ML model detected: "{detected_species}"
+Observation time: {datetime}
+Location: {latitude}, {longitude}
 
 Is this detection plausible? Check:
-- Is there a bird clearly visible? (not a leaf, shadow, or blur)
+- Is there an actual bird clearly visible? The image must show a real bird with identifiable features (shape, feathers, beak, etc.) - reject silhouettes, shadows, blurs, leaves, or other objects
 - Could it reasonably be a {detected_species}?
+- Is this species plausible for this location and time of year?
 
-Be lenient - only reject if obviously wrong."""
+Be lenient on exact species ID - only reject if obviously wrong or if no actual bird is visible."""
 
 
 class VerificationResult(BaseModel):
@@ -42,11 +45,15 @@ class LLMVerifier:
         min_confidence: float,
         max_calls_per_hour: int,
         max_calls_per_day: int,
+        latitude: float = None,
+        longitude: float = None,
         log_dir: str = None,
     ):
         self.client = genai.Client(api_key=api_key)
         self.log_dir = log_dir
         self.model = model
+        self.latitude = latitude
+        self.longitude = longitude
         self.min_confidence = min_confidence
         
         # Rate limiting
@@ -87,7 +94,7 @@ class LLMVerifier:
             return False
         return True
     
-    def verify(self, crop: np.ndarray, detected_species: str) -> dict:
+    def verify(self, crop: np.ndarray, detected_species: str, observation_time: datetime = None) -> dict:
         """Verify if detection is plausible."""
         if crop is None or crop.size == 0:
             return {'is_plausible': False, 'reasoning': 'Empty image'}
@@ -98,7 +105,18 @@ class LLMVerifier:
         
         try:
             _, buffer = cv2.imencode('.jpg', crop, [cv2.IMWRITE_JPEG_QUALITY, 85])
-            prompt = PROMPT.format(detected_species=detected_species)
+            
+            # Format datetime for the prompt
+            dt_str = observation_time.strftime('%Y-%m-%d %H:%M') if observation_time else 'Unknown'
+            lat_str = f"{self.latitude:.4f}" if self.latitude else 'Unknown'
+            lon_str = f"{self.longitude:.4f}" if self.longitude else 'Unknown'
+            
+            prompt = PROMPT.format(
+                detected_species=detected_species,
+                datetime=dt_str,
+                latitude=lat_str,
+                longitude=lon_str
+            )
             
             response = self.client.models.generate_content(
                 model=self.model,
@@ -138,7 +156,7 @@ class LLMVerifier:
                 'llm_result': result
             }, f, indent=2)
     
-    def validate_detections(self, detections: List[dict]) -> List[dict]:
+    def validate_detections(self, detections: List[dict], observation_time: datetime = None) -> List[dict]:
         """Validate detections, returns only plausible ones."""
         validated = []
         for det in detections:
@@ -146,7 +164,7 @@ class LLMVerifier:
                 validated.append(det)
                 continue
             
-            result = self.verify(det['best_frame'], det['species_name'])
+            result = self.verify(det['best_frame'], det['species_name'], observation_time)
             self._save_log(det.get('track_id', 0), det['best_frame'], det, result)
             
             if result['is_plausible']:
