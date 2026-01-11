@@ -331,10 +331,12 @@ class TwoStageStrategy(DetectionStrategy):
             species_name = None
             crop = None
             blur_variance = None
+            combined_conf = box['conf']  # Default to detector confidence
             
             if classified and box['track_id'] == classified['track_id']:
-                species_name, conf = self._classify_crop(classified['crop'])
-                box['conf'] = conf
+                species_name, cls_conf = self._classify_crop(classified['crop'])
+                # Combined confidence: P(species) = P(is_bird) × P(species|is_bird)
+                combined_conf = box['conf'] * cls_conf
 
                 crop = classified['crop']
                 blur_variance = classified['blur_variance']
@@ -342,7 +344,7 @@ class TwoStageStrategy(DetectionStrategy):
             detection_results.append(DetectionResult(
                 track_id=box['track_id'],
                 class_name=species_name,
-                confidence=box['conf'], 
+                confidence=combined_conf, 
                 bbox=box['bbox_norm'],
                 blur_variance=blur_variance,
                 crop=crop
