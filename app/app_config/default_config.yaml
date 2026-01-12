@@ -28,7 +28,7 @@ ai:
   gemini_api_key: "" # API key for Google Gemini
   model: "gemini-3-flash-preview" # Model for LLM verification & summaries
   llm_verification:
-    min_confidence: 0.5 # Only verify detections below this confidence threshold
+    min_confidence: 0.4 # Only verify detections below this confidence threshold
     max_calls_per_hour: 20 # Rate limit: max API calls per hour
     max_calls_per_day: 100 # Rate limit: max API calls per day
 

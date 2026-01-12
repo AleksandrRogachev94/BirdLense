@@ -119,9 +119,6 @@ class DailySummaryService:
 
         timeline_text = "\n\n".join(timeline_parts)
 
-        logger.info('!!! TIMELINE TEXT !!!')
-        logger.info(timeline_text)
-
         # 4. Generate Summary via LLM
         api_key = app_config.get('ai.gemini_api_key')
         if not api_key:
