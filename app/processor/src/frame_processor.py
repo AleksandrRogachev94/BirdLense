@@ -1,4 +1,5 @@
 import time
+import math
 import logging
 import cv2
 import numpy as np
@@ -84,11 +85,15 @@ class FrameProcessor:
             'bbox': [round(float(b), 2) for b in bbox]
         })
         
-        # Update best frame if this crop is sharper
+        # Update best frame using combined score: sharpness + size
+        # Log-space addition balances blur variance and pixel count regardless of scale
         if crop is not None and blur_variance is not None:
-            if blur_variance > self.tracks[track_id]['best_frame_score']:
+            pixel_count = crop.shape[0] * crop.shape[1]
+            # 1.5x weight on blur to prioritize sharpness over size
+            frame_score = 1.5 * math.log(blur_variance + 1) + math.log(pixel_count + 1)
+            if frame_score > self.tracks[track_id]['best_frame_score']:
                 self.tracks[track_id]['best_frame'] = crop
-                self.tracks[track_id]['best_frame_score'] = blur_variance
+                self.tracks[track_id]['best_frame_score'] = frame_score
 
     def reset(self):
         self.tracks = {}
