@@ -78,7 +78,8 @@ def register_routes(app):
         excluded_species = app_config.get(
             'general.notification_excluded_species', [])
         if detection not in excluded_species:
-            notify(f"{detection} Detected", tags="bird")
+            icon = "chipmunk" if "squirrel" in detection.lower() else "bird"
+            notify(f"{detection} Detected", tags=icon)
         return {'message': f'Successfully received notification of {detection}'}, 200
 
     @app.route('/api/processor/notify/motion', methods=['POST'])
