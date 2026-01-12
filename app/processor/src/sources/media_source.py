@@ -121,12 +121,22 @@ def recording_worker(control_queue: multiprocessing.Queue, frame_queue: multipro
     )
     picam2.configure(config)
 
-    # Auto-enable Continuous Autofocus if camera supports it
+    # Configure focus mode based on camera config
     if controls and "AfMode" in picam2.camera_controls:
-        picam2.set_controls({"AfMode": controls.AfModeEnum.Continuous})
-        logging.info("Autofocus enabled (Continuous mode)")
+        focus_mode = camera_config.get('focus_mode', 'auto') if camera_config else 'auto'
+        
+        if focus_mode == 'manual' and "LensPosition" in picam2.camera_controls:
+            lens_position = camera_config.get('lens_position', 7.0) if camera_config else 7.0
+            picam2.set_controls({
+                "AfMode": controls.AfModeEnum.Manual,
+                "LensPosition": lens_position
+            })
+            logging.info(f"Manual focus enabled (LensPosition: {lens_position} diopters ≈ {100/lens_position:.0f}cm)")
+        else:
+            picam2.set_controls({"AfMode": controls.AfModeEnum.Continuous})
+            logging.info("Autofocus enabled (Continuous mode)")
     elif not controls:
-        logging.debug("libcamera.controls not available, skipping autofocus")
+        logging.debug("libcamera.controls not available, skipping focus control")
 
     stream_output = StreamingOutput()
     start_streaming_server(stream_output, control_queue)

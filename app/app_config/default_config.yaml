@@ -36,7 +36,9 @@ ai:
 camera:
   video_width: 1280
   video_height: 720
-  hdr_mode: true # Enable HDR if available. Autofocus is enabled automatically if supported.
+  hdr_mode: true # Enable HDR if available.
+  focus_mode: "manual" # Options: "auto" (continuous autofocus), "manual" (fixed focus)
+  lens_position: 7.0 # Diopters for manual focus. Higher = closer. 7.0 ≈ 14cm, good for 10-20cm range
 
 # Add your secrets and other configurations here
 secrets:

@@ -52,6 +52,24 @@ export const SettingsForm = ({
     { label: 'VGA (640x480)', width: 640, height: 480 },
   ];
 
+  // Calculate focus distance from lens position (diopters)
+  // LensPosition in diopters = 1 / distance_in_meters
+  const formatFocusDistance = (diopters: number): string => {
+    const cm = Math.round(100 / diopters);
+    const inches = Math.round(cm / 2.54);
+    return `~${cm} cm (${inches} in)`;
+  };
+
+  const focusDistanceOptions = [
+    { diopters: 12, note: 'Very Close' },
+    { diopters: 10, note: '' },
+    { diopters: 7, note: 'Recommended' },
+    { diopters: 5, note: '' },
+    { diopters: 4, note: '' },
+    { diopters: 3, note: '' },
+    { diopters: 2, note: 'Far' },
+  ];
+
   return (
     <Box
       component="form"
@@ -422,9 +440,62 @@ export const SettingsForm = ({
             )}
           </form.Field>
           <FormHelperText>
-            Enable High Dynamic Range mode (Pi Camera v3 only). Autofocus is
-            enabled automatically if supported.
+            Enable High Dynamic Range mode (Pi Camera v3 only)
           </FormHelperText>
+        </Grid>
+        <Grid size={{ xs: 12, sm: 6 }}>
+          <form.Field name="camera.focus_mode">
+            {(field) => (
+              <FormControl fullWidth>
+                <InputLabel>Focus Mode</InputLabel>
+                <Select
+                  value={field.state.value || 'auto'}
+                  label="Focus Mode"
+                  onChange={(e) =>
+                    field.handleChange(e.target.value as 'auto' | 'manual')
+                  }
+                >
+                  <MenuItem value="auto">Auto (Continuous)</MenuItem>
+                  <MenuItem value="manual">Manual (Fixed Distance)</MenuItem>
+                </Select>
+                <FormHelperText>
+                  Manual focus is better for feeders at a fixed distance
+                </FormHelperText>
+              </FormControl>
+            )}
+          </form.Field>
+        </Grid>
+        <Grid size={{ xs: 12, sm: 6 }}>
+          <form.Subscribe
+            selector={(state) => [state.values.camera?.focus_mode]}
+          >
+            {([focusMode]) => (
+              <form.Field name="camera.lens_position">
+                {(field) => (
+                  <FormControl fullWidth disabled={focusMode !== 'manual'}>
+                    <InputLabel>Focus Distance</InputLabel>
+                    <Select
+                      value={field.state.value || 7}
+                      label="Focus Distance"
+                      onChange={(e) =>
+                        field.handleChange(Number(e.target.value))
+                      }
+                    >
+                      {focusDistanceOptions.map((opt) => (
+                        <MenuItem key={opt.diopters} value={opt.diopters}>
+                          {formatFocusDistance(opt.diopters)}
+                          {opt.note && ` - ${opt.note}`}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    <FormHelperText>
+                      Set to match your feeder distance from camera
+                    </FormHelperText>
+                  </FormControl>
+                )}
+              </form.Field>
+            )}
+          </form.Subscribe>
         </Grid>
       </Grid>
 

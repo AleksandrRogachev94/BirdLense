@@ -110,7 +110,9 @@ export interface Settings {
   camera: {
     video_width: number; // Video width in pixels, e.g., 1280
     video_height: number; // Video height in pixels, e.g., 720
-    hdr_mode: boolean; // Enable HDR if available (Pi Camera v3). Autofocus is auto-enabled.
+    hdr_mode: boolean; // Enable HDR if available (Pi Camera v3)
+    focus_mode: 'auto' | 'manual'; // Focus mode: auto (continuous) or manual (fixed)
+    lens_position: number; // Diopters for manual focus (higher = closer). 7 ≈ 14cm
   };
   secrets: {
     openweather_api_key: string; // API key for OpenWeather
