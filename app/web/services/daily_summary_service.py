@@ -128,7 +128,7 @@ class DailySummaryService:
             raise ValueError('Gemini API key not configured in settings.')
 
         model = app_config.get('ai.model')
-        prompt = _build_prompt(date, timeline_text)
+        prompt = _build_prompt(start_of_day, timeline_text)
 
         try:
             client = genai.Client(api_key=api_key)

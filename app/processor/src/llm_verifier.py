@@ -108,8 +108,8 @@ class LLMVerifier:
             
             # Format datetime for the prompt
             dt_str = observation_time.strftime('%Y-%m-%d %H:%M') if observation_time else 'Unknown'
-            lat_str = f"{self.latitude:.4f}" if self.latitude else 'Unknown'
-            lon_str = f"{self.longitude:.4f}" if self.longitude else 'Unknown'
+            lat_str = str(self.latitude) if self.latitude is not None else 'Unknown'
+            lon_str = str(self.longitude) if self.longitude is not None else 'Unknown'
             
             prompt = PROMPT.format(
                 detected_species=detected_species,
