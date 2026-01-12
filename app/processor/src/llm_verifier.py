@@ -140,13 +140,17 @@ class LLMVerifier:
             return {'is_plausible': True, 'reasoning': f'Error: {e}'}
     
     def _save_log(self, track_id: int, crop: np.ndarray, detection: dict, result: dict):
-        """Save verification to persistent log folder."""
+        """Save verification to persistent log folder organized by year/month/day."""
         if not self.log_dir:
             return
         
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        log_path = os.path.join(self.log_dir, f'{timestamp}_track{track_id}')
-        os.makedirs(self.log_dir, exist_ok=True)
+        now = datetime.now()
+        # Create year/month/day folder structure
+        date_folder = os.path.join(self.log_dir, now.strftime('%Y'), now.strftime('%m'), now.strftime('%d'))
+        os.makedirs(date_folder, exist_ok=True)
+        
+        timestamp = now.strftime('%H%M%S')
+        log_path = os.path.join(date_folder, f'{timestamp}_track{track_id}')
         
         cv2.imwrite(f'{log_path}.jpg', crop)
         with open(f'{log_path}.json', 'w') as f:
