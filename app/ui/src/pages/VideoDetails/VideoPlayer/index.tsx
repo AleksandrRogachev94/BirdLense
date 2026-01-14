@@ -215,16 +215,32 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ video }) => {
 
   const handleFullscreen = useCallback(() => {
     if (videoRef.current) {
-      videoRef.current
-        .requestFullscreen()
-        .then(() => {
-          if (videoRef.current) {
-            videoRef.current.controls = true;
-          }
-        })
-        .catch((err) => {
-          console.error('Error attempting to enable fullscreen:', err);
-        });
+      // iOS Safari requires webkitEnterFullscreen for video elements
+      const video = videoRef.current as HTMLVideoElement & {
+        webkitEnterFullscreen?: () => void;
+        webkitSupportsFullscreen?: boolean;
+      };
+
+      // Check if iOS Safari fullscreen is available
+      if (video.webkitEnterFullscreen && video.webkitSupportsFullscreen) {
+        try {
+          video.webkitEnterFullscreen();
+        } catch (err) {
+          console.error('Error attempting to enable webkit fullscreen:', err);
+        }
+      } else if (videoRef.current.requestFullscreen) {
+        // Standard Fullscreen API for other browsers
+        videoRef.current
+          .requestFullscreen()
+          .then(() => {
+            if (videoRef.current) {
+              videoRef.current.controls = true;
+            }
+          })
+          .catch((err) => {
+            console.error('Error attempting to enable fullscreen:', err);
+          });
+      }
     }
   }, []);
 
