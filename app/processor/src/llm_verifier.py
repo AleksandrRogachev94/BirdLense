@@ -164,6 +164,11 @@ class LLMVerifier:
         """Validate detections, returns only plausible ones."""
         validated = []
         for det in detections:
+            # Skip LLM verification for squirrels
+            if det.get('species_name') == 'Squirrel':
+                validated.append(det)
+                continue
+            
             if not self.should_verify(det['confidence']) or det.get('best_frame') is None:
                 validated.append(det)
                 continue
